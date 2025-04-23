@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+@import "swiper/css/scrollbar";
+@import "swiper/css/autoplay";
+@import "swiper/css/free-mode";
+
+@theme inline {
+  --color-site-yellow: #f3cb1e;
+  --color-site-litegreen: #27995a;
+  --color-site-darkgreen: #0b5844;
+  --color-site-gray: #666666;
+
+  --font-outfit: var(--font-outfit);
+
+  --shadow-nav: 0px 4px 4px 0px var(--tw-shadow-color);
+  --shadow-btn: 0px 0px 10px 0px var(--tw-shadow-color) inset;
+
+  --background-image-nav: linear-gradient(
+    90deg,
+    #cccccc 0%,
+    #ffffff 50%,
+    #cccccc 100%
+  );
+  --background-image-green-dark-to-light: linear-gradient(
+    180deg,
+    #0d331e 0%,
+    #27995a 100%
+  );
+  --background-image-gradient-btn-inner: linear-gradient(0deg, #030303, #030303),
+    radial-gradient(80.68% 51.24% at 19.32% 40.62%, #08203a 0%, #000000 100%),
+    radial-gradient(128.28% 129.69% at 63.64% -12.5%, #80c727 0%, #23211b 100%),
+    radial-gradient(
+      80.11% 425.98% at 19.89% 65.63%,
+      rgba(73, 255, 244, 0.2) 0%,
+      rgba(11, 88, 68, 0.128) 100%
+    );
+  --background-image-gradient-btn-outer: linear-gradient(0deg, #030303, #030303),
+    radial-gradient(35.8% 316.2% at 82.39% 55.47%, #41ff48 0%, #27995a 100%),
+    radial-gradient(
+      92.56% 151.44% at 33.52% -15.63%,
+      #ffd41a 0%,
+      rgba(35, 173, 140, 0.58) 85.15%
+    ),
+    radial-gradient(
+      66.76% 121.06% at 22.73% 20.31%,
+      rgba(243, 203, 30, 0.2) 18.63%,
+      rgba(255, 250, 142, 0.2) 100%
+    ),
+    radial-gradient(
+      45.91% 85.94% at 55.4% 14.06%,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.032) 100%
+    );
+  --background-image-white-to-ash: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(226, 226, 226, 0.96) 100%
+  );
+
+  --animate-marquee: marquee 10s linear infinite;
+}
+
+@layer base {
+  body {
+    @apply font-outfit;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  input {
+    @apply outline-none;
+  }
+
+  textarea {
+    @apply outline-none resize-none;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
