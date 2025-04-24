@@ -26,22 +26,7 @@ export default function ContactUsPage() {
               />
             </div>
             <p className="text-site-gray lg:text-base text-sm">
-              Lorem ipsum dolor sit amet consectetur. Velit in massa ut vel
-              velit condimentum quis euismod morbi. Dignissim morbi donec
-              consectetur tellus dapibus accumsan adipiscing nibh. Cursus vitae
-              ultrices elementum in eget pharetra amet commodo. Id aliquam diam
-              curabitur quam. Quam pretium eu nec tincidunt posuere quis arcu
-              nullam. Morbi mauris nunc nisl pellentesque condimentum rhoncus.
-              Amet amet adipiscing neque sit. Velit fames massa cursus aliquet
-              cursus proin urna eget. Fermentum magna vitae at elit. Elementum
-              amet molestie molestie nullam pretium. Scelerisque fermentum neque
-              dignissim nisi morbi amet. At ullamcorper nisl ac sem in fames
-              sagittis. Sed sagittis pharetra nec et scelerisque. Eget enim sed
-              nibh et sit elit neque consequat. Sit suspendisse consectetur
-              tincidunt quam sagittis urna. Pellentesque facilisis sagittis
-              magna potenti tristique. Vel commodo ut lorem massa egestas semper
-              varius suspendisse consectetur tincidunt quam sagittis urna.
-              Pellentesque facilisis
+            At WavePlus Academy, we believe in providing personalized attention to every student and their unique learning needs. If you have any questions about our courses, hostel facilities, or teaching methods, or if you wish to inquire about admission details, feel free to reach out to us. Our team is here to assist you every step of the way. Our office hours are from Monday to Saturday, 9 AM to 6 PM. Whether you're a parent, student, or prospective applicant, we're always ready to answer your queries and provide any information you need. We also encourage you to visit us in person to experience our facilities and meet our team. We look forward to assisting you on your academic journey!
             </p>
             <div className="flex flex-col lg:flex-row">
               <div className="flex  flex-col gap-4 basis-full lg:basis-1/2">

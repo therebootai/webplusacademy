@@ -87,9 +87,7 @@ export default function Footer() {
                 />
               </div>
               <p className="text-site-gray text-base">
-                Finding your dream home starts here. At True Homes, we turn your
-                vision into reality with trust, transparency, and unmatched real
-                estate expertise. Let&apos;s begin today!
+              WavePlus Academy is committed to providing high-quality education for aspiring medical and engineering students. Our courses are designed to help students excel in competitive exams while fostering personal growth.
               </p>
               <button className="bg-green-dark-to-light rounded-md text-white flex justify-center items-center text-base h-[3rem] w-full xl:text-lg">
                 Admission Open

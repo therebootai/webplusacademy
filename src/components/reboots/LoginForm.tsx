@@ -29,7 +29,7 @@ export default function LoginForm() {
         password as string
       );
 
-      console.log(loginResponse);
+      router.push("/admin");
     } catch (error) {
       console.log(error);
     }

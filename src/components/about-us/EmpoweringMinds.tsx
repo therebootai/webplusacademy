@@ -116,34 +116,34 @@ export default function EmpoweringMinds() {
             <div className="grid grid-cols-2 justify-items-center basis-full">
               {[
                 {
-                  title: "12K",
+                  title: "1800+",
                   description:
-                    "Lorem ipsum dolor sit amet consectetur. Rhoncus dis lorem.",
+                    "Happy Students Trusted by thousands of learners across all levels..",
                 },
                 {
-                  title: "12K",
+                  title: "170+",
                   description:
-                    "Lorem ipsum dolor sit amet consectetur. Rhoncus dis lorem.",
+                    "Expert-Led Courses Diverse programs designed to suit every interest and career path.",
                 },
                 {
-                  title: "12K",
+                  title: "700+",
                   description:
-                    "Lorem ipsum dolor sit amet consectetur. Rhoncus dis lorem.",
+                    "Certified Teachers Qualified mentors dedicated to quality education and personal growth.",
                 },
                 {
-                  title: "12K",
+                  title: "1200+",
                   description:
-                    "Lorem ipsum dolor sit amet consectetur. Rhoncus dis lorem.",
+                    "Awards & Achievements Recognized for excellence in education and innovation.",
                 },
                 {
-                  title: "12K",
+                  title: "95%",
                   description:
-                    "Lorem ipsum dolor sit amet consectetur. Rhoncus dis lorem.",
+                    "Placement Success Strong industry connections with high placement rates.",
                 },
                 {
-                  title: "12K",
+                  title: "24x7",
                   description:
-                    "Lorem ipsum dolor sit amet consectetur. Rhoncus dis lorem.",
+                    "Student Support Round-the-clock assistance for academic and career guidance.",
                 },
               ].map((item, index) => (
                 <div

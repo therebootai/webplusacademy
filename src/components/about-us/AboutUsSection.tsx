@@ -5,28 +5,28 @@ import EnquiryForm from "@/ui/EnquiryForm";
 export default function AboutUsSection() {
   const cardData = [
     {
-      heading: "Career Coaching",
-      para: "Lorem ipsum dolor sit amet consectetur. Aliquam duis duis enim morbi suscipit quis. Tellus nisl hac id in tellus",
+      heading: "Expert Faculty Guidance",
+      para: "Dedicated, experienced teachers help students excel with personalized coaching, tailored to meet individual learning needs.",
     },
     {
-      heading: "Career Coaching",
-      para: "Lorem ipsum dolor sit amet consectetur. Aliquam duis duis enim morbi suscipit quis. Tellus nisl hac id in tellus",
+      heading: "Comprehensive Course Structure",
+      para: "Programs designed for NEET, JEE, and board exams, integrating theory and practical to ensure thorough preparation.",
     },
     {
-      heading: "Career Coaching",
-      para: "Lorem ipsum dolor sit amet consectetur. Aliquam duis duis enim morbi suscipit quis. Tellus nisl hac id in tellus",
+      heading: "Holistic Personality Development",
+      para: "Beyond academics, we build confident, well-rounded individuals with strong personality and communication skills.",
     },
     {
-      heading: "Career Coaching",
-      para: "Lorem ipsum dolor sit amet consectetur. Aliquam duis duis enim morbi suscipit quis. Tellus nisl hac id in tellus",
+      heading: "Top-notch Study Material",
+      para: "Updated, exam-focused resources and mock tests designed by experts to ensure in-depth understanding and top scores.",
     },
     {
-      heading: "Career Coaching",
-      para: "Lorem ipsum dolor sit amet consectetur. Aliquam duis duis enim morbi suscipit quis. Tellus nisl hac id in tellus",
+      heading: "Regular Assessments & Feedback",
+      para: "Continuous evaluations, personalized feedback, and doubt-clearing sessions to track progress and ensure concept mastery.",
     },
     {
-      heading: "Career Coaching",
-      para: "Lorem ipsum dolor sit amet consectetur. Aliquam duis duis enim morbi suscipit quis. Tellus nisl hac id in tellus",
+      heading: "State-of-the-art Facilities",
+      para: "Equipped classrooms, advanced teaching tools, and online resources that support an immersive and engaging learning experience.",
     },
   ];
   return (
@@ -43,21 +43,23 @@ export default function AboutUsSection() {
           />
         </div>
         <p className="text-site-gray lg:text-base text-sm">
-          Lorem ipsum dolor sit amet consectetur. Velit in massa ut vel velit
-          condimentum quis euismod morbi. Dignissim morbi donec consectetur
-          tellus dapibus accumsan adipiscing nibh. Cursus vitae ultrices
-          elementum in eget pharetra amet commodo. Id aliquam diam curabitur
-          quam. Quam pretium eu nec tincidunt posuere quis arcu nullam. Morbi
-          mauris nunc nisl pellentesque condimentum rhoncus. Amet amet
-          adipiscing neque sit. Velit fames massa cursus aliquet cursus proin
-          urna eget. Fermentum magna vitae at elit. Elementum amet molestie
-          molestie nullam pretium. Scelerisque fermentum neque dignissim nisi
-          morbi amet. At ullamcorper nisl ac sem in fames sagittis. Sed sagittis
-          pharetra nec et scelerisque. Eget enim sed nibh et sit elit neque
-          consequat. Sit suspendisse consectetur tincidunt quam sagittis urna.
-          Pellentesque facilisis sagittis magna potenti tristique. Vel commodo
-          ut lorem massa egestas semper varius suspendisse consectetur tincidunt
-          quam sagittis urna. Pellentesque facilisis
+          WavePlus Academy is a premier coaching institute dedicated to
+          providing high-quality education for students aspiring to pursue
+          careers in the medical and engineering fields. Located in Bagdogra,
+          Darjeeling, the academy offers a range of programs that cater to
+          students at various educational levels. Their courses include
+          preparatory programs for NEET UG, integrated coaching for Class XI &
+          XII, and specialized classes for Class IX & X, ensuring a
+          comprehensive approach to both board exams and competitive entrance
+          exams. <br />
+          With a focus on holistic development, WavePlus Academy emphasizes
+          personality development, regular assessments, and personalized
+          attention. The academy&apos;s team of highly qualified faculty members
+          provides expert guidance, using the latest study materials and
+          techniques to help students excel. WavePlus Academy is committed to
+          shaping students into successful professionals by fostering both
+          academic excellence and character development. Visit their website for
+          more details and to apply for their programs today.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-7 md:gap-6">
           {cardData.map((card, index) => (

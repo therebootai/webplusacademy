@@ -2,9 +2,7 @@
 
 import { connectToDataBase } from "@/db/connection";
 import User from "@/models/User";
-import { generateCustomId } from "@/util/generateCustomId";
 import { generateToken } from "@/util/jsonToken";
-import mongoose from "mongoose";
 import { cookies } from "next/headers";
 
 export async function getUser(userId: string | undefined) {
@@ -14,59 +12,12 @@ export async function getUser(userId: string | undefined) {
     const query: { userId?: string } = {};
     if (userId) query.userId = userId;
 
-    const users = await User.find(query);
+    const users = await User.find(query).lean();
 
     return { success: true, data: users };
   } catch (error) {
     console.log(error);
     return { success: false, data: [] };
-  }
-}
-
-export async function createNewUser(
-  name: string,
-  email: string,
-  phone: string,
-  password: string
-) {
-  try {
-    if (!name || !email || !phone || !password) {
-      return { success: false, data: null, message: "All fields are required" };
-    }
-
-    const existingUser = await User.findOne({
-      $or: [{ email: email }, { phone: phone }],
-    });
-
-    if (existingUser) {
-      return { success: false, data: null, message: "User already exists" };
-    }
-
-    const userId = await generateCustomId(User, "userId", "userId");
-
-    const data = new User({
-      userId,
-      name,
-      email,
-      phone,
-      password,
-    });
-
-    // Save the new user to the database
-    const newUser = await data.save();
-
-    const token = generateToken({ ...newUser });
-
-    const cookieStore = await cookies();
-    cookieStore.set("token", token ?? "");
-
-    return {
-      success: true,
-      data: newUser,
-    };
-  } catch (error) {
-    console.log(error);
-    return { success: false, data: null };
   }
 }
 
@@ -91,7 +42,9 @@ export async function loginUser(emailOrPhone: string, password: string) {
     const cookieStore = await cookies();
     cookieStore.set("token", token ?? "");
 
-    return { success: true, data: user };
+    const plainUser = user.toObject();
+
+    return { success: true, data: JSON.parse(JSON.stringify(plainUser)) };
   } catch (error) {
     console.log(error);
     return { success: false, data: null };
@@ -106,24 +59,5 @@ export async function logoutUser() {
   } catch (error) {
     console.log(error);
     return { success: false };
-  }
-}
-
-export async function deleteUser(userId: string) {
-  try {
-    await connectToDataBase();
-    const deletedUser = await User.findOneAndDelete({
-      $or: [
-        { userId: userId },
-        { _id: mongoose.Types.ObjectId.isValid(userId) ? userId : undefined },
-      ],
-    });
-    if (!deletedUser) {
-      return { success: false, data: null, message: "User not found" };
-    }
-    return { success: true, data: deletedUser };
-  } catch (error) {
-    console.log(error);
-    return { success: false, data: null };
   }
 }

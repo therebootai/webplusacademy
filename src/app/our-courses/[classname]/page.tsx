@@ -18,28 +18,28 @@ export default async function OurCoursesPage({
 
   const cardData = [
     {
-      heading: "Career Coaching",
-      para: "Lorem ipsum dolor sit amet consectetur. Aliquam duis duis enim morbi suscipit quis. Tellus nisl hac id in tellus",
+      heading: "Expert Faculty Guidance",
+      para: "Dedicated, experienced teachers help students excel with personalized coaching, tailored to meet individual learning needs.",
     },
     {
-      heading: "Career Coaching",
-      para: "Lorem ipsum dolor sit amet consectetur. Aliquam duis duis enim morbi suscipit quis. Tellus nisl hac id in tellus",
+      heading: "Comprehensive Course Structure",
+      para: "Programs designed for NEET, JEE, and board exams, integrating theory and practical to ensure thorough preparation.",
     },
     {
-      heading: "Career Coaching",
-      para: "Lorem ipsum dolor sit amet consectetur. Aliquam duis duis enim morbi suscipit quis. Tellus nisl hac id in tellus",
+      heading: "Holistic Personality Development",
+      para: "Beyond academics, we build confident, well-rounded individuals with strong personality and communication skills.",
     },
     {
-      heading: "Career Coaching",
-      para: "Lorem ipsum dolor sit amet consectetur. Aliquam duis duis enim morbi suscipit quis. Tellus nisl hac id in tellus",
+      heading: "Top-notch Study Material",
+      para: "Updated, exam-focused resources and mock tests designed by experts to ensure in-depth understanding and top scores.",
     },
     {
-      heading: "Career Coaching",
-      para: "Lorem ipsum dolor sit amet consectetur. Aliquam duis duis enim morbi suscipit quis. Tellus nisl hac id in tellus",
+      heading: "Regular Assessments & Feedback",
+      para: "Continuous evaluations, personalized feedback, and doubt-clearing sessions to track progress and ensure concept mastery.",
     },
     {
-      heading: "Career Coaching",
-      para: "Lorem ipsum dolor sit amet consectetur. Aliquam duis duis enim morbi suscipit quis. Tellus nisl hac id in tellus",
+      heading: "State-of-the-art Facilities",
+      para: "Equipped classrooms, advanced teaching tools, and online resources that support an immersive and engaging learning experience.",
     },
   ];
 

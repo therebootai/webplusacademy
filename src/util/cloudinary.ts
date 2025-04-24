@@ -15,15 +15,26 @@ export interface UploadFileResult {
 }
 
 export const uploadFile = async (
-  tempFilePath: string
+  tempFilePath: string,
+  fileType: string
 ): Promise<UploadFileResult | Error> => {
   try {
+    let folderName = "images";
+    let format = "jpg";
+    let resourceType: "image" | "video" | "raw" | "auto" = "image";
+    
+    if (fileType === "application/pdf") {
+      folderName = "pdf";
+      format = "pdf";
+      resourceType = "raw";
+    }
     // Upload the file to Cloudinary
     const result: UploadFileResult = await cloudinary.uploader.upload(
       tempFilePath,
       {
-        folder: `waveplusacademy/`,
-        resource_type: "auto",
+        folder: `waveplusacademy/` + folderName,
+        resource_type: resourceType,
+        format: format,
       }
     );
 
