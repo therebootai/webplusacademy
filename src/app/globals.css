@@ -5,12 +5,14 @@
 @import "swiper/css/scrollbar";
 @import "swiper/css/autoplay";
 @import "swiper/css/free-mode";
+@import "react-datepicker/dist/react-datepicker.css";
 
 @theme inline {
   --color-site-yellow: #f3cb1e;
   --color-site-litegreen: #27995a;
   --color-site-darkgreen: #0b5844;
   --color-site-gray: #666666;
+  --color-site-black: #333333;
 
   --font-outfit: var(--font-outfit);
 
@@ -87,4 +89,62 @@
   100% {
     transform: translateX(-100%);
   }
+}
+
+.switch {
+  --secondary-container: #00cd44;
+  --primary: white;
+  font-size: 10px;
+  position: relative;
+  display: inline-block;
+  width: 1.75rem;
+  height: 0.875rem;
+}
+
+.switch input {
+  display: none;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: 30px;
+  border: 1px solid #00cd44;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 1em;
+  width: 1em;
+  border-radius: 20px;
+  left: 0.1em;
+  bottom: 0.05em;
+  background-color: #00cd44;
+  transition: 0.4s;
+}
+
+input:checked + .slider::before {
+  background-color: var(--primary);
+}
+
+input:checked + .slider {
+  background-color: var(--secondary-container);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--secondary-container);
+}
+
+input:checked + .slider:before {
+  transform: translateX(1.5em);
 }

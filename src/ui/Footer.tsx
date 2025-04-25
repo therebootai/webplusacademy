@@ -29,8 +29,8 @@ export default function Footer() {
       href: "/facilities",
     },
     {
-      label: "Notice",
-      href: "/notices",
+      label: "Results",
+      href: "/results",
     },
     {
       label: "Gallery",
@@ -87,7 +87,10 @@ export default function Footer() {
                 />
               </div>
               <p className="text-site-gray text-base">
-              WavePlus Academy is committed to providing high-quality education for aspiring medical and engineering students. Our courses are designed to help students excel in competitive exams while fostering personal growth.
+                WavePlus Academy is committed to providing high-quality
+                education for aspiring medical and engineering students. Our
+                courses are designed to help students excel in competitive exams
+                while fostering personal growth.
               </p>
               <button className="bg-green-dark-to-light rounded-md text-white flex justify-center items-center text-base h-[3rem] w-full xl:text-lg">
                 Admission Open
@@ -131,22 +134,31 @@ export default function Footer() {
                 Contact Information
               </h1>
               <div className="flex flex-col gap-2 text-sm xl:text-base">
+                <div className="flex flex-wrap gap-2">
+                  <Link
+                    href="tel:+919614016184"
+                    className="flex gap-2 text-site-gray"
+                  >
+                    <FaMobile
+                      size={24}
+                      className="shrink-0 text-site-darkgreen"
+                    />{" "}
+                    <span className="">+91 96140 16184</span>
+                  </Link>{" "}
+                  /
+                  <Link
+                    href="tel:+919679315590"
+                    className="flex gap-2 text-site-gray"
+                  >
+                    <span className="">+91 96793 15590</span>
+                  </Link>
+                </div>
                 <Link
-                  href="tel:+918945927196"
-                  className="flex gap-2 text-site-gray"
-                >
-                  <FaMobile
-                    size={24}
-                    className="shrink-0 text-site-darkgreen"
-                  />{" "}
-                  <span className="">+91 89459 27196</span>
-                </Link>
-                <Link
-                  href="mailto:truehomes@gmail.com"
+                  href="mailto:info@waveplusacademy.com"
                   className="flex gap-2 text-site-gray"
                 >
                   <MdEmail size={24} className="shrink-0 text-site-darkgreen" />{" "}
-                  <span className="">truehomes@gmail.com</span>
+                  <span className="">info@waveplusacademy.com</span>
                 </Link>
                 <Link
                   href="https://maps.app.goo.gl/itkQPUvt7iep1Bv57?g_st=com.google.maps.preview.copy"
@@ -156,8 +168,8 @@ export default function Footer() {
                 >
                   <IoLocationSharp size={24} className="shrink-0" />{" "}
                   <span className="text-site-gray">
-                    Tarunjubari, Khaprail Bazar, Matigara, Siliguri, Darjeeling,
-                    West Bengal - 734001
+                    Gadadhar Pally, Behind Hebron School, Upper Bagdogra,
+                    Darjeeling, West Bengal - 734003
                   </span>
                 </Link>
               </div>

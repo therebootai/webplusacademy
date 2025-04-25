@@ -1,9 +1,32 @@
 "use client";
+import { getAllSliders } from "@/actions/sliderActions";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 export default function HomeHero() {
+  const [allSiders, setAllSliders] = useState<
+    { slider_image: { secure_url: string } }[]
+  >([]);
+  async function getSliders() {
+    try {
+      const sliders = await getAllSliders(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        true
+      );
+      setAllSliders(sliders.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getSliders();
+  }, []);
   return (
     <div className="flex relative">
       <Swiper
@@ -12,10 +35,10 @@ export default function HomeHero() {
         modules={[Autoplay]}
         autoplay={{ delay: 2500, disableOnInteraction: false }}
       >
-        {["/slider/slider-1.png", "/slider/slider-2.png"].map((img, index) => (
+        {allSiders.map((img, index) => (
           <SwiperSlide key={index}>
             <Image
-              src={img}
+              src={img.slider_image?.secure_url as string}
               width={1440}
               height={868}
               alt="slider"

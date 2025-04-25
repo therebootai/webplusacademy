@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-interface ComponentDocument extends Document {
+export interface Component {
   componentId: string;
   name: string;
   slider_image: {
@@ -8,7 +8,12 @@ interface ComponentDocument extends Document {
     secure_url: string;
   };
   status: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
+
+// ✅ Extended interface for Mongoose documents
+export interface ComponentDocument extends Document, Component {}
 
 const componentSchema = new Schema<ComponentDocument>(
   {

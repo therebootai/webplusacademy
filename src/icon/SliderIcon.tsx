@@ -16,13 +16,13 @@ export default function SliderIcon({ className }: { className?: string }) {
         maskUnits="userSpaceOnUse"
         x="0"
         y="0"
-        width="1em"
-        height="1em"
+        width="100%"
+        height="100%"
       >
         <rect
           x="24"
-          width="1em"
-          height="1em"
+          width="100%"
+          height="100%"
           transform="rotate(90 24 0)"
           fill="#D9D9D9"
         />

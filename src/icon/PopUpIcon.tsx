@@ -16,10 +16,11 @@ export default function PopUpIcon({ className }: { className?: string }) {
         maskUnits="userSpaceOnUse"
         x="0"
         y="0"
-        width="1em"
-        height="1em"
+       width="100%"
+        height="100%"
       >
-        <rect x="0.80957" width="1em" height="1em" fill="#D9D9D9" />
+        <rect x="0.80957" width="100%"
+        height="100%" fill="#D9D9D9" />
       </mask>
       <g mask="url(#mask0_63_1545)">
         <path

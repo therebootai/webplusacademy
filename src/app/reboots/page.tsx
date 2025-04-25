@@ -7,7 +7,7 @@ export default async function RebootsPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
   if (token && token.value) {
-    // redirect("/dashboard/packages/");
+    redirect("/admin?page=1");
   }
   return (
     <div className="flex justify-center h-screen bg-[#EDF4F7] overflow-y-scroll bg-no-repeat bg-cover bg-center overflow-x-hidden items-center">

@@ -1,7 +1,6 @@
 "use client";
 
 import { createComponent } from "@/actions/sliderActions";
-import { UploadedFile } from "@/types/ImageFileTypes";
 import { useActionState } from "react";
 
 export default function AddNewSlider() {
@@ -18,7 +17,7 @@ export default function AddNewSlider() {
         };
       }
 
-      const slider = await createComponent(name, slider_image);
+      const slider = await createComponent(name.trim(), slider_image);
       console.log(slider);
       return slider;
     } catch (error) {
@@ -31,13 +30,12 @@ export default function AddNewSlider() {
     <form className="flex gap-2 items-center" action={formActions}>
       <input
         type="text"
-        pattern="^\S+$"
         required
-        placeholder={`SliderName`}
+        placeholder={`Slider Name`}
         name="name"
-        className="px-2 h-[3rem] border border-custom-gray-border outline-none placeholder:text-site-gray rounded-md flex-1 capitalize placeholder:capitalize"
+        className="px-2 h-[3rem] border border-[#cccccc] outline-none placeholder:text-site-gray rounded-md flex-1 capitalize placeholder:capitalize"
       />
-      <div className="relative flex-1 h-[3rem] border border-custom-gray-border rounded-md truncate">
+      <div className="relative flex-1 h-[3rem] border border-[#cccccc] rounded-md truncate">
         <label
           htmlFor="file-input"
           className="absolute capitalize top-1/2 left-2 transform -translate-y-1/2 text-custom-gray cursor-pointer truncate"

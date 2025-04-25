@@ -59,12 +59,15 @@ export default function Navbar() {
       href: "/facilities",
     },
     {
-      text: "Notice",
-      href: "/notices",
+      text: "Results",
+      href: "/results",
     },
     {
       text: "Gallery",
-      href: "/gallery",
+      subMenu: [
+        { text: "Photo Gallery", href: "/gallery/image" },
+        { text: "Video Gallery", href: "/gallery/video" },
+      ],
     },
     {
       text: "Contact Us",
@@ -135,19 +138,19 @@ export default function Navbar() {
                   </span>
                   {item.subMenu && item.subMenu.length > 0 && (
                     <div className="absolute top-full bg-nav  left-1/2 -translate-x-1/2 duration-500 transition-all origin-top opacity-0 group-hover:opacity-100 size-0 group-hover:size-auto overflow-hidden flex rounded border border-white/50">
-                      <div className="text-white flex flex-col whitespace-nowrap p-2">
+                      <div className="text-white flex flex-col whitespace-nowrap">
                         <ul className="flex flex-col gap-4">
                           {item.subMenu.map((menu, con) => (
                             <div
-                              className="text-white flex flex-col gap-6 whitespace-nowrap p-2"
+                              className="hover:bg-site-yellow hover:text-white text-site-darkgreen flex flex-col gap-6 whitespace-nowrap py-2 px-4 transition-colors duration-300"
                               key={con}
                             >
                               <li className="text-base xl:text-lg">
                                 <Link
                                   href={menu.href}
-                                  className="flex items-center z-10 gap-2 text-site-darkgreen hover:underline hover:text-site-litegreen transition-colors duration-300"
+                                  className="flex items-center z-10 gap-2 "
                                 >
-                                  &gt; {menu.text}
+                                  {menu.text}
                                 </Link>
                               </li>
                             </div>

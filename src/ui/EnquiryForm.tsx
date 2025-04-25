@@ -1,4 +1,27 @@
+"use client";
+import { useActionState } from "react";
+
 export default function EnquiryForm() {
+  const handleSubmit = (prevState: object, formData: FormData) => {
+    const name = formData.get("name");
+    const mobile = formData.get("mobile");
+    const className = formData.get("class");
+    const location = formData.get("location");
+    const message = formData.get("message");
+
+    const whatsappMessage = `Name: ${name}\nMobile: ${mobile}}\nClass: ${className}\nLocation: ${location}\nMessage: ${message}`;
+
+    const encodedMessage = encodeURIComponent(whatsappMessage);
+
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    const whatsappUrl = isDesktop
+      ? `https://web.whatsapp.com/send?phone=919614016184&text=${encodedMessage}`
+      : `https://api.whatsapp.com/send?phone=919614016184&text=${encodedMessage}`;
+    window.open(whatsappUrl, "_blank");
+    return { ...prevState };
+  };
+
+  const [, formAction] = useActionState(handleSubmit, {});
   return (
     <div className="flex flex-col relative rounded-md overflow-hidden bg-[#fafafa]">
       <div className="relative h-28 bg-site-yellow flex items-center justify-center">
@@ -7,7 +30,7 @@ export default function EnquiryForm() {
           Career You&apos;re Passionate About Is There For You!
         </h3>
       </div>
-      <form action="" className="flex flex-col gap-4 p-7">
+      <form action={formAction} className="flex flex-col gap-4 p-7">
         <input
           type="text"
           name="name"
@@ -30,6 +53,12 @@ export default function EnquiryForm() {
           className="bg-white lg:py-3.5 py-2.5 xl:px-6 md:px-4 px-3.5 rounded-md text-site-gray placeholder:text-site-gray lg:text-base text-sm outline-none"
         >
           <option value="">Select Class Your&apos;re Interested</option>
+          <option value="Class 9">Class 9</option>
+          <option value="Class 10">Class 10</option>
+          <option value="Class 11">Class 11</option>
+          <option value="Class 12">Class 12</option>
+          <option value="jee">JEE</option>
+          <option value="neet">Neet</option>
         </select>
         <input
           type="text"
