@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getAllResults } from "@/actions/resultActions";
 import DownloadResultSection from "@/components/results/DownloadResultSection";
 import { ResultDocument } from "@/models/Results";

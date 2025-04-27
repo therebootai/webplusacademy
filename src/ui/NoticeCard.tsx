@@ -1,24 +1,23 @@
 "use client";
-
 import Link from "next/link";
 
-export default function ResultCard({
+export default function NoticeCard({
+  title,
   status,
-  year,
-  result_file,
+  notice_file,
   deleteCard,
   changeStatus,
 }: {
+  title: string;
   status: boolean;
-  year: string;
-  result_file: { secure_url: string; public_id: string };
+  notice_file?: { secure_url: string; public_id: string };
   deleteCard: () => Promise<{ success: boolean; message: string }>;
   changeStatus: () => Promise<{ success: boolean; data: any }>;
 }) {
   return (
-    <div className="flex flex-col gap-4 px-6 py-4 bg-[#F7F7F7] text-[#333333]">
+    <div className="flex flex-col gap-4 px-6 py-4 bg-[#F7F7F7] text-[#333333] rounded-md">
       <div className="flex items-center gap-5 text-lg">
-        Year <span className="font-bold capitalize">{year}</span>
+        Title <span className="font-bold capitalize">{title}</span>
       </div>
       <div className="flex items-center gap-5">
         Status{" "}
@@ -29,14 +28,18 @@ export default function ResultCard({
       </div>
       <div className="flex items-center gap-5">
         Actions{" "}
-        <Link
-          className="text-site-darkgreen font-medium text-lg"
-          href={result_file.secure_url}
-          target="_blank"
-        >
-          View
-        </Link>{" "}
-        /
+        {notice_file && (
+          <>
+            <Link
+              className="text-site-darkgreen font-medium text-lg"
+              href={notice_file?.secure_url}
+              target="_blank"
+            >
+              View
+            </Link>
+            /
+          </>
+        )}{" "}
         <button
           type="button"
           className="text-red-500 font-medium text-lg"

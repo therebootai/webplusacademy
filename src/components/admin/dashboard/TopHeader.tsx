@@ -34,8 +34,8 @@ export default function TopHeader() {
     },
     {
       icon: <PopUpIcon />,
-      label: "Pop Up",
-      path: "/admin/pop-up?page=1",
+      label: "Notices",
+      path: "/admin/notices?page=1",
     },
     {
       icon: <MediaIcon />,

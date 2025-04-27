@@ -1,13 +1,46 @@
+"use client";
+import { getAllNotices } from "@/actions/noticeAction";
+import { NoticeDocument } from "@/models/Notice";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { BiSolidPhoneCall } from "react-icons/bi";
 import { IoLogoWhatsapp } from "react-icons/io";
 import { MdEmail } from "react-icons/md";
+
+type NoticeResponse = {
+  success: boolean;
+  data: NoticeDocument[];
+  pagination: {
+    totalCount: number;
+    currentPage: number;
+    limit: number;
+    totalPages: number;
+  };
+};
 
 export default function TopHeader({
   ref,
 }: {
   ref: React.RefObject<HTMLDivElement | null>;
 }) {
+  const [notices, setNotices] = useState<NoticeDocument[]>([]);
+
+  useEffect(() => {
+    const fetchNotices = async () => {
+      const response: NoticeResponse = await getAllNotices(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        true
+      );
+      if (response.success) {
+        setNotices(response.data);
+      }
+    };
+    fetchNotices();
+  }, []);
+
   return (
     <div ref={ref}>
       <div className="h-1 w-full bg-site-litegreen" />
@@ -33,8 +66,26 @@ export default function TopHeader({
           </Link>
         </div>
         <div className="py-3.5 md:py-6 pl-3.5 md:pl-9 md:pr-16 text-base text-site-darkgreen">
-          <div className="inline-block animate-marquee">
-            Website under maintenance....
+          <div className="inline-block animate-marquee hover:[animation-play-state:paused]">
+            {notices.map((notice) =>
+              notice.notice_file ? (
+                <Link
+                  key={notice._id as string}
+                  href={notice.notice_file.secure_url}
+                  target="_blank"
+                  className="mr-4 relative  after:absolute after:content-['|'] last:after:content-none after:mx-1"
+                >
+                  {notice.title}
+                </Link>
+              ) : (
+                <span
+                  key={notice._id as string}
+                  className="mr-4 relative after:absolute after:content-['|'] last:after:content-none after:mx-1 cursor-context-menu"
+                >
+                  {notice.title}
+                </span>
+              )
+            )}
           </div>
         </div>
       </header>

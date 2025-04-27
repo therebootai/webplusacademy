@@ -5,6 +5,8 @@ import { useActionState, useState } from "react";
 
 export default function AddNewMedia() {
   const [type, setType] = useState<string>("image");
+  const [file, setFile] = useState<File | null>(null);
+
   async function addNewMedia(prevState: unknown, formData: FormData) {
     try {
       const name = formData.get("name") as string;
@@ -52,13 +54,14 @@ export default function AddNewMedia() {
             htmlFor="file-input"
             className="absolute capitalize top-1/2 left-2 transform -translate-y-1/2 text-custom-gray cursor-pointer truncate"
           >
-            Choose Media Image
+            {file ? file.name : "Choose Media Image"}
           </label>
           <input
             id="file-input"
             type="file"
             name="image"
             accept="image/*"
+            onChange={(e) => setFile(e.target?.files?.[0] ?? null)}
             required
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer truncate"
           />

@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import { AiOutlineMenuFold } from "react-icons/ai";
 import { IoCloseSharp } from "react-icons/io5";
 import TopHeader from "./TopHeader";
+import Popup from "./Popup";
+import EnquiryForm from "./EnquiryForm";
 
 interface NavbarProps {
   text: string;
@@ -279,6 +281,9 @@ export default function Navbar() {
           </div>
         )}
       </div>
+      <Popup isOpen={isAppointmentModalOpen} onClose={toggleAppointmentModal}>
+        <EnquiryForm />
+      </Popup>
     </div>
   );
 }
