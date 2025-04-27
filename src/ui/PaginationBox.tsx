@@ -31,7 +31,7 @@ const PaginationBox = ({
   }
 
   return (
-    <div className="p-4 px-6 flex justify-end items-center bg-white border border-site-gray rounded-md">
+    <div className="p-4 px-6 flex justify-end items-center bg-white border border-[#cccccc] rounded-md">
       <div className="flex flex-row gap-6 items-center justify-end">
         {currentPage === 1 ? null : (
           <Link

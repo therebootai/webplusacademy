@@ -40,7 +40,7 @@ export default function Popup({
             </div>
             <div className="relative overflow-hidden">
               <button
-                className="absolute top-0 right-0 bg-gray-200 text-gray-700 p-2 rounded-md rounded-tl-none hover:bg-gray-300 transition-all text-sm lg:text-xl"
+                className="absolute top-0 right-0 bg-site-litegreen text-site-yellow p-2 rounded-md rounded-tl-none hover:bg-site-darkgreen transition-all text-sm lg:text-xl z-20"
                 onClick={onClose}
               >
                 <IoClose />

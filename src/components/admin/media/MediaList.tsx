@@ -1,7 +1,6 @@
 "use client";
 
-import { updateGallery } from "@/actions/galleryActions";
-import { deleteComponent } from "@/actions/sliderActions";
+import { deleteGallery, updateGallery } from "@/actions/galleryActions";
 import { GalleryDocument } from "@/models/Gallery";
 import AdminCard from "@/ui/AdminCard";
 
@@ -14,13 +13,13 @@ export default function MediaList({
 }) {
   return (
     <div className="grid grid-cols-4">
-      {Media.map((slider: any) => (
+      {Media.map((slider: GalleryDocument) => (
         <AdminCard
           img={videoOnly ? slider.video : slider.image.secure_url}
           name={slider.name}
           key={slider.galleryId}
           status={slider.status}
-          deleteCard={() => deleteComponent(slider._id)}
+          deleteCard={() => deleteGallery(slider._id as string)}
           video={videoOnly}
           changeStatus={() =>
             updateGallery(slider._id as string, undefined, !slider.status)

@@ -3,6 +3,7 @@ import EmpoweringMinds from "@/components/about-us/EmpoweringMinds";
 import HomeBadges from "@/components/home/HomeBadges";
 import HomeCourses from "@/components/home/HomeCourses";
 import HomeHero from "@/components/home/HomeHero";
+import HomeTestimonial from "@/components/home/HomeTestimonial";
 import MainTemplate from "@/templates/MainTemplate";
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
         <AboutUsSection />
         <HomeCourses />
         <EmpoweringMinds />
+        <HomeTestimonial />
       </div>
     </MainTemplate>
   );

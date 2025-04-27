@@ -1,10 +1,8 @@
 import { getAllResults } from "@/actions/resultActions";
 import AddnewResult from "@/components/admin/results/AddNewResult";
 import ResultsList from "@/components/admin/results/ResultsList";
-import Result, { ResultDocument } from "@/models/Results";
+import { ResultDocument } from "@/models/Results";
 import AdminTemplate from "@/templates/AdminTemplate";
-import ResultCard from "@/ui/ResultCard";
-import Link from "next/link";
 
 type ResultResponse = {
   success: boolean;

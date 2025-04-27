@@ -40,11 +40,11 @@ export default function HomeBadges() {
     <div className="flex flex-col gap-7 items-center">
       <div className="flex flex-col gap-3.5 items-center">
         <h3 className="text-site-darkgreen xl:text-base md:text-sm text-xs text-center">
-          Lorem ipsum dolor sit amet consectetur.
+          Transforming lives, shaping futures.
         </h3>
         <CustomHeading
-          normal="Lorem ipsum dolor sit "
-          highlight="amet consectetur."
+          normal="Pioneering Excellence: 10"
+          highlight="Years of Impact & Innovation"
           className="font-bold xl:text-3xl"
         />
       </div>

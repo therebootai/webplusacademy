@@ -6,6 +6,7 @@ import DatePicker from "react-datepicker";
 
 export default function AddnewResult() {
   const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [file, setFile] = useState<File | null>(null);
   async function addResult(prevState: unknown, formData: FormData) {
     try {
       const result_file = formData.get("result_file") as File;
@@ -14,6 +15,10 @@ export default function AddnewResult() {
 
       if (!classFor || !year) {
         return alert("All fields are required");
+      }
+
+      if (result_file.type !== "application/pdf") {
+        return alert("Only PDF files are allowed");
       }
 
       const result = await addNewResult(classFor, result_file, year);
@@ -43,13 +48,14 @@ export default function AddnewResult() {
           htmlFor="file-input"
           className="absolute capitalize top-1/2 left-2 transform -translate-y-1/2 text-custom-gray cursor-pointer truncate"
         >
-          Choose Result file
+          {file ? file.name : "Choose Result file"}
         </label>
         <input
           id="file-input"
           type="file"
           name="result_file"
-          accept="file/pdf"
+          onChange={(e) => setFile(e.target?.files?.[0] ?? null)}
+          accept="application/pdf"
           required
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer truncate"
         />

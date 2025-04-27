@@ -6,6 +6,8 @@ import { IoLocationSharp } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
 import { useState } from "react";
 import RebootAi from "@/icon/RebootAi";
+import Popup from "./Popup";
+import EnquiryForm from "./EnquiryForm";
 
 export default function Footer() {
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
@@ -92,10 +94,17 @@ export default function Footer() {
                 courses are designed to help students excel in competitive exams
                 while fostering personal growth.
               </p>
-              <button className="bg-green-dark-to-light rounded-md text-white flex justify-center items-center text-base h-[3rem] w-full xl:text-lg">
+              <button
+                className="bg-green-dark-to-light rounded-md text-white flex justify-center items-center text-base h-[3rem] w-full xl:text-lg"
+                type="button"
+                onClick={toggleAppointmentModal}
+              >
                 Admission Open
               </button>
-              <button className="bg-green-dark-to-light rounded-md text-white flex justify-center items-center text-base h-[3rem] w-full xl:text-lg">
+              <button
+                className="bg-green-dark-to-light rounded-md text-white flex justify-center items-center text-base h-[3rem] w-full xl:text-lg"
+                type="button"
+              >
                 Download PDF
               </button>
             </div>
@@ -211,6 +220,9 @@ export default function Footer() {
           </div>
         </div>
       </div>
+      <Popup isOpen={isAppointmentModalOpen} onClose={toggleAppointmentModal}>
+        <EnquiryForm />
+      </Popup>
     </footer>
   );
 }

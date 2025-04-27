@@ -1,7 +1,6 @@
 "use client";
 import { ResultDocument } from "@/models/Results";
 import Accordian from "@/ui/Accordian";
-import Link from "next/link";
 
 export default function DownloadResultSection({
   Results,
@@ -25,9 +24,13 @@ export default function DownloadResultSection({
                   className="text-center text-base lg:text-lg font-medium bg-site-darkgreen text-white px-4 py-2 rounded"
                   key={result._id as string}
                 >
-                  <Link href={result.result_file.secure_url} target="_blank">
+                  <a
+                    href={`${result.result_file.secure_url}`}
+                    target="_blank"
+                    download
+                  >
                     {result.year}
-                  </Link>
+                  </a>
                 </Accordian.Content>
               ))
             ) : (
