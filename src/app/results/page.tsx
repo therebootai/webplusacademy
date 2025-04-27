@@ -28,7 +28,14 @@ export default async function ResultsPage() {
 
 async function getResultsData(): Promise<ResultResponse> {
   try {
-    const results = await getAllResults();
+    const results = await getAllResults(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      true,
+      undefined
+    );
     return results;
   } catch (error) {
     console.log(error);
