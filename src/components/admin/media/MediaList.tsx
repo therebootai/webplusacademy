@@ -12,7 +12,7 @@ export default function MediaList({
   videoOnly?: boolean;
 }) {
   return (
-    <div className="grid grid-cols-4">
+    <div className="grid grid-cols-4 gap-6">
       {Media.map((slider: GalleryDocument) => (
         <AdminCard
           img={videoOnly ? slider.video : slider.image.secure_url}
