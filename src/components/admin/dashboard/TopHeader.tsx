@@ -3,22 +3,20 @@ import MediaIcon from "@/icon/MediaIcon";
 import PopUpIcon from "@/icon/PopUpIcon";
 import ResultIcon from "@/icon/ResultIcon";
 import SliderIcon from "@/icon/SliderIcon";
+import StudentIcon from "@/icon/StudentIcon";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { JSX } from "react";
 import { FaRegBell } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
-import { IoSearchSharp } from "react-icons/io5";
 import { LuMessageSquareText } from "react-icons/lu";
 import { PiUserCircleFill } from "react-icons/pi";
 
 export default function TopHeader() {
   const pathname = usePathname();
   const isActive = (path: string) => {
-    return pathname === path || pathname.includes(path.split("/")[1])
-      ? true
-      : false;
+    return pathname === path ? true : false;
   };
 
   const allNavLinks: {
@@ -28,24 +26,33 @@ export default function TopHeader() {
     dropdown?: { label: string; path: string }[];
   }[] = [
     {
+      icon: <StudentIcon />,
+      label: "Students",
+      path: "/admin/students",
+      dropdown: [
+        { label: "Batches", path: "/admin/batches" },
+        { label: "Courses", path: "/admin/courses" },
+      ],
+    },
+    {
       icon: <SliderIcon />,
       label: "Slider",
-      path: "/admin?page=1",
+      path: "/admin",
     },
     {
       icon: <PopUpIcon />,
       label: "Notices",
-      path: "/admin/notices?page=1",
+      path: "/admin/notices",
     },
     {
       icon: <MediaIcon />,
       label: "Media",
-      path: "/admin/media?page=1",
+      path: "/admin/media",
     },
     {
       icon: <ResultIcon />,
       label: "Result",
-      path: "/admin/result?page=1",
+      path: "/admin/result",
     },
   ];
 
@@ -67,16 +74,15 @@ export default function TopHeader() {
             <div className="group" key={index}>
               {!link.dropdown ? (
                 <Link
-                  href={link.path}
-                  className={`inline-flex gap-2 items-center hover:text-custom-violet font-medium text-base lg:text-base xlg:text-base xl:text-xl ${
+                  href={link.path + "?page=1"}
+                  className={`inline-flex gap-2 items-center group hover:text-site-darkgreen  font-medium text-base lg:text-base xlg:text-base xl:text-xl ${
                     isActive(link.path)
-                      ? "text-custom-violet"
-                      : "text-custom-black"
+                      ? "text-site-darkgreen"
+                      : "text-site-black"
                   }`}
                 >
                   {link.icon}
                   {link.label}
-                  {link.dropdown && <IoIosArrowDown />}
                 </Link>
               ) : (
                 <div className="relative" key={index}>
@@ -91,12 +97,12 @@ export default function TopHeader() {
                     {link.label}
                     <IoIosArrowDown />
                   </h3>
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-[12rem] bg-custom-violet/70 hidden group-hover:flex p-2 rounded-md flex-col gap-2 z-10">
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-[12rem] bg-site-yellow/70 hidden group-hover:flex p-2 rounded-md flex-col gap-2 z-10 backdrop-blur">
                     {link.dropdown.map((item, index) => (
                       <Link
                         key={index}
                         href={item.path}
-                        className="flex gap-4 items-center font-medium text-sm lg:text-lg text-white"
+                        className="flex gap-4 items-center font-medium text-sm lg:text-lg text-site-darkgreen border-b border-transparent hover:border-site-darkgreen"
                       >
                         {item.label}
                       </Link>
