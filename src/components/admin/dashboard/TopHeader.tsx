@@ -1,4 +1,6 @@
 "use client";
+import { logoutUser } from "@/actions/userActions";
+import { AuthContext } from "@/context/AuthContext";
 import MediaIcon from "@/icon/MediaIcon";
 import PopUpIcon from "@/icon/PopUpIcon";
 import ResultIcon from "@/icon/ResultIcon";
@@ -6,15 +8,20 @@ import SliderIcon from "@/icon/SliderIcon";
 import StudentIcon from "@/icon/StudentIcon";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { JSX } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { JSX, useContext } from "react";
 import { FaRegBell } from "react-icons/fa";
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown, IoIosLogOut } from "react-icons/io";
 import { LuMessageSquareText } from "react-icons/lu";
 import { PiUserCircleFill } from "react-icons/pi";
 
 export default function TopHeader() {
   const pathname = usePathname();
+
+  const router = useRouter();
+
+  const { user, logout, isAuthenticated } = useContext(AuthContext);
+
   const isActive = (path: string) => {
     return pathname === path ? true : false;
   };
@@ -28,10 +35,10 @@ export default function TopHeader() {
     {
       icon: <StudentIcon />,
       label: "Students",
-      path: "/admin/students",
+      path: "/admin/student-management",
       dropdown: [
-        { label: "Batches", path: "/admin/batches" },
-        { label: "Courses", path: "/admin/courses" },
+        { label: "Batches", path: "/admin/student-management/batches" },
+        { label: "Courses", path: "/admin/student-management/courses" },
       ],
     },
     {
@@ -55,6 +62,20 @@ export default function TopHeader() {
       path: "/admin/result",
     },
   ];
+
+  async function handleLogout() {
+    try {
+      const response = await logoutUser();
+
+      if (response.success) {
+        logout();
+        router.push("/reboots");
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+      alert("Logout failed");
+    }
+  }
 
   return (
     <nav className="flex flex-col bg-white">
@@ -124,27 +145,24 @@ export default function TopHeader() {
             <button type="button" className="text-custom-black text-2xl">
               <PiUserCircleFill />
             </button>
-            {/* <div className="absolute top-full right-0 w-[10vmax] bg-custom-violet hidden group-hover:flex p-2 rounded-md flex-col gap-4 z-50">
+            <div className="absolute top-full right-0 w-[10vmax] bg-site-yellow hidden group-hover:flex p-2 rounded-md flex-col gap-4 z-50">
               {user && (
                 <div className="flex flex-col gap-2">
                   <h1 className="text-white text-base font-bold lg:text-xl">
                     {user.name}
                   </h1>
-                  <h3 className="text-white text-base lg:text-sm font-medium">
-                    Role: {user.role}
-                  </h3>
                 </div>
               )}
               <div className="h-0.5 w-full bg-custom-border" />
               <button
                 type="button"
-                onClick={handelLogout}
+                onClick={handleLogout}
                 className="flex gap-2 items-center font-medium text-sm lg:text-lg text-white whitespace-nowrap"
               >
                 <IoIosLogOut />
                 <span>Log Out</span>
               </button>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

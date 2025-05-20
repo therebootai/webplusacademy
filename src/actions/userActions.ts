@@ -2,7 +2,7 @@
 
 import { connectToDataBase } from "@/db/connection";
 import User from "@/models/User";
-import { generateToken } from "@/util/jsonToken";
+import { generateToken, verifyToken } from "@/util/jsonToken";
 import { cookies } from "next/headers";
 
 export async function getUser(userId: string | undefined) {
@@ -37,12 +37,12 @@ export async function loginUser(emailOrPhone: string, password: string) {
       return { success: false, data: null, message: "Credentials mismatch" };
     }
 
-    const token = generateToken({ ...user });
+    const plainUser = user.toObject();
+
+    const token = generateToken({ ...plainUser });
 
     const cookieStore = await cookies();
     cookieStore.set("token", token ?? "");
-
-    const plainUser = user.toObject();
 
     return { success: true, data: JSON.parse(JSON.stringify(plainUser)) };
   } catch (error) {
@@ -59,5 +59,28 @@ export async function logoutUser() {
   } catch (error) {
     console.log(error);
     return { success: false };
+  }
+}
+
+export async function checkTokenAuth() {
+  try {
+    const cookieStore = await cookies(); // Get cookies from request
+    const token = cookieStore.get("token")?.value;
+    if (!token) {
+      return { success: false, user: null };
+    }
+
+    const user = verifyToken(token) ?? { user: null };
+
+    if (!user) {
+      (await cookies()).delete("token");
+      return { success: false, user: null };
+    }
+
+    return { success: false, user: user };
+  } catch (error) {
+    console.log(error);
+    (await cookies()).delete("token");
+    return { success: false, user: null };
   }
 }

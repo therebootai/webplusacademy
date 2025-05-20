@@ -15,6 +15,7 @@
   --color-site-black: #333333;
 
   --font-outfit: var(--font-outfit);
+  --font-plus-jakarta-sans: var(--font-plus-jakarta-sans);
 
   --shadow-nav: 0px 4px 4px 0px var(--tw-shadow-color);
   --shadow-btn: 0px 0px 10px 0px var(--tw-shadow-color) inset;
