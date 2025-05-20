@@ -18,7 +18,7 @@ const DisplayTable = ({
           </div>
         ))}
       </div>
-      <div className="h-[60vmin] overflow-hidden overflow-y-scroll bg-white">
+      <div className="h-[50vmin] overflow-hidden overflow-y-scroll bg-white no-scrollbar">
         {children}
       </div>
     </div>

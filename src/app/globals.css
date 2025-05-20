@@ -81,6 +81,10 @@
   textarea {
     @apply outline-none resize-none;
   }
+
+  * {
+    @apply transition-all duration-500;
+  }
 }
 
 @keyframes marquee {
@@ -92,60 +96,72 @@
   }
 }
 
-.switch {
-  --secondary-container: #00cd44;
-  --primary: white;
-  font-size: 10px;
-  position: relative;
-  display: inline-block;
-  width: 1.75rem;
-  height: 0.875rem;
-}
+@layer components {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 
-.switch input {
-  display: none;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: white;
-  transition: 0.2s;
-  border-radius: 30px;
-  border: 1px solid #00cd44;
-}
+  .switch {
+    --secondary-container: #00cd44;
+    --primary: white;
+    font-size: 10px;
+    position: relative;
+    display: inline-block;
+    width: 1.75rem;
+    height: 0.875rem;
+  }
 
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 1em;
-  width: 1em;
-  border-radius: 20px;
-  left: 0.1em;
-  bottom: 0.05em;
-  background-color: #00cd44;
-  transition: 0.4s;
-}
+  .switch input {
+    display: none;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
 
-input:checked + .slider::before {
-  background-color: var(--primary);
-}
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    transition: 0.2s;
+    border-radius: 30px;
+    border: 1px solid #00cd44;
+  }
 
-input:checked + .slider {
-  background-color: var(--secondary-container);
-}
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 1em;
+    width: 1em;
+    border-radius: 20px;
+    left: 0.1em;
+    bottom: 0.05em;
+    background-color: #00cd44;
+    transition: 0.4s;
+  }
 
-input:focus + .slider {
-  box-shadow: 0 0 1px var(--secondary-container);
-}
+  input:checked + .slider::before {
+    background-color: var(--primary);
+  }
 
-input:checked + .slider:before {
-  transform: translateX(1.5em);
+  input:checked + .slider {
+    background-color: var(--secondary-container);
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px var(--secondary-container);
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(1.5em);
+  }
 }

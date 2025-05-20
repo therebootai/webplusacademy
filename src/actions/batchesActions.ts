@@ -2,6 +2,7 @@
 
 import { connectToDataBase } from "@/db/connection";
 import Batches, { BatchesDocument } from "@/models/Batches";
+import Courses from "@/models/Courses";
 import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
 
@@ -20,7 +21,6 @@ export async function createNewBatch({
 }) {
   try {
     await connectToDataBase();
-    console.log(start_date, end_date);
     const newBatch = new Batches({
       batch_name,
       course,
@@ -30,6 +30,8 @@ export async function createNewBatch({
     });
 
     const savedBatch = await newBatch.save();
+
+    await Courses.findByIdAndUpdate(course, { $push: { batches: savedBatch._id } });
 
     revalidatePath("/admin/student-management/batches");
     return {
@@ -87,7 +89,7 @@ export async function getAllBatches({
     const allBatches = await Batches.find(filter)
       .sort(sortQuery)
       .skip(skip)
-      .limit(pageSize)
+      .limit(pageSize).populate("course")
       .lean<BatchesDocument[]>();
 
     // Get total count for pagination metadata

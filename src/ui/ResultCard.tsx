@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import ToggleInput from "./ToggleInput";
 
 export default function ResultCard({
   status,
@@ -21,11 +22,7 @@ export default function ResultCard({
         Year <span className="font-bold capitalize">{year}</span>
       </div>
       <div className="flex items-center gap-5">
-        Status{" "}
-        <label className="switch">
-          <input type="checkbox" checked={status} onChange={changeStatus} />
-          <span className="slider"></span>
-        </label>
+        Status <ToggleInput status={status} changeStatus={changeStatus} />
       </div>
       <div className="flex items-center gap-5">
         Actions{" "}

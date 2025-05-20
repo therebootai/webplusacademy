@@ -1,12 +1,13 @@
 import { generateCustomId } from "@/util/generateCustomId";
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { CourseDocument } from "./Courses";
 
 export interface BatchesDocument extends Document {
   batch_id: string;
   batch_name: string;
   status: boolean;
   year: string;
-  course: "ix" | "x" | "xi" | "xii" | "jee" | "neet";
+  course: mongoose.Schema.Types.ObjectId | CourseDocument;
   start_date?: Date;
   end_date?: Date;
 }
@@ -31,9 +32,9 @@ const batchSchema = new Schema<BatchesDocument>(
       required: true,
     },
     course: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Courses",
       required: true,
-      enum: ["ix", "x", "xi", "xii", "jee", "neet"],
     },
     start_date: {
       type: Date,

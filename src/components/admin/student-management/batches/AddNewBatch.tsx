@@ -1,6 +1,7 @@
 "use client";
 
 import { createNewBatch } from "@/actions/batchesActions";
+import { searchCourses } from "@/actions/coursesActions";
 import { useActionState, useState } from "react";
 import DatePicker from "react-datepicker";
 import { LiaObjectGroupSolid } from "react-icons/lia";
@@ -10,16 +11,18 @@ export default function AddNewBatch() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [batchYear, setBatchYear] = useState<Date | null>(null);
+  const [courseName, setCourseName] = useState<string>("");
+  const [courseId, setCourseId] = useState<string>("");
+  const [courses, setCourses] = useState([]);
 
   async function addNewBatch(prevState: unknown, formData: FormData) {
     try {
       const batch_name = formData.get("batch_name") as string;
-      const course = formData.get("course") as string;
       const year = formData.get("year") as string;
 
       const batch = await createNewBatch({
         batch_name,
-        course,
+        course: courseId,
         year,
         start_date: startDate ? new Date(startDate) : undefined,
         end_date: endDate ? new Date(endDate) : undefined,
@@ -31,10 +34,20 @@ export default function AddNewBatch() {
       setStartDate(null);
       setEndDate(null);
       setBatchYear(null);
+      setCourseName("");
       return batch.data;
     } catch (error: Error | any) {
       console.log(error);
       alert(error.message);
+    }
+  }
+
+  async function searchCourse(search: string) {
+    try {
+      const data = await searchCourses(search);
+      setCourses(data.data);
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -51,20 +64,37 @@ export default function AddNewBatch() {
           className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
         />
       </div>
-      <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
+      <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2 relative">
         <LuBookA className="text-site-gray text-2xl" />
-        <select
-          name="course"
-          className="h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
-        >
-          <option value="">Select course</option>
-          <option value="ix">Class IX</option>
-          <option value="x">Class X</option>
-          <option value="xi">Class XI</option>
-          <option value="xii">Class XII</option>
-          <option value="jee">JEE</option>
-          <option value="neet">NEET</option>
-        </select>
+        <div className="flex flex-1 relative">
+          <input
+            type="text"
+            value={courseName}
+            onChange={(e) => {
+              setCourseName(e.target.value);
+              searchCourse(e.target.value);
+            }}
+            placeholder={`Search Course Name`}
+            className="h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
+          />
+        </div>
+        {courses.length > 0 && (
+          <div className="absolute top-full left-0 w-full rounded-md p-2 bg-white flex flex-col">
+            {courses.map((course: any) => (
+              <button
+                key={course._id}
+                onClick={() => {
+                  setCourseName(course.course_name);
+                  setCourseId(course._id);
+                  setCourses([]);
+                }}
+                className="text-left text-site-black capitalize p-1.5 border-b border-site-gray last:border-b-0"
+              >
+                {course.course_name}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
         <LuCalendarDays className="text-site-gray text-2xl" />

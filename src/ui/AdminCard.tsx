@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import ReactPlayer from "react-player";
+import ToggleInput from "./ToggleInput";
 
 export default function AdminCard({
   img,
@@ -40,11 +41,7 @@ export default function AdminCard({
           Name <span className="font-bold ">{name}</span>
         </div>
         <div className="flex items-center gap-5">
-          Status{" "}
-          <label className="switch">
-            <input type="checkbox" checked={status} onChange={changeStatus} />
-            <span className="slider"></span>
-          </label>
+          Status <ToggleInput status={status} changeStatus={changeStatus} />
         </div>
         <div className="flex items-center gap-5">
           Actions{" "}
