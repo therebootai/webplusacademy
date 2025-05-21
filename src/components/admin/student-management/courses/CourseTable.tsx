@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteaBatch } from "@/actions/batchesActions";
+import { deleteaCourse, updateaCourse } from "@/actions/coursesActions";
 import { BatchesDocument } from "@/models/Batches";
 import { CourseDocument } from "@/models/Courses";
 import DisplayTable from "@/ui/DisplayTable";
@@ -15,11 +15,24 @@ export default function CourseTable({
 }) {
   async function handleDelete(id: string) {
     try {
-      const deleted = await deleteaBatch(id);
+      const deleted = await deleteaCourse(id);
       if (!deleted.success) {
         throw new Error(deleted.message);
       }
       alert(deleted.message);
+    } catch (error: any) {
+      console.log(error);
+      alert(error.message);
+    }
+  }
+
+  async function handleStatus(id: string, status: boolean) {
+    try {
+      const updated = await updateaCourse(id, { status: !status });
+      if (!updated.success) {
+        throw new Error(updated.message);
+      }
+      alert(updated.message);
     } catch (error: any) {
       console.log(error);
       alert(error.message);
@@ -42,7 +55,10 @@ export default function CourseTable({
             )}
           </div>
           <div className="flex-1">
-            <ToggleInput status={item.status} changeStatus={() => {}} />
+            <ToggleInput
+              status={item.status}
+              changeStatus={() => handleStatus(item._id as string, item.status)}
+            />
           </div>
           <div className="flex-1 flex gap-1">
             <button type="button" className="text-shadow-site-black">
