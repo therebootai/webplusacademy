@@ -54,46 +54,32 @@ export default function AddNewStudent() {
       | null;
     const class12PassYear = formData.get("twelveth_pass_year") as string | null;
 
-    const courseTotalAmount = formData.get("course_total_amount");
-
-    const emisRaw = formData.get("course_emis") as string | null;
-    let emis: any[] = [];
-    if (emisRaw) {
-      try {
-        emis = JSON.parse(emisRaw);
-        emis = emis.map((e) => ({
-          installmentNumber: Number(e.installmentNumber),
-          amount: Number(e.amount),
-          dueDate: e.dueDate ? new Date(e.dueDate) : null,
-          scholarship: e.scholarship || undefined,
-        }));
-      } catch {
-        emis = [];
-      }
-    }
-
-    const currentBatch = formData.get("current_batch") as string | null;
-    const currentCourse = formData.get("current_course") as string | null;
-    const currentClass = formData.get("current_class") as string | null;
-    const currentYear = formData.get("current_year") as string | null;
     const bookFees = formData.get("book_fees") as string | null;
+    const hostelMonthlyAmountRaw = formData.get("hostel_monthly_amount") as
+      | string
+      | null;
 
-    const hostelMonthlyAmount = formData.get("hostel_monthly_amount");
-    const monthsDueRaw = formData.get("hostel_months_due") as string | null;
-    let monthsDue: any[] = [];
-    if (monthsDueRaw) {
-      try {
-        monthsDue = JSON.parse(monthsDueRaw);
-        monthsDue = monthsDue.map((m) => ({
-          month: m.month,
-          year: Number(m.year),
-          amount: Number(m.amount),
-          scholarship: m.scholarship || undefined,
-        }));
-      } catch {
-        monthsDue = [];
-      }
-    }
+    const emis = courseFees.map((amount, index) => ({
+      installmentNumber: index + 1,
+      amount: Number(amount),
+      dueDate: null,
+    }));
+
+    const courseFeesTotal = emis.reduce((acc, cur) => acc + cur.amount, 0);
+
+    const studentDataEntry = {
+      currentBatch: batchId || undefined,
+      currentCourse: courseId || undefined,
+      currentClass: formData.get("current_class") || undefined,
+      currentYear: formData.get("current_year") || undefined,
+      bookFees: bookFees || undefined,
+      hostelFees: {
+        monthlyAmount: hostelMonthlyAmountRaw
+          ? Number(hostelMonthlyAmountRaw)
+          : undefined,
+        monthsDue: [],
+      },
+    };
 
     const data = {
       studentName,
@@ -112,34 +98,14 @@ export default function AddNewStudent() {
       class12SchoolName: class12SchoolName || undefined,
       class12PassYear: class12PassYear || undefined,
 
-      courseFees: courseTotalAmount
+      courseFees: emis.length
         ? {
-            totalAmount: Number(courseTotalAmount),
+            totalAmount: courseFeesTotal,
             emis,
           }
         : undefined,
 
-      studentData:
-        currentBatch && currentCourse
-          ? [
-              {
-                currentBatch,
-                currentCourse,
-                currentClass: currentClass || undefined,
-                currentYear: currentYear || undefined,
-                bookFees: bookFees || undefined,
-                hostelFees:
-                  hostelMonthlyAmount || monthsDue.length > 0
-                    ? {
-                        monthlyAmount: hostelMonthlyAmount
-                          ? Number(hostelMonthlyAmount)
-                          : undefined,
-                        monthsDue,
-                      }
-                    : undefined,
-              },
-            ]
-          : [],
+      studentData: batchId && courseId ? [studentDataEntry] : [],
     };
 
     const result = await createStudent(data);
@@ -399,9 +365,9 @@ export default function AddNewStudent() {
             <option value="other">Other</option>
           </select>
         </div>
-        <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
+        <div className="flex-1 flex-wrap border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
           {courseFees.length > 0 && (
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-wrap">
               {courseFees.map((fees, index) => (
                 <div
                   key={index}
@@ -420,25 +386,27 @@ export default function AddNewStudent() {
               ))}
             </div>
           )}
-          <RiMoneyRupeeCircleLine className="text-site-gray size-5" />
-          <input
-            type="text"
-            placeholder={`Course Fees`}
-            name="fees"
-            value={currentCourseFees}
-            onChange={(e) => setCurrentCourseFees(e.target.value)}
-            className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
-          />
-          <button
-            type="button"
-            onClick={() => {
-              setCouseFees((prev) => [...prev, currentCourseFees]);
-              setCurrentCourseFees("");
-            }}
-            className="text-site-darkgreen inline-flex items-center justify-center "
-          >
-            <CiCirclePlus size={24} />
-          </button>
+          <div className=" flex flex-row  items-center gap-1">
+            <RiMoneyRupeeCircleLine className="text-site-gray size-5" />
+            <input
+              type="text"
+              placeholder={`Course Fees`}
+              name="fees"
+              value={currentCourseFees}
+              onChange={(e) => setCurrentCourseFees(e.target.value)}
+              className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setCouseFees((prev) => [...prev, currentCourseFees]);
+                setCurrentCourseFees("");
+              }}
+              className="text-site-darkgreen sticky inline-flex items-center justify-center "
+            >
+              <CiCirclePlus size={24} />
+            </button>
+          </div>
         </div>
         <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
           <RiMoneyRupeeCircleLine className="text-site-gray size-5" />
