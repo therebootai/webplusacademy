@@ -3,6 +3,7 @@ import { connectToDataBase } from "@/db/connection";
 import Students from "@/models/Students";
 import { generateCustomId } from "@/util/generateCustomId";
 import mongoose from "mongoose";
+import { revalidatePath } from "next/cache";
 
 export async function createStudent(data: any) {
   try {
@@ -18,6 +19,7 @@ export async function createStudent(data: any) {
     const newStudent = new Students(data);
     const savedStudent = await newStudent.save();
 
+    revalidatePath("/admin/student-management/students");
     return { success: true, student: JSON.parse(JSON.stringify(savedStudent)) };
   } catch (error: any) {
     console.error("Error creating student:", error);

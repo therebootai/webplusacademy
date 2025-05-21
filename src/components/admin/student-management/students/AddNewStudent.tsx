@@ -1,12 +1,12 @@
 "use client";
 
-import { searchBatches } from "@/actions/batchesActions";
+import { getAllBatches, searchBatches } from "@/actions/batchesActions";
 import { searchCourses } from "@/actions/coursesActions";
 import { createStudent } from "@/actions/studentAction";
 import StudentIcon from "@/icon/StudentIcon";
 import { BatchesDocument } from "@/models/Batches";
 import { CourseDocument } from "@/models/Courses";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import { BiBookBookmark } from "react-icons/bi";
 import { BsBuildings } from "react-icons/bs";
@@ -28,7 +28,6 @@ export default function AddNewStudent() {
   const [courseName, setCourseName] = useState<string>("");
   const [courseId, setCourseId] = useState<string>("");
   const [courses, setCourses] = useState([]);
-  const [batchName, setBatchName] = useState<string>("");
   const [batchId, setBatchId] = useState<string>("");
   const [batches, setBatches] = useState([]);
   const [courseFees, setCouseFees] = useState<string[]>([]);
@@ -128,17 +127,23 @@ export default function AddNewStudent() {
     }
   }
 
-  async function searchABatch(search: string) {
+  async function getBatchFromCourse(courseId: string) {
     try {
-      const data = await searchBatches(search);
+      const data = await getAllBatches({ course: courseId });
       setBatches(data.data);
-      console.log(data);
     } catch (error) {
       console.log(error);
     }
   }
 
+  useEffect(() => {
+    if (courseId !== "") {
+      getBatchFromCourse(courseId);
+    }
+  }, [courseId]);
+
   const [, formActtion, isPending] = useActionState(addStudent, null);
+
   return (
     <div className="flex flex-col px-6 gap-5">
       <h3 className="text-site-darkgreen xl:text-lg md:text-base text-sm font-bold">
@@ -294,35 +299,20 @@ export default function AddNewStudent() {
         </div>
         <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2 relative">
           <LiaObjectGroupSolid className="text-site-gray text-2xl" />
-          <div className="flex flex-1 relative">
-            <input
-              type="text"
-              value={batchName}
-              onChange={(e) => {
-                setBatchName(e.target.value);
-                searchABatch(e.target.value);
-              }}
-              placeholder={`Search Batch Name`}
-              className="h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
-            />
-          </div>
-          {batches.length > 0 && (
-            <div className="absolute top-full left-0 w-full z-10 rounded-md p-2 bg-white flex flex-col">
-              {batches.map((batch: BatchesDocument) => (
-                <button
-                  key={batch._id as string}
-                  onClick={() => {
-                    setBatchName(batch.batch_name);
-                    setBatchId(batch._id as string);
-                    setBatches([]);
-                  }}
-                  className="text-left text-site-black capitalize p-1.5 border-b border-site-gray last:border-b-0"
-                >
-                  {batch.batch_name}
-                </button>
-              ))}
-            </div>
-          )}
+          <select
+            value={batchId}
+            className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
+            onChange={(e) => {
+              setBatchId(e.target.value);
+            }}
+          >
+            <option value="">Select Batch</option>
+            {batches.map((batch: BatchesDocument) => (
+              <option key={batch._id as string} value={batch._id as string}>
+                {batch.batch_name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
           <PiMapPinArea className="text-site-gray size-5" />
@@ -369,7 +359,7 @@ export default function AddNewStudent() {
             <option value="other">Other</option>
           </select>
         </div>
-        <div className="flex-1 flex-wrap border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
+        <div className="flex-1 flex-wrap border border-[#cccccc] rounded-md flex gap-2 items-center px-2 col-span-2">
           {courseFees.length > 0 && (
             <div className="flex gap-1 flex-wrap">
               {courseFees.map((fees, index) => (
@@ -390,7 +380,7 @@ export default function AddNewStudent() {
               ))}
             </div>
           )}
-          <div className=" flex flex-row  items-center gap-1">
+          <div className="flex flex-row  items-center gap-1 flex-1">
             <RiMoneyRupeeCircleLine className="text-site-gray size-5" />
             <input
               type="text"
@@ -435,7 +425,7 @@ export default function AddNewStudent() {
           <RiMoneyRupeeCircleLine className="text-site-gray size-5" />
           <input
             type="text"
-            placeholder={`Other Fees(if aplicable)`}
+            placeholder={`Other Fees (if aplicable)`}
             name="other_fees"
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
