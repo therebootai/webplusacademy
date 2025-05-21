@@ -3,6 +3,7 @@
 import { connectToDataBase } from "@/db/connection";
 import Batches, { BatchesDocument } from "@/models/Batches";
 import Courses from "@/models/Courses";
+
 import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
 
