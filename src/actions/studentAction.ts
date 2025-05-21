@@ -15,9 +15,9 @@ export async function createStudent(data: any) {
       );
     }
     const newStudent = new Students(data);
-    await newStudent.save();
+    const savedStudent = await newStudent.save();
 
-    return { success: true, student: newStudent };
+    return { success: true, student: JSON.parse(JSON.stringify(savedStudent)) };
   } catch (error: any) {
     console.error("Error creating student:", error);
     return { success: false, error: error.message || "Unknown error" };

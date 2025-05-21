@@ -6,7 +6,7 @@ import { createStudent } from "@/actions/studentAction";
 import StudentIcon from "@/icon/StudentIcon";
 import { BatchesDocument } from "@/models/Batches";
 import { CourseDocument } from "@/models/Courses";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import DatePicker from "react-datepicker";
 import { BiBookBookmark } from "react-icons/bi";
 import { BsBuildings } from "react-icons/bs";
@@ -34,7 +34,7 @@ export default function AddNewStudent() {
   const [courseFees, setCouseFees] = useState<string[]>([]);
   const [currentCourseFees, setCurrentCourseFees] = useState<string>("");
 
-  async function addStudent(formData: FormData) {
+  async function addStudent(prevState: unknown, formData: FormData) {
     const studentName = formData.get("student_name") as string;
     const mobileNumber = formData.get("student_mobile") as string;
     const dateOfBirth = formData.get("date_of_birth") as string;
@@ -108,10 +108,14 @@ export default function AddNewStudent() {
       studentData: batchId && courseId ? [studentDataEntry] : [],
     };
 
-    const result = await createStudent(data);
+    try {
+      const result = await createStudent(data);
 
-    if (!result.success) {
-      throw new Error(result.error);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -134,14 +138,14 @@ export default function AddNewStudent() {
     }
   }
 
+  const [, formActtion, isPending] = useActionState(addStudent, null);
   return (
     <div className="flex flex-col px-6 gap-5">
       <h3 className="text-site-darkgreen xl:text-lg md:text-base text-sm font-bold">
         Student Details
       </h3>
       <form
-        action={addStudent}
-        method="post"
+        action={formActtion}
         className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-6 place-items-stretch justify-items-stretch"
       >
         <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
