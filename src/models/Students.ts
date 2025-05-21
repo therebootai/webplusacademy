@@ -7,26 +7,26 @@ import {
   StudentDataType,
 } from "@/types/StudentType";
 import { generateCustomId } from "@/util/generateCustomId";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 
 const emiSchema = new Schema<EmiType>({
   installmentNumber: {
     type: Number,
-    required: true,
   },
   amount: {
     type: Number,
-    required: true,
   },
   dueDate: {
     type: Date,
+  },
+  scholarship: {
+    type: String,
   },
 });
 
 const courseFeesSchema = new Schema<CourseFeesType>({
   totalAmount: {
     type: Number,
-    required: true,
   },
   emis: [emiSchema],
 });
@@ -34,22 +34,21 @@ const courseFeesSchema = new Schema<CourseFeesType>({
 const hostelFeeMonthSchema = new Schema<HostelFeeMonthType>({
   month: {
     type: String,
-    required: true,
   },
   year: {
     type: Number,
-    required: true,
   },
   amount: {
     type: Number,
-    required: true,
+  },
+  scholarship: {
+    type: String,
   },
 });
 
 const hostelFeesSchema = new Schema<HostelFeesType>({
   monthlyAmount: {
     type: Number,
-    required: true,
   },
   monthsDue: [hostelFeeMonthSchema],
 });
@@ -58,6 +57,11 @@ const studentDataSchema = new Schema<StudentDataType>({
   currentBatch: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Batches",
+    required: true,
+  },
+  currentCourse: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Courses",
     required: true,
   },
   currentClass: {
@@ -104,16 +108,7 @@ const studentSchema = new Schema<IStudentType>({
     type: String,
     required: true,
   },
-  selectedCourse: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Courses",
-    required: true,
-  },
-  selectedBatch: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Batches",
-    required: true,
-  },
+
   address: {
     type: String,
     required: true,
@@ -147,7 +142,7 @@ const studentSchema = new Schema<IStudentType>({
   studentData: [studentDataSchema],
 });
 
-studentSchema.pre("save", async function (next) {
+studentSchema.pre<IStudentType>("save", async function (next) {
   if (!this.student_id) {
     try {
       this.student_id = await generateCustomId(
@@ -162,7 +157,8 @@ studentSchema.pre("save", async function (next) {
   next();
 });
 
-const Students =
-  mongoose.models.Students || mongoose.model("Students", studentSchema);
+const Students: Model<IStudentType> =
+  mongoose.models.Students ||
+  mongoose.model<IStudentType>("Students", studentSchema);
 
 export default Students;

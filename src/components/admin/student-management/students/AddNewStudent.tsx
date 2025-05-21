@@ -2,6 +2,7 @@
 
 import { searchBatches } from "@/actions/batchesActions";
 import { searchCourses } from "@/actions/coursesActions";
+import { createStudent } from "@/actions/studentAction";
 import StudentIcon from "@/icon/StudentIcon";
 import { BatchesDocument } from "@/models/Batches";
 import { CourseDocument } from "@/models/Courses";
@@ -33,6 +34,121 @@ export default function AddNewStudent() {
   const [courseFees, setCouseFees] = useState<string[]>([]);
   const [currentCourseFees, setCurrentCourseFees] = useState<string>("");
 
+  async function addStudent(formData: FormData) {
+    const studentName = formData.get("student_name") as string;
+    const mobileNumber = formData.get("student_mobile") as string;
+    const dateOfBirth = formData.get("date_of_birth") as string;
+    const gurdianName = formData.get("guardian_name") as string;
+    const gurdianMobileNumber = formData.get("guardian_mobile") as string;
+    const gender = formData.get("gender") as string;
+    const address = formData.get("address") as string;
+    const pinCode = formData.get("pincode") as string;
+    const city = formData.get("city") as string;
+    const caste = formData.get("caste") as string;
+    const class10SchoolName = formData.get("tenth_school_name") as
+      | string
+      | null;
+    const class10PassYear = formData.get("tenth_pass_year") as string | null;
+    const class12SchoolName = formData.get("twelveth_school_name") as
+      | string
+      | null;
+    const class12PassYear = formData.get("twelveth_pass_year") as string | null;
+
+    const courseTotalAmount = formData.get("course_total_amount");
+
+    const emisRaw = formData.get("course_emis") as string | null;
+    let emis: any[] = [];
+    if (emisRaw) {
+      try {
+        emis = JSON.parse(emisRaw);
+        emis = emis.map((e) => ({
+          installmentNumber: Number(e.installmentNumber),
+          amount: Number(e.amount),
+          dueDate: e.dueDate ? new Date(e.dueDate) : null,
+          scholarship: e.scholarship || undefined,
+        }));
+      } catch {
+        emis = [];
+      }
+    }
+
+    const currentBatch = formData.get("current_batch") as string | null;
+    const currentCourse = formData.get("current_course") as string | null;
+    const currentClass = formData.get("current_class") as string | null;
+    const currentYear = formData.get("current_year") as string | null;
+    const bookFees = formData.get("book_fees") as string | null;
+
+    const hostelMonthlyAmount = formData.get("hostel_monthly_amount");
+    const monthsDueRaw = formData.get("hostel_months_due") as string | null;
+    let monthsDue: any[] = [];
+    if (monthsDueRaw) {
+      try {
+        monthsDue = JSON.parse(monthsDueRaw);
+        monthsDue = monthsDue.map((m) => ({
+          month: m.month,
+          year: Number(m.year),
+          amount: Number(m.amount),
+          scholarship: m.scholarship || undefined,
+        }));
+      } catch {
+        monthsDue = [];
+      }
+    }
+
+    const data = {
+      studentName,
+      mobileNumber,
+      dateOfBirth,
+      gurdianName,
+      gurdianMobileNumber,
+      gender,
+      address,
+      pinCode,
+      city,
+      caste,
+
+      class10SchoolName: class10SchoolName || undefined,
+      class10PassYear: class10PassYear || undefined,
+      class12SchoolName: class12SchoolName || undefined,
+      class12PassYear: class12PassYear || undefined,
+
+      courseFees: courseTotalAmount
+        ? {
+            totalAmount: Number(courseTotalAmount),
+            emis,
+          }
+        : undefined,
+
+      studentData:
+        currentBatch && currentCourse
+          ? [
+              {
+                currentBatch,
+                currentCourse,
+                currentClass: currentClass || undefined,
+                currentYear: currentYear || undefined,
+                bookFees: bookFees || undefined,
+                hostelFees:
+                  hostelMonthlyAmount || monthsDue.length > 0
+                    ? {
+                        monthlyAmount: hostelMonthlyAmount
+                          ? Number(hostelMonthlyAmount)
+                          : undefined,
+                        monthsDue,
+                      }
+                    : undefined,
+              },
+            ]
+          : [],
+    };
+
+    const result = await createStudent(data);
+
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+  }
+
   async function searchCourse(search: string) {
     try {
       const data = await searchCourses(search);
@@ -46,6 +162,7 @@ export default function AddNewStudent() {
     try {
       const data = await searchBatches(search);
       setBatches(data.data);
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -57,7 +174,8 @@ export default function AddNewStudent() {
         Student Details
       </h3>
       <form
-        action=""
+        action={addStudent}
+        method="post"
         className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-6 place-items-stretch justify-items-stretch"
       >
         <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
@@ -134,7 +252,6 @@ export default function AddNewStudent() {
           <BiBookBookmark className="text-site-gray size-5" />
           <input
             type="text"
-            required
             placeholder={`10th Pass School Name`}
             name="tenth_school_name"
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
@@ -144,7 +261,6 @@ export default function AddNewStudent() {
           <BiBookBookmark className="text-site-gray size-5" />
           <input
             type="text"
-            required
             placeholder={`12th Pass School Name`}
             name="twelveth_school_name"
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
@@ -165,7 +281,7 @@ export default function AddNewStudent() {
             />
           </div>
           {courses.length > 0 && (
-            <div className="absolute top-full left-0 w-full rounded-md p-2 bg-white flex flex-col">
+            <div className="absolute top-full left-0 w-full z-10 rounded-md p-2 bg-white flex flex-col">
               {courses.map((course: CourseDocument) => (
                 <button
                   key={course._id as string}
@@ -220,8 +336,8 @@ export default function AddNewStudent() {
               className="h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
             />
           </div>
-          {courses.length > 0 && (
-            <div className="absolute top-full left-0 w-full rounded-md p-2 bg-white flex flex-col">
+          {batches.length > 0 && (
+            <div className="absolute top-full left-0 w-full z-10 rounded-md p-2 bg-white flex flex-col">
               {batches.map((batch: BatchesDocument) => (
                 <button
                   key={batch._id as string}
@@ -324,6 +440,16 @@ export default function AddNewStudent() {
             <CiCirclePlus size={24} />
           </button>
         </div>
+        <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
+          <RiMoneyRupeeCircleLine className="text-site-gray size-5" />
+          <input
+            type="number"
+            name="hostel_monthly_amount"
+            placeholder="Hostel Fees per Month"
+            className="h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
+          />
+        </div>
+
         <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
           <RiMoneyRupeeCircleLine className="text-site-gray size-5" />
           <input

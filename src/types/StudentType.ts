@@ -1,13 +1,14 @@
 import mongoose, { Document } from "mongoose";
 
 export interface EmiType {
-  installmentNumber: number;
-  amount: number;
+  installmentNumber?: number;
+  amount?: number;
   dueDate?: Date;
+  scholarship?: string;
 }
 
 export interface CourseFeesType {
-  totalAmount: number;
+  totalAmount?: number;
   emis: EmiType[];
 }
 
@@ -15,6 +16,7 @@ export interface HostelFeeMonthType {
   month: string;
   year: number;
   amount: number;
+  scholarship: string;
 }
 
 export interface HostelFeesType {
@@ -24,6 +26,7 @@ export interface HostelFeesType {
 
 export interface StudentDataType {
   currentBatch: mongoose.Types.ObjectId;
+  currentCourse: mongoose.Types.ObjectId;
   currentClass?: string;
   currentYear?: string;
   bookFees?: string;
