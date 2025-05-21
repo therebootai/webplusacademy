@@ -25,11 +25,11 @@ export function generateToken(payload: TokenPayload): string | null {
   }
 }
 
-export const verifyToken = (token: string): TokenPayload | null => {
+export const verifyToken = (token: string) => {
   try {
     if (!process.env.SECRET_KEY) throw new Error("SECRET_KEY is missing");
     // Verify the token and decode it
-    const decoded = jwt.verify(token, process.env.SECRET_KEY) as TokenPayload;
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
     return decoded;
   } catch (err) {
     console.error(

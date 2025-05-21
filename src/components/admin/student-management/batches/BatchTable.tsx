@@ -1,0 +1,71 @@
+"use client";
+
+import { deleteaBatch } from "@/actions/batchesActions";
+import { BatchesDocument } from "@/models/Batches";
+import { CourseDocument } from "@/models/Courses";
+import DisplayTable from "@/ui/DisplayTable";
+import ToggleInput from "@/ui/ToggleInput";
+import mongoose from "mongoose";
+
+export default function BatchTable({
+  tableHeader,
+  batchData,
+}: {
+  tableHeader: string[];
+  batchData: BatchesDocument[];
+}) {
+  async function handleDelete(id: string) {
+    try {
+      const deleted = await deleteaBatch(id);
+      if (!deleted.success) {
+        throw new Error(deleted.message);
+      }
+      alert(deleted.message);
+    } catch (error: any) {
+      console.log(error);
+      alert(error.message);
+    }
+  }
+
+  return (
+    <DisplayTable tableHeader={tableHeader}>
+      {batchData.map((item: BatchesDocument) => (
+        <div
+          key={item._id as string}
+          className="flex odd:bg-white even:bg-site-darkgreen/5 p-2.5"
+          style={{ flexBasis: `${Math.round(100 / batchData.length)}%` }}
+        >
+          <div className="flex-1">{item.batch_name}</div>
+          <div className="flex-1 uppercase">
+            {item.course instanceof mongoose.Types.ObjectId
+              ? "-"
+              : (item.course as CourseDocument).course_name ?? "-"}
+          </div>
+          <div className="flex-1">
+            {item.start_date ? new Date(item.start_date).toDateString() : "-"}
+          </div>
+          <div className="flex-1">
+            {item.end_date ? new Date(item.end_date).toDateString() : "-"}
+          </div>
+          <div className="flex-1">{item.year}</div>
+          <div className="flex-1">
+            <ToggleInput status={item.status} changeStatus={() => {}} />
+          </div>
+          <div className="flex-1 flex gap-1">
+            <button type="button" className="text-shadow-site-black">
+              Edit
+            </button>
+            |
+            <button
+              type="button"
+              className="text-red-500"
+              onClick={() => handleDelete(item._id as string)}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ))}
+    </DisplayTable>
+  );
+}

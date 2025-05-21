@@ -72,7 +72,7 @@ export async function deleteGallery(galleryId: string) {
     await connectToDataBase();
     const deletedGallery = await Gallery.findOne({
       $or: [
-        { componentId: galleryId },
+        { galleryId },
         {
           _id: mongoose.Types.ObjectId.isValid(galleryId)
             ? galleryId

@@ -1,8 +1,9 @@
 "use client";
 
 import { loginUser } from "@/actions/userActions";
+import { AuthContext } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useActionState, useState } from "react";
+import { useActionState, useContext, useState } from "react";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -11,7 +12,9 @@ export default function LoginForm() {
 
   const router = useRouter();
 
-  async function login(prevState: unknown, formData: FormData) {
+  const { login } = useContext(AuthContext);
+
+  async function handleLogin(prevState: unknown, formData: FormData) {
     try {
       const emailOrPhone = formData.get("emailOrPhone");
       const password = formData.get("password");
@@ -29,13 +32,15 @@ export default function LoginForm() {
         password as string
       );
 
+      login(loginResponse.data);
+
       router.push("/admin");
     } catch (error) {
       console.log(error);
     }
   }
 
-  const [, formAction, isPending] = useActionState(login, null);
+  const [, formAction, isPending] = useActionState(handleLogin, null);
   return (
     <form
       className="flex flex-col gap-5 lg:gap-2 xlg:gap-4"
