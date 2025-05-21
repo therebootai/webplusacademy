@@ -20,10 +20,40 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const studentsData = await getStudents();
-  if (studentsData.success) {
-    return NextResponse.json(studentsData.students);
-  } else {
-    return NextResponse.json({ error: studentsData.error }, { status: 500 });
+  try {
+    const { searchParams } = new URL(request.url);
+
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "10", 10);
+    const mobileNumber = searchParams.get("mobileNumber") || undefined;
+    const studentName = searchParams.get("studentName") || undefined;
+    const currentCourse = searchParams.get("currentCourse") || undefined;
+    const currentBatch = searchParams.get("currentBatch") || undefined;
+
+    const studentsData = await getStudents({
+      page,
+      limit,
+      mobileNumber,
+      studentName,
+      currentCourse,
+      currentBatch,
+    });
+
+    if (studentsData.success) {
+      return NextResponse.json({
+        data: studentsData.data,
+        pagination: studentsData.pagination,
+      });
+    } else {
+      return NextResponse.json(
+        { error: studentsData.error || "Failed to fetch students" },
+        { status: 500 }
+      );
+    }
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error.message || "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

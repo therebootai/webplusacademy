@@ -1,3 +1,5 @@
+import { BatchesDocument } from "@/models/Batches";
+import { CourseDocument } from "@/models/Courses";
 import mongoose, { Document } from "mongoose";
 
 export interface EmiType {
@@ -25,8 +27,8 @@ export interface HostelFeesType {
 }
 
 export interface StudentDataType {
-  currentBatch: mongoose.Types.ObjectId;
-  currentCourse: mongoose.Types.ObjectId;
+  currentBatch: mongoose.Types.ObjectId | BatchesDocument[];
+  currentCourse: mongoose.Types.ObjectId | CourseDocument;
   currentClass?: string;
   currentYear?: string;
   bookFees?: string;
