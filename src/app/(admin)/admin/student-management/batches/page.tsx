@@ -5,8 +5,13 @@ import AdminTemplate from "@/templates/AdminTemplate";
 import PaginationBox from "@/ui/PaginationBox";
 import React from "react";
 
-export default async function BatchPage() {
-  const { data, pagination } = await getPageData(1);
+export default async function BatchPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page: string }>;
+}) {
+  const { page } = await searchParams;
+  const { data, pagination } = await getPageData(parseInt(page) || 1);
   const tableHeader = [
     "batch name",
     "class for",

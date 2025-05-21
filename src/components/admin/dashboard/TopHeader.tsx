@@ -39,6 +39,7 @@ export default function TopHeader() {
       dropdown: [
         { label: "Batches", path: "/admin/student-management/batches" },
         { label: "Courses", path: "/admin/student-management/courses" },
+        { label: "Students", path: "/admin/student-management/students" },
       ],
     },
     {
