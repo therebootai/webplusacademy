@@ -197,3 +197,26 @@ export async function updateaBatch(
     };
   }
 }
+
+export async function searchBatches(search: string) {
+  try {
+    await connectToDataBase();
+    const allBatches = await Batches.find({
+      batch_name: { $regex: search, $options: "i" },
+    })
+      .limit(100)
+      .lean<BatchesDocument[]>();
+    return {
+      success: true,
+      message: "Batches fetched successfully",
+      data: JSON.parse(JSON.stringify(allBatches)),
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      message: "Something went wrong",
+      data: [],
+    };
+  }
+}

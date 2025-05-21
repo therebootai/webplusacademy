@@ -70,14 +70,16 @@ export async function checkTokenAuth() {
       return { success: false, user: null };
     }
 
-    const user = verifyToken(token) ?? { user: null };
+    const userId = verifyToken(token);
 
-    if (!user) {
+    if (userId && typeof userId === 'object') {
+
+      return { success: true, user: JSON.parse(JSON.stringify(userId)) };
+    } else {
       (await cookies()).delete("token");
       return { success: false, user: null };
     }
 
-    return { success: false, user: user };
   } catch (error) {
     console.log(error);
     (await cookies()).delete("token");
