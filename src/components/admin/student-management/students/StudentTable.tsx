@@ -45,47 +45,59 @@ export default function StudentTable({
   return (
     <>
       <DisplayTable tableHeader={tableHeader}>
-        {studentsData.map((student) => (
-          <div
-            key={student._id as string}
-            className="flex odd:bg-white even:bg-site-darkgreen/5 p-2.5"
-            style={{ flexBasis: `${Math.round(100 / studentsData.length)}%` }}
-          >
-            <div className="flex-1">{student.studentName}</div>
-            <div className="flex-1">{student.mobileNumber}</div>
-            <div className="flex-1">
-              {student.studentData[0]?.currentCourse?.course_name}
+        {studentsData.map((student) => {
+          const studentInfo = student.studentData[0];
+
+          const course = studentInfo?.currentCourse;
+          const batch = studentInfo?.currentBatch;
+
+          const isCoursePopulated =
+            course && typeof course === "object" && "_id" in course;
+          const isBatchPopulated =
+            batch && typeof batch === "object" && "_id" in batch;
+
+          return (
+            <div
+              key={student._id as string}
+              className="flex odd:bg-white even:bg-site-darkgreen/5 p-2.5"
+              style={{ flexBasis: `${Math.round(100 / studentsData.length)}%` }}
+            >
+              <div className="flex-1">{student.studentName}</div>
+              <div className="flex-1">{student.mobileNumber}</div>
+              <div className="flex-1">
+                {isCoursePopulated ? (course as any).course_name : "N/A"}
+              </div>
+              <div className="flex-1">
+                {isBatchPopulated ? (batch as any).batch_name : "N/A"}
+              </div>
+              <div className="flex-1">
+                {student.address}, {student.city}, {student.pinCode}
+              </div>
+              <div className="flex-1">{student.gurdianMobileNumber}</div>
+              <div className="flex-1 flex gap-1 items-center">
+                <button
+                  type="button"
+                  className="text-shadow-site-black"
+                  onClick={() => {
+                    setSelectedStudent(student);
+                    setShowPopUp(true);
+                  }}
+                >
+                  Edit
+                </button>
+                |
+                <button
+                  type="button"
+                  className="text-red-500"
+                  onClick={() => handleDelete(student.student_id as string)}
+                  disabled={isPending}
+                >
+                  {isPending ? "Deleting..." : "Delete"}
+                </button>
+              </div>
             </div>
-            <div className="flex-1">
-              {student.studentData[0]?.currentBatch?.batch_name}
-            </div>
-            <div className="flex-1">
-              {student.address} , {student.city} , {student.pinCode}
-            </div>
-            <div className="flex-1">{student.gurdianMobileNumber}</div>
-            <div className="flex-1 flex gap-1 items-center">
-              <button
-                onClick={() => {
-                  setSelectedStudent(student);
-                  setShowPopUp(true);
-                }}
-                type="button"
-                className="text-shadow-site-black"
-              >
-                Edit
-              </button>
-              |
-              <button
-                type="button"
-                className="text-red-500"
-                onClick={() => handleDelete(student.student_id as string)}
-                disabled={isPending}
-              >
-                {isPending ? "Deleting..." : "Delete"}
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </DisplayTable>
       {selectedStudent && (
         <SidePopUpSlider
