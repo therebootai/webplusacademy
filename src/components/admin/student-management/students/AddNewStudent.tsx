@@ -2,10 +2,11 @@
 
 import { getAllBatches, searchBatches } from "@/actions/batchesActions";
 import { searchCourses } from "@/actions/coursesActions";
-import { createStudent } from "@/actions/studentAction";
+import { createStudent, updateStudent } from "@/actions/studentAction";
 import StudentIcon from "@/icon/StudentIcon";
 import { BatchesDocument } from "@/models/Batches";
 import { CourseDocument } from "@/models/Courses";
+import { IStudentType } from "@/types/StudentType";
 import { useActionState, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import { BiBookBookmark } from "react-icons/bi";
@@ -21,7 +22,13 @@ import { PiMapPinArea, PiMapPinPlusBold } from "react-icons/pi";
 import { RiMoneyRupeeCircleLine } from "react-icons/ri";
 import { TbUserHeart } from "react-icons/tb";
 
-export default function AddNewStudent() {
+export default function AddNewStudent({
+  existingStudent,
+  onSuccess,
+}: {
+  existingStudent?: IStudentType | null;
+  onSuccess?: () => void;
+}) {
   const [dob, setDOB] = useState<Date | null>(null);
   const [tenthPassYear, setTenthPassYear] = useState<Date | null>(null);
   const [twelvethPassYear, setTwelvethPassYear] = useState<Date | null>(null);
@@ -32,6 +39,20 @@ export default function AddNewStudent() {
   const [batches, setBatches] = useState([]);
   const [courseFees, setCouseFees] = useState<string[]>([]);
   const [currentCourseFees, setCurrentCourseFees] = useState<string>("");
+  const [studentName, setStudentName] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
+  const [guardianName, setGuardianName] = useState("");
+  const [guardianMobileNumber, setGuardianMobileNumber] = useState("");
+  const [gender, setGender] = useState("");
+  const [address, setAddress] = useState("");
+  const [pinCode, setPinCode] = useState("");
+  const [city, setCity] = useState("");
+  const [caste, setCaste] = useState("");
+  const [class10SchoolName, setClass10SchoolName] = useState("");
+  const [class12SchoolName, setClass12SchoolName] = useState("");
+  const [bookFees, setBookFees] = useState("");
+  const [hostelMonthlyAmount, setHostelMonthlyAmount] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function addStudent(prevState: unknown, formData: FormData) {
     const studentName = formData.get("student_name") as string;
@@ -106,17 +127,102 @@ export default function AddNewStudent() {
 
       studentData: batchId && courseId ? [studentDataEntry] : [],
     };
-
+    setIsLoading(true);
     try {
-      const result = await createStudent(data);
+      let result;
+      if (existingStudent) {
+        result = await updateStudent(existingStudent.student_id, data);
+      } else {
+        result = await createStudent(data);
+      }
 
       if (!result.success) {
-        throw new Error(result.error);
+        const errorMsg =
+          "error" in result
+            ? result.error
+            : "message" in result
+            ? result.message
+            : "Unknown error occurred";
+
+        throw new Error(errorMsg);
+      }
+
+      if (onSuccess) {
+        onSuccess();
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (existingStudent) {
+      setStudentName(existingStudent.studentName);
+      setMobileNumber(existingStudent.mobileNumber);
+      setGuardianName(existingStudent.gurdianName);
+      setGuardianMobileNumber(existingStudent.gurdianMobileNumber);
+      setGender(existingStudent.gender);
+      setAddress(existingStudent.address);
+      setPinCode(existingStudent.pinCode);
+      setCity(existingStudent.city);
+      setCaste(existingStudent.caste);
+      setClass10SchoolName(existingStudent.class10SchoolName || "");
+      setClass12SchoolName(existingStudent.class12SchoolName || "");
+      setBookFees(existingStudent.studentData?.[0]?.bookFees || "");
+      setHostelMonthlyAmount(
+        existingStudent.studentData?.[0]?.hostelFees?.monthlyAmount?.toString() ||
+          ""
+      );
+
+      if (
+        existingStudent.dateOfBirth &&
+        !isNaN(Date.parse(existingStudent.dateOfBirth))
+      ) {
+        setDOB(new Date(existingStudent.dateOfBirth));
+      } else {
+        setDOB(null);
+      }
+
+      if (
+        existingStudent.class10PassYear &&
+        !isNaN(Date.parse(existingStudent.class10PassYear))
+      ) {
+        setTenthPassYear(new Date(existingStudent.class10PassYear));
+      }
+
+      if (
+        existingStudent.class12PassYear &&
+        !isNaN(Date.parse(existingStudent.class12PassYear))
+      ) {
+        setTwelvethPassYear(new Date(existingStudent.class12PassYear));
+      }
+      const course = existingStudent.studentData?.[0]?.currentCourse;
+      setCourseName(
+        typeof course === "object" && "course_name" in course
+          ? course.course_name
+          : ""
+      );
+      setCourseId(
+        typeof course === "object" && "_id" in course
+          ? (course as { _id: any })._id.toString()
+          : ""
+      );
+      const batch = existingStudent.studentData?.[0]?.currentBatch;
+      setBatchId(
+        typeof batch === "object" && "_id" in batch ? batch._id.toString() : ""
+      );
+
+      setCouseFees(
+        (existingStudent.courseFees?.emis || [])
+          .filter(
+            (e): e is { amount: number } => !!e && typeof e.amount === "number"
+          )
+          .map((e) => e.amount.toString())
+      );
+    }
+  }, [existingStudent]);
 
   async function searchCourse(search: string) {
     try {
@@ -159,6 +265,8 @@ export default function AddNewStudent() {
             type="text"
             required
             placeholder={`Student Name`}
+            value={studentName}
+            onChange={(e) => setStudentName(e.target.value)}
             name="student_name"
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
@@ -172,6 +280,8 @@ export default function AddNewStudent() {
             pattern="[0-9]{10}"
             minLength={10}
             maxLength={10}
+            value={mobileNumber}
+            onChange={(e) => setMobileNumber(e.target.value)}
             name="student_mobile"
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
@@ -193,6 +303,8 @@ export default function AddNewStudent() {
             type="text"
             required
             placeholder={`Guardian Name`}
+            value={guardianName}
+            onChange={(e) => setGuardianName(e.target.value)}
             name="guardian_name"
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
@@ -206,6 +318,8 @@ export default function AddNewStudent() {
             pattern="[0-9]{10}"
             minLength={10}
             maxLength={10}
+            value={guardianMobileNumber}
+            onChange={(e) => setGuardianMobileNumber(e.target.value)}
             name="guardian_mobile"
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
@@ -215,6 +329,8 @@ export default function AddNewStudent() {
           <select
             name="gender"
             required
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
             className="h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           >
             <option value="">Select Gender</option>
@@ -229,6 +345,8 @@ export default function AddNewStudent() {
             type="text"
             placeholder={`10th Pass School Name`}
             name="tenth_school_name"
+            value={class10SchoolName}
+            onChange={(e) => setClass10SchoolName(e.target.value)}
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
         </div>
@@ -238,6 +356,8 @@ export default function AddNewStudent() {
             type="text"
             placeholder={`12th Pass School Name`}
             name="twelveth_school_name"
+            value={class12SchoolName}
+            onChange={(e) => setClass12SchoolName(e.target.value)}
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
         </div>
@@ -321,6 +441,8 @@ export default function AddNewStudent() {
             required
             placeholder={`Address`}
             name="address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
         </div>
@@ -331,6 +453,8 @@ export default function AddNewStudent() {
             required
             placeholder={`City / Town`}
             name="city"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
         </div>
@@ -341,6 +465,8 @@ export default function AddNewStudent() {
             required
             placeholder={`Pincode`}
             name="pincode"
+            value={pinCode}
+            onChange={(e) => setPinCode(e.target.value)}
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
         </div>
@@ -348,6 +474,8 @@ export default function AddNewStudent() {
           <GrDocumentUser className="text-site-gray size-5" />
           <select
             name="caste"
+            value={caste}
+            onChange={(e) => setCaste(e.target.value)}
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           >
             <option value="">Select Caste &#40;OBC,SC,ST&#41;</option>
@@ -408,6 +536,8 @@ export default function AddNewStudent() {
             type="number"
             name="hostel_monthly_amount"
             placeholder="Hostel Fees per Month"
+            value={hostelMonthlyAmount}
+            onChange={(e) => setHostelMonthlyAmount(e.target.value)}
             className="h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
         </div>
@@ -418,6 +548,8 @@ export default function AddNewStudent() {
             type="text"
             placeholder={`Book Fees`}
             name="book_fees"
+            value={bookFees}
+            onChange={(e) => setBookFees(e.target.value)}
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
         </div>
@@ -433,10 +565,22 @@ export default function AddNewStudent() {
         <div className="flex-1 col-span-3 rounded-md flex gap-2 items-center px-2">
           <button
             type="submit"
-            className="py-5 px-7 bg-site-darkgreen text-white rounded-lg text-center font-semibold text-base"
+            disabled={isLoading}
+            className={`py-5 px-7 rounded-lg text-center font-semibold text-base ${
+              isLoading
+                ? "bg-gray-400 text-white cursor-not-allowed"
+                : "bg-site-darkgreen text-white"
+            }`}
           >
-            Submit
+            {isLoading
+              ? existingStudent
+                ? "Updating..."
+                : "Submitting..."
+              : existingStudent
+              ? "Update"
+              : "Submit"}
           </button>
+
           <button
             type="reset"
             className="py-5 px-7 bg-transparent border border-site-darkgreen text-site-darkgreen rounded-lg text-center font-semibold text-base"
