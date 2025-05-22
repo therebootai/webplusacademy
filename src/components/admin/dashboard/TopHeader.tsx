@@ -12,6 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { JSX, useContext } from "react";
 import { FaRegBell } from "react-icons/fa";
 import { IoIosArrowDown, IoIosLogOut } from "react-icons/io";
+import { IoPricetagOutline } from "react-icons/io5";
 import { LuMessageSquareText } from "react-icons/lu";
 import { PiUserCircleFill } from "react-icons/pi";
 
@@ -20,10 +21,11 @@ export default function TopHeader() {
 
   const router = useRouter();
 
-  const { user, logout, isAuthenticated } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   const isActive = (path: string) => {
-    return pathname === path ? true : false;
+    if (path === "/admin") return pathname === "/admin";
+    return pathname === path || pathname.startsWith(path + "/");
   };
 
   const allNavLinks: {
@@ -41,6 +43,11 @@ export default function TopHeader() {
         { label: "Courses", path: "/admin/student-management/courses" },
         { label: "Students", path: "/admin/student-management/students" },
       ],
+    },
+    {
+      icon: <IoPricetagOutline />,
+      label: "Fees",
+      path: "/admin/fees",
     },
     {
       icon: <SliderIcon />,
@@ -110,9 +117,9 @@ export default function TopHeader() {
                 <div className="relative" key={index}>
                   <h3
                     className={`inline-flex gap-2 items-center hover:text-custom-violet font-medium lg:text-base xlg:text-base xl:text-xl ${
-                      isActive(link.dropdown[0].path)
-                        ? "text-custom-violet"
-                        : "text-custom-black"
+                      isActive(link.path)
+                        ? "text-site-darkgreen"
+                        : "text-site-black"
                     }`}
                   >
                     {link.icon}
@@ -123,7 +130,7 @@ export default function TopHeader() {
                     {link.dropdown.map((item, index) => (
                       <Link
                         key={index}
-                        href={item.path}
+                        href={item.path + "?page=1"}
                         className="flex gap-4 items-center font-medium text-sm lg:text-lg text-site-darkgreen border-b border-transparent hover:border-site-darkgreen"
                       >
                         {item.label}

@@ -1,10 +1,9 @@
 import { getStudents } from "@/actions/studentAction";
-import StudentHeader from "@/components/admin/student-management/students/StudentHeader";
-import StudentTable from "@/components/admin/student-management/students/StudentTable";
+import FeesTable from "@/components/admin/fees/FeesTable";
 import AdminTemplate from "@/templates/AdminTemplate";
 import PaginationBox from "@/ui/PaginationBox";
 
-export default async function StudentManagementPage({
+export default async function FeesPage({
   searchParams,
 }: {
   searchParams: Promise<{ page: string }>;
@@ -13,12 +12,9 @@ export default async function StudentManagementPage({
   const { data, pagination } = await getPageData(parseInt(page) || 1);
   return (
     <AdminTemplate>
-      <StudentHeader />
-      <StudentTable studentsData={data} />
-      <PaginationBox
-        pagination={pagination}
-        prefix="/admin/student-management/students"
-      />
+      <div></div>
+      <FeesTable studentsData={data} />
+      <PaginationBox pagination={pagination} prefix="/admin/fees" />
     </AdminTemplate>
   );
 }
