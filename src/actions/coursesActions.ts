@@ -1,6 +1,7 @@
 "use server";
 import { connectToDataBase } from "@/db/connection";
 import Courses, { CourseDocument } from "@/models/Courses";
+import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
 
 export async function createNewCourse({
@@ -122,5 +123,76 @@ export async function searchCourses(search: string) {
       message: "Something went wrong",
       data: [],
     };
+  }
+}
+
+export async function deleteaCourse(courseId: string) {
+  try {
+    await connectToDataBase();
+    await Courses.findByIdAndDelete({
+      $or: [
+        { course_id: courseId },
+        {
+          _id: mongoose.Types.ObjectId.isValid(courseId) ? courseId : undefined,
+        },
+      ],
+    });
+    revalidatePath("/admin/courses");
+    return { success: true, message: "Course deleted successfully" };
+  } catch (error) {
+    console.log(error);
+    return { success: false, message: "Something went wrong" };
+  }
+}
+
+export async function updateaCourse(
+  courseId: string,
+  data: {
+    course_name?: string;
+    status?: boolean;
+    batches?: string | string[];
+    course_class?: string;
+  }
+) {
+  try {
+    await connectToDataBase();
+    const updatedCourse = await Courses.findOne({
+      $or: [
+        { course_id: courseId },
+        {
+          _id: mongoose.Types.ObjectId.isValid(courseId) ? courseId : undefined,
+        },
+      ],
+    });
+
+    if (!updatedCourse) {
+      return { success: false, message: "Course not found" };
+    }
+
+    updatedCourse.course_name = data.course_name ?? updatedCourse.course_name;
+    updatedCourse.status = data.status ?? updatedCourse.status;
+    updatedCourse.course_class =
+      data.course_class ?? updatedCourse.course_class;
+
+    if (data.batches !== undefined) {
+      let batchArray: string[] = [];
+
+      if (typeof data.batches === "string") {
+        batchArray = [data.batches];
+      } else if (Array.isArray(data.batches)) {
+        batchArray = data.batches;
+      }
+
+      updatedCourse.batches = batchArray.map(
+        (id) => new mongoose.Schema.Types.ObjectId(id)
+      );
+    }
+
+    await updatedCourse.save();
+    revalidatePath("/admin/courses");
+    return { success: true, message: "Course updated successfully" };
+  } catch (error) {
+    console.log(error);
+    return { success: false, message: "Something went wrong" };
   }
 }

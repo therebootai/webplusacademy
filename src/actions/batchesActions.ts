@@ -160,6 +160,7 @@ export async function updateaBatch(
     batch_name?: string;
     start_date?: Date;
     end_date?: Date;
+    status?: boolean;
   }
 ) {
   try {
@@ -183,6 +184,7 @@ export async function updateaBatch(
     updatedBatch.batch_name = updatedData.batch_name ?? updatedBatch.batch_name;
     updatedBatch.start_date = updatedData.start_date ?? updatedBatch.start_date;
     updatedBatch.end_date = updatedData.end_date ?? updatedBatch.end_date;
+    updatedBatch.status = updatedData.status ?? updatedBatch.status;
 
     await updatedBatch.save();
 
