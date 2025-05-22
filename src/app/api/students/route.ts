@@ -27,6 +27,8 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const mobileNumber = searchParams.get("mobileNumber") || undefined;
     const studentName = searchParams.get("studentName") || undefined;
+    const studentId = searchParams.get("studentId") || undefined;
+
     const currentCourse = searchParams.get("currentCourse") || undefined;
     const currentBatch = searchParams.get("currentBatch") || undefined;
 
@@ -37,6 +39,7 @@ export async function GET(request: NextRequest) {
       studentName,
       currentCourse,
       currentBatch,
+      studentId,
     });
 
     if (studentsData.success) {

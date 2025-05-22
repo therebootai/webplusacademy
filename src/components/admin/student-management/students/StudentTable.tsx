@@ -1,6 +1,9 @@
-import { CourseDocument } from "@/models/Courses";
+"use client";
+import { deleteStudent } from "@/actions/studentAction";
 import { IStudentType } from "@/types/StudentType";
 import DisplayTable from "@/ui/DisplayTable";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 
 export default function StudentTable({
   studentsData,
@@ -16,6 +19,23 @@ export default function StudentTable({
     "Guardian Number",
     "Action",
   ];
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const handleDelete = (studentId: string) => {
+    const confirmed = confirm("Are you sure you want to delete this student?");
+    if (!confirmed) return;
+
+    startTransition(async () => {
+      const res = await deleteStudent(studentId);
+      if (res.success) {
+        router.refresh();
+      } else {
+        alert("Error deleting student: " + res.message);
+      }
+    });
+  };
+
   return (
     <DisplayTable tableHeader={tableHeader}>
       {studentsData.map((student) => (
@@ -26,12 +46,12 @@ export default function StudentTable({
         >
           <div className="flex-1">{student.studentName}</div>
           <div className="flex-1">{student.mobileNumber}</div>
-          {/* <div className="flex-1">
+          <div className="flex-1">
             {student.studentData[0]?.currentCourse?.course_name}
           </div>
           <div className="flex-1">
             {student.studentData[0]?.currentBatch?.batch_name}
-          </div> */}
+          </div>
           <div className="flex-1">
             {student.address} , {student.city} , {student.pinCode}
           </div>
@@ -44,9 +64,10 @@ export default function StudentTable({
             <button
               type="button"
               className="text-red-500"
-              //   onClick={() => handleDelete(item._id as string)}
+              onClick={() => handleDelete(student.student_id as string)}
+              disabled={isPending}
             >
-              Delete
+              {isPending ? "Deleting..." : "Delete"}
             </button>
           </div>
         </div>

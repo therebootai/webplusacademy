@@ -19,6 +19,10 @@ const emiSchema = new Schema<EmiType>({
   dueDate: {
     type: Date,
   },
+  paid: {
+    type: Boolean,
+    default: false,
+  },
   scholarship: {
     type: String,
   },
@@ -42,6 +46,13 @@ const hostelFeeMonthSchema = new Schema<HostelFeeMonthType>({
     type: Number,
   },
   scholarship: {
+    type: String,
+  },
+  uploadReceipt: {
+    public_id: { type: String },
+    secure_url: { type: String },
+  },
+  remarks: {
     type: String,
   },
 });
@@ -77,70 +88,73 @@ const studentDataSchema = new Schema<StudentDataType>({
   hostelFees: hostelFeesSchema,
 });
 
-const studentSchema = new Schema<IStudentType>({
-  student_id: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  studentName: {
-    type: String,
-    required: true,
-  },
-  mobileNumber: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  dateOfBirth: {
-    type: String,
-    required: true,
-  },
-  gurdianName: {
-    type: String,
-    required: true,
-  },
-  gurdianMobileNumber: {
-    type: String,
-    required: true,
-  },
-  gender: {
-    type: String,
-    required: true,
-  },
+const studentSchema = new Schema<IStudentType>(
+  {
+    student_id: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    studentName: {
+      type: String,
+      required: true,
+    },
+    mobileNumber: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    dateOfBirth: {
+      type: String,
+      required: true,
+    },
+    gurdianName: {
+      type: String,
+      required: true,
+    },
+    gurdianMobileNumber: {
+      type: String,
+      required: true,
+    },
+    gender: {
+      type: String,
+      required: true,
+    },
 
-  address: {
-    type: String,
-    required: true,
-  },
-  pinCode: {
-    type: String,
-    required: true,
-  },
-  city: {
-    type: String,
-    required: true,
-  },
-  caste: {
-    type: String,
-    required: true,
-  },
-  class10SchoolName: {
-    type: String,
-  },
-  class10PassYear: {
-    type: String,
-  },
-  class12SchoolName: {
-    type: String,
-  },
-  class12PassYear: {
-    type: String,
-  },
-  courseFees: courseFeesSchema,
+    address: {
+      type: String,
+      required: true,
+    },
+    pinCode: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    caste: {
+      type: String,
+      required: true,
+    },
+    class10SchoolName: {
+      type: String,
+    },
+    class10PassYear: {
+      type: String,
+    },
+    class12SchoolName: {
+      type: String,
+    },
+    class12PassYear: {
+      type: String,
+    },
+    courseFees: courseFeesSchema,
 
-  studentData: [studentDataSchema],
-});
+    studentData: [studentDataSchema],
+  },
+  { timestamps: true }
+);
 
 studentSchema.pre<IStudentType>("save", async function (next) {
   if (!this.student_id) {
