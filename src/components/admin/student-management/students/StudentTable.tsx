@@ -67,7 +67,6 @@ export default function StudentTable({
               onClick={() => handleDelete(student.student_id as string)}
               disabled={isPending}
             >
-              Delete
               {isPending ? "Deleting..." : "Delete"}
             </button>
           </div>
