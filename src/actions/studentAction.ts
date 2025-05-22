@@ -86,14 +86,8 @@ export async function getStudents({
       .skip(skip)
       .limit(pageSize)
       .sort({ studentName: 1 })
-      .populate({
-        path: "studentData.currentBatch",
-        model: "Batches",
-      })
-      .populate({
-        path: "studentData.currentCourse",
-        model: "Courses",
-      })
+      .populate("studentData.currentBatch")
+      .populate("studentData.currentCourse")
       .lean();
 
     return {
