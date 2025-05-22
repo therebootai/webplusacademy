@@ -1,4 +1,5 @@
 import { getStudents } from "@/actions/studentAction";
+import FeesTable from "@/components/admin/fees/FeesTable";
 import AdminTemplate from "@/templates/AdminTemplate";
 import PaginationBox from "@/ui/PaginationBox";
 
@@ -11,6 +12,8 @@ export default async function FeesPage({
   const { data, pagination } = await getPageData(parseInt(page) || 1);
   return (
     <AdminTemplate>
+      <div></div>
+      <FeesTable studentsData={data} />
       <PaginationBox pagination={pagination} prefix="/admin/fees" />
     </AdminTemplate>
   );

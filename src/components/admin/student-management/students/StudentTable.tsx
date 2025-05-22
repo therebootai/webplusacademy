@@ -46,12 +46,12 @@ export default function StudentTable({
         >
           <div className="flex-1">{student.studentName}</div>
           <div className="flex-1">{student.mobileNumber}</div>
-          <div className="flex-1">
+          {/* <div className="flex-1">
             {student.studentData[0]?.currentCourse?.course_name}
           </div>
           <div className="flex-1">
             {student.studentData[0]?.currentBatch?.batch_name}
-          </div>
+          </div> */}
           <div className="flex-1">
             {student.address} , {student.city} , {student.pinCode}
           </div>
@@ -64,10 +64,9 @@ export default function StudentTable({
             <button
               type="button"
               className="text-red-500"
-              onClick={() => handleDelete(student.student_id as string)}
-              disabled={isPending}
+              //   onClick={() => handleDelete(item._id as string)}
             >
-              {isPending ? "Deleting..." : "Delete"}
+              Delete
             </button>
           </div>
         </div>
