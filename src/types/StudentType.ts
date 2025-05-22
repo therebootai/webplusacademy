@@ -3,6 +3,7 @@ import { CourseDocument } from "@/models/Courses";
 import mongoose, { Document } from "mongoose";
 
 export interface EmiType {
+  _id?: string;
   installmentNumber?: number;
   amount?: number;
   dueDate?: Date;
