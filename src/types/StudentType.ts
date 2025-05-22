@@ -7,6 +7,7 @@ export interface EmiType {
   amount?: number;
   dueDate?: Date;
   scholarship?: string;
+  paid?: boolean;
 }
 
 export interface CourseFeesType {
@@ -19,6 +20,11 @@ export interface HostelFeeMonthType {
   year: number;
   amount: number;
   scholarship: string;
+  uploadReceipt: {
+    public_id: string;
+    secure_url: string;
+  };
+  remarks: string;
 }
 
 export interface HostelFeesType {
