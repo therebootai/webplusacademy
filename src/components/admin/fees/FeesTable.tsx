@@ -26,11 +26,6 @@ export default function FeesTable({
         const course = studentInfo?.currentCourse;
         const batch = studentInfo?.currentBatch;
 
-        const isCoursePopulated =
-          course && typeof course === "object" && "_id" in course;
-        const isBatchPopulated =
-          batch && typeof batch === "object" && "_id" in batch;
-
         return (
           <div
             key={student._id as string}
@@ -52,6 +47,39 @@ export default function FeesTable({
               className="flex-1"
               style={{ flexBasis: `${Math.round(100 / tableHeader.length)}%` }}
             >
+              {student.studentData.map((data, index) => {
+                const { hostelFees } = data;
+
+                // Get current month and year
+                const now = new Date();
+                const currentMonth = now.toLocaleString("default", {
+                  month: "long",
+                }); // e.g., "May"
+                const currentYear = now.getFullYear();
+
+                const isPaid = hostelFees?.monthsDue.some(
+                  (m) => m.month === currentMonth && m.year === currentYear
+                );
+
+                return (
+                  <span
+                    className={` inline-flex items-center gap-2`}
+                    key={index}
+                  >
+                    {isPaid ? (
+                      <FaCheckCircle className="text-green-600 text-base" />
+                    ) : (
+                      <FaClock className="text-red-600 text-base" />
+                    )}
+                    {hostelFees?.monthlyAmount}
+                  </span>
+                );
+              })}
+            </div>
+            <div
+              className="flex-1"
+              style={{ flexBasis: `${Math.round(100 / tableHeader.length)}%` }}
+            >
               {student.courseFees.totalAmount}
             </div>
             {Array.from({ length: 4 }).map((_, index) => {
@@ -60,7 +88,7 @@ export default function FeesTable({
               return (
                 <div
                   key={index}
-                  className="flex-1 inline-flex items-center justify-center gap-2"
+                  className="flex-1 inline-flex items-center gap-2"
                   style={{
                     flexBasis: `${Math.round(100 / tableHeader.length)}%`,
                   }}
@@ -75,11 +103,19 @@ export default function FeesTable({
                       {emi.amount}
                     </>
                   ) : (
-                    <>-</>
+                    <p className="text-center">-</p>
                   )}
                 </div>
               );
             })}
+            <div
+              className="flex-1"
+              style={{ flexBasis: `${Math.round(100 / tableHeader.length)}%` }}
+            >
+              {student.courseFees.emis
+                .filter((emi) => !emi.paid)
+                .reduce((sum, emi) => sum + (emi.amount ?? 0), 0)}
+            </div>
           </div>
         );
       })}
