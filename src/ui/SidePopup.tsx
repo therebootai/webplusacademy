@@ -25,7 +25,7 @@ const SidePopUpSlider = ({
           <AiOutlineCloseCircle size={24} className="text-xl font-bold" />
         </button>
       </div>
-      <div>{children}</div>
+      <div className="max-h-[90vh]">{children}</div>
     </div>
   );
 };

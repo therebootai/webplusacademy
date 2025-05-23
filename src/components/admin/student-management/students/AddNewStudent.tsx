@@ -79,6 +79,11 @@ export default function AddNewStudent({
       | string
       | null;
 
+    if (courseFees.length === 0) {
+      alert("Please enter course fees");
+      return;
+    }
+
     const emis = courseFees.map((amount, index) => ({
       installmentNumber: index + 1,
       amount: Number(amount),
@@ -150,8 +155,14 @@ export default function AddNewStudent({
       if (onSuccess) {
         onSuccess();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      if (error.message.includes("E11000 duplicate key")) {
+        alert("Student already exists");
+      } else {
+        alert(error.message);
+      }
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -248,7 +259,7 @@ export default function AddNewStudent({
     }
   }, [courseId]);
 
-  const [, formActtion, isPending] = useActionState(addStudent, null);
+  const [, formActtion] = useActionState(addStudent, null);
 
   return (
     <div className="flex flex-col px-6 gap-5">
@@ -313,7 +324,6 @@ export default function AddNewStudent({
           <MdOutlinePhone className="text-site-gray size-5" />
           <input
             type="tel"
-            required
             placeholder={`Guardian Mobile Number`}
             pattern="[0-9]{10}"
             minLength={10}

@@ -7,13 +7,23 @@ import PaginationBox from "@/ui/PaginationBox";
 export default async function StudentManagementPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page: string }>;
+  searchParams: Promise<{
+    page: string;
+    q: string;
+    course: string;
+    batch: string;
+  }>;
 }) {
-  const { page } = await searchParams;
-  const { data, pagination } = await getPageData(parseInt(page) || 1);
+  const { page, q, course, batch } = await searchParams;
+  const { data, pagination } = await getPageData(
+    parseInt(page) || 1,
+    q,
+    course,
+    batch
+  );
   return (
     <AdminTemplate>
-      <StudentHeader />
+      <StudentHeader search={q} course={course} batch={batch} />
       <StudentTable studentsData={data} />
       <PaginationBox
         pagination={pagination}
@@ -23,9 +33,20 @@ export default async function StudentManagementPage({
   );
 }
 
-async function getPageData(page: number = 1) {
+async function getPageData(
+  page: number = 1,
+  q: string,
+  course: string,
+  batch: string
+) {
   try {
-    const { data, pagination } = await getStudents({ page });
+    const { data, pagination } = await getStudents({
+      page,
+      mobileNumber: q,
+      studentName: q,
+      currentCourse: course,
+      currentBatch: batch,
+    });
     return { data, pagination };
   } catch (error) {
     console.log(error);

@@ -2,13 +2,45 @@
 
 import { IStudentType } from "@/types/StudentType";
 import DisplayTable from "@/ui/DisplayTable";
+import { useEffect, useRef, useState } from "react";
 import { FaCheckCircle, FaClock } from "react-icons/fa";
+import { RiEdit2Line } from "react-icons/ri";
+import EditFees from "./EditFees";
+import { updateCourseFees, updateHostelFees } from "@/actions/studentAction";
 
 export default function FeesTable({
   studentsData,
+  mon,
+  year,
 }: {
   studentsData: IStudentType[];
+  mon?: string;
+  year?: string;
 }) {
+  const [editingStudentId, setEditingStudentId] = useState<string | null>(null);
+  const popupRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        setEditingStudentId(null);
+      }
+    }
+
+    if (editingStudentId) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [editingStudentId]);
+
   const tableHeader = [
     "student name",
     "Mobile Number",
@@ -18,14 +50,93 @@ export default function FeesTable({
     "total due",
   ];
 
+  async function updateStudentHostelFees(
+    studentId: string,
+    studentDataId: string,
+    receiptFile?: File,
+    hostelFeeMonth?: {
+      month: string;
+      year: string;
+      amount: number;
+    }
+  ) {
+    try {
+      const updateResult = await updateHostelFees(
+        studentId,
+        studentDataId,
+        hostelFeeMonth,
+        receiptFile,
+        "add"
+      );
+      if (!updateResult.success) {
+        throw new Error(updateResult.message);
+      }
+      return updateResult;
+    } catch (error: any) {
+      console.log(error);
+      alert(error.message);
+      return { success: false, message: error.message };
+    }
+  }
+
+  async function removeHostelFees(
+    studentId: string,
+    studentDataId: string,
+    hostelFeeMonth?: {
+      month: string;
+      year: string;
+      amount: number;
+    }
+  ) {
+    const confirmed = confirm(
+      "Are you sure you want to change hostel fees status?"
+    );
+    if (!confirmed) return;
+
+    try {
+      const updateResult = await updateHostelFees(
+        studentId,
+        studentDataId,
+        hostelFeeMonth,
+        undefined,
+        "remove"
+      );
+      if (!updateResult.success) {
+        throw new Error(updateResult.message);
+      }
+      return updateResult;
+    } catch (error: any) {
+      console.log(error);
+      alert(error.message);
+      return { success: false, message: error.message };
+    }
+  }
+
+  async function updateEMIFees(
+    studentId: string,
+    emiId: string,
+    paid: boolean,
+    extra: string | undefined = ""
+  ) {
+    const confirmed = confirm(`Are you sure you want to change ${extra} ?`);
+    if (!confirmed) return;
+
+    try {
+      const updateResult = await updateCourseFees(studentId, emiId, paid);
+      if (!updateResult.success) {
+        throw new Error(updateResult.message);
+      }
+      return updateResult;
+    } catch (error: any) {
+      console.log(error);
+      alert(error.message);
+      return { success: false, message: error.message };
+    }
+  }
+
   return (
     <DisplayTable tableHeader={tableHeader}>
       {studentsData.map((student) => {
-        const studentInfo = student.studentData[0];
-
-        const course = studentInfo?.currentCourse;
-        const batch = studentInfo?.currentBatch;
-
         return (
           <div
             key={student._id as string}
@@ -44,35 +155,81 @@ export default function FeesTable({
               {student.mobileNumber}
             </div>
             <div
-              className="flex-1"
+              className="flex-1 relative"
               style={{ flexBasis: `${Math.round(100 / tableHeader.length)}%` }}
             >
-              {student.studentData.map((data, index) => {
+              {student.studentData.map((data: any, index) => {
                 const { hostelFees } = data;
 
                 // Get current month and year
                 const now = new Date();
-                const currentMonth = now.toLocaleString("default", {
-                  month: "long",
-                }); // e.g., "May"
-                const currentYear = now.getFullYear();
+                const currentMonth = mon
+                  ? mon
+                  : now.toLocaleString("default", {
+                      month: "long",
+                    }); // e.g., "May"
+                const currentYear = year ? year : now.getFullYear();
 
                 const isPaid = hostelFees?.monthsDue.some(
-                  (m) => m.month === currentMonth && m.year === currentYear
+                  (m: { month: string; year: number }) =>
+                    m.month === currentMonth && m.year === currentYear
                 );
 
                 return (
-                  <span
-                    className={` inline-flex items-center gap-2`}
+                  <div
+                    className={`inline-flex items-center gap-2 relative`}
                     key={index}
                   >
                     {isPaid ? (
-                      <FaCheckCircle className="text-green-600 text-base" />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removeHostelFees(
+                            student._id as string,
+                            data?._id ?? "",
+                            hostelFees?.monthsDue.find(
+                              (m: { month: string; year: number }) =>
+                                m.month === currentMonth &&
+                                m.year === currentYear
+                            )
+                          )
+                        }
+                      >
+                        <FaCheckCircle className="text-green-600 text-base" />
+                      </button>
                     ) : (
                       <FaClock className="text-red-600 text-base" />
                     )}
                     {hostelFees?.monthlyAmount}
-                  </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingStudentId(student._id as string);
+                      }}
+                      className="text-xs text-site-darkgreen p-1 bg-white border borde-[#eeeeee] rounded-full"
+                    >
+                      <RiEdit2Line />
+                    </button>
+                    {editingStudentId === student._id && (
+                      <div
+                        ref={popupRef}
+                        className="absolute top-[calc(100%_+_0.75rem)] left-1/2 -translate-x-1/2 z-[100]"
+                      >
+                        <EditFees
+                          amount={hostelFees?.monthlyAmount}
+                          helper={(hostelFeeMonth: any, receiptFile?: File) =>
+                            updateStudentHostelFees(
+                              student._id as string,
+                              data?._id ?? "",
+                              receiptFile,
+                              hostelFeeMonth
+                            )
+                          }
+                          handleClose={() => setEditingStudentId(null)}
+                        />
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -95,11 +252,23 @@ export default function FeesTable({
                 >
                   {emi ? (
                     <>
-                      {emi.paid ? (
-                        <FaCheckCircle className="text-green-600 text-base" />
-                      ) : (
-                        <FaClock className="text-red-600 text-base" />
-                      )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateEMIFees(
+                            student._id as string,
+                            emi._id ?? "",
+                            !emi.paid,
+                            `EMI ${index + 1}`
+                          )
+                        }
+                      >
+                        {emi.paid ? (
+                          <FaCheckCircle className="text-green-600 text-base" />
+                        ) : (
+                          <FaClock className="text-red-600 text-base" />
+                        )}
+                      </button>
                       {emi.amount}
                     </>
                   ) : (
