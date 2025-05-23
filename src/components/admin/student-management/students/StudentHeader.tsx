@@ -1,18 +1,22 @@
 "use client";
 
 import SidePopUpSlider from "@/ui/SidePopup";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LuUserPlus } from "react-icons/lu";
 import AddNewStudent from "./AddNewStudent";
 import { getAllCourses } from "@/actions/coursesActions";
 import { getAllBatches } from "@/actions/batchesActions";
 import { BatchesDocument } from "@/models/Batches";
 import { CourseDocument } from "@/models/Courses";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function StudentHeader() {
+export default function StudentHeader({ search }: { search?: string }) {
   const [showPopUp, setShowPopUp] = useState(false);
   const [courses, setCourses] = useState([]);
   const [batches, setBatches] = useState([]);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,22 +34,38 @@ export default function StudentHeader() {
     fetchData();
   }, []);
 
+  const handleSearch = useCallback(
+    (query: string | null | undefined) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (!query) {
+        params.delete("q"); // remove "q" if query is empty, null, or undefined
+      } else {
+        params.set("q", query); // otherwise set it
+      }
+
+      router.push(`?${params.toString()}`);
+    },
+    [searchParams]
+  );
+
   return (
     <>
       <div className="flex gap-3.5">
         <button
           type="button"
           onClick={() => setShowPopUp(true)}
-          className="flex items-center justify-center rounded-lg xl:text-lg md:text-base text-white bg-site-darkgreen px-5 h-[3.5rem]"
+          className="flex items-center justify-center rounded-lg xl:text-lg md:text-base text-white bg-site-darkgreen px-5 h-[3.5rem] flex-1"
         >
           <LuUserPlus />
           <span className="ml-2">Add</span>
         </button>
-        <div className=" w-[40%]">
+        <div className="basis-[40%]">
           <input
-            type="text"
+            type="search"
+            defaultValue={search}
             placeholder="Search mobile no  & student name"
-            className=" w-full bg-white rounded-md  text-site-black border border-[#f0f0f0] px-5 h-[3.5rem]"
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full bg-white rounded-md  text-site-black border border-[#f0f0f0] px-5 h-[3.5rem]"
           />
         </div>
         <div className="w-[20%]">
