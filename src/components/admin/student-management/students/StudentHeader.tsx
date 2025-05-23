@@ -137,7 +137,7 @@ export default function StudentHeader({
         showPopUp={showPopUp}
         handleClose={() => setShowPopUp(false)}
       >
-        <AddNewStudent />
+        <AddNewStudent onSuccess={() => setShowPopUp(false)} />
       </SidePopUpSlider>
     </>
   );
