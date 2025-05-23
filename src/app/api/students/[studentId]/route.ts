@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { studentId: string } }
+  { params }: { params: Promise<{ studentId: string }> }
 ) {
   try {
-    const studentId = params.studentId;
+    const studentId = (await params).studentId;
     const updatedData = await request.json();
 
     const result = await updateStudent(studentId, updatedData);
