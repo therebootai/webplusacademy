@@ -2,7 +2,7 @@
 
 import { IStudentType } from "@/types/StudentType";
 import DisplayTable from "@/ui/DisplayTable";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaCheckCircle, FaClock } from "react-icons/fa";
 import { RiEdit2Line } from "react-icons/ri";
 import EditFees from "./EditFees";
@@ -17,7 +17,29 @@ export default function FeesTable({
   mon?: string;
   year?: string;
 }) {
-  const [showHostelEdit, setShowHostelEdit] = useState(false);
+  const [editingStudentId, setEditingStudentId] = useState<string | null>(null);
+  const popupRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        setEditingStudentId(null);
+      }
+    }
+
+    if (editingStudentId) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [editingStudentId]);
 
   const tableHeader = [
     "student name",
@@ -182,15 +204,19 @@ export default function FeesTable({
                     <button
                       type="button"
                       onClick={() => {
-                        setShowHostelEdit(!showHostelEdit);
+                        setEditingStudentId(student._id as string);
                       }}
                       className="text-xs text-site-darkgreen p-1 bg-white border borde-[#eeeeee] rounded-full"
                     >
                       <RiEdit2Line />
                     </button>
-                    {showHostelEdit && student._id && (
-                      <div className="absolute top-[calc(100%_+_0.75rem)] left-1/2 -translate-x-1/2">
+                    {editingStudentId === student._id && (
+                      <div
+                        ref={popupRef}
+                        className="absolute top-[calc(100%_+_0.75rem)] left-1/2 -translate-x-1/2 z-[100]"
+                      >
                         <EditFees
+                          amount={hostelFees?.monthlyAmount}
                           helper={(hostelFeeMonth: any, receiptFile?: File) =>
                             updateStudentHostelFees(
                               student._id as string,
@@ -199,7 +225,7 @@ export default function FeesTable({
                               hostelFeeMonth
                             )
                           }
-                          handleClose={() => setShowHostelEdit(false)}
+                          handleClose={() => setEditingStudentId(null)}
                         />
                       </div>
                     )}
