@@ -13,7 +13,7 @@ export default function AdminLayout({
 }>) {
   return (
     <main
-      className={`${plusJakartaSans.className} font-plus-jakarta-sans antialiased`}
+      className={`${plusJakartaSans.variable} font-plus-jakarta-sans antialiased`}
     >
       <AuthContextProvider>{children}</AuthContextProvider>
     </main>

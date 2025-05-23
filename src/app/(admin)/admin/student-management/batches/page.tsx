@@ -33,7 +33,7 @@ export default async function BatchPage({
   );
 }
 
-export async function getPageData(page: number | string) {
+async function getPageData(page: number | string) {
   try {
     const { data, pagination } = await getAllBatches({ page });
     return { data, pagination };

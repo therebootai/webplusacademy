@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import AddNewStudent from "./AddNewStudent";
 import ViewStudent from "./ViewStudents";
-import StudentHeader from "./StudentHeader";
 
 export default function StudentTable({
   studentsData,
@@ -25,8 +24,9 @@ export default function StudentTable({
   ];
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
   const [showPopUp, setShowPopUp] = useState(false);
-  const [showViewPopUp, setShowViewPopUp] = useState(false);
+  const [showViewPopUp, setShowViewPopUp] = useState("");
 
   const [selectedStudent, setSelectedStudent] = useState<IStudentType | null>(
     null
@@ -49,8 +49,6 @@ export default function StudentTable({
   return (
     <>
       <div className="flex flex-col gap-4">
-        <StudentHeader />
-
         <DisplayTable tableHeader={tableHeader}>
           {studentsData.map((student) => {
             const studentInfo = student.studentData[0];
@@ -87,7 +85,8 @@ export default function StudentTable({
                   <button
                     onClick={() => {
                       setSelectedStudent(student);
-                      setShowViewPopUp(true);
+                      setShowViewPopUp("view");
+                      setShowPopUp(true);
                     }}
                     className="text-shadow-site-black"
                   >
@@ -99,6 +98,7 @@ export default function StudentTable({
                     className="text-shadow-site-black"
                     onClick={() => {
                       setSelectedStudent(student);
+                      setShowViewPopUp("edit");
                       setShowPopUp(true);
                     }}
                   >
@@ -123,21 +123,18 @@ export default function StudentTable({
             showPopUp={showPopUp}
             handleClose={() => setShowPopUp(false)}
           >
-            <AddNewStudent
-              existingStudent={selectedStudent}
-              onSuccess={() => {
-                router.refresh();
-                setShowPopUp(false);
-              }}
-            />
-          </SidePopUpSlider>
-        )}
-        {showViewPopUp && selectedStudent && (
-          <SidePopUpSlider
-            showPopUp={showViewPopUp}
-            handleClose={() => setShowViewPopUp(false)}
-          >
-            <ViewStudent student={selectedStudent} />
+            {showViewPopUp === "edit" && (
+              <AddNewStudent
+                existingStudent={selectedStudent}
+                onSuccess={() => {
+                  router.refresh();
+                  setShowPopUp(false);
+                }}
+              />
+            )}
+            {showViewPopUp === "view" && (
+              <ViewStudent student={selectedStudent} />
+            )}
           </SidePopUpSlider>
         )}
       </div>

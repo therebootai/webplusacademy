@@ -1,4 +1,5 @@
 import { getStudents } from "@/actions/studentAction";
+import StudentHeader from "@/components/admin/student-management/students/StudentHeader";
 import StudentTable from "@/components/admin/student-management/students/StudentTable";
 import AdminTemplate from "@/templates/AdminTemplate";
 import PaginationBox from "@/ui/PaginationBox";
@@ -6,12 +7,13 @@ import PaginationBox from "@/ui/PaginationBox";
 export default async function StudentManagementPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page: string }>;
+  searchParams: Promise<{ page: string; q: string }>;
 }) {
-  const { page } = await searchParams;
-  const { data, pagination } = await getPageData(parseInt(page) || 1);
+  const { page, q } = await searchParams;
+  const { data, pagination } = await getPageData(parseInt(page) || 1, q);
   return (
     <AdminTemplate>
+      <StudentHeader search={q} />
       <StudentTable studentsData={data} />
       <PaginationBox
         pagination={pagination}
@@ -21,9 +23,13 @@ export default async function StudentManagementPage({
   );
 }
 
-async function getPageData(page: number = 1) {
+async function getPageData(page: number = 1, q: string) {
   try {
-    const { data, pagination } = await getStudents({ page });
+    const { data, pagination } = await getStudents({
+      page,
+      mobileNumber: q,
+      studentName: q,
+    });
     return { data, pagination };
   } catch (error) {
     console.log(error);
