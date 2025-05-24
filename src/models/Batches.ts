@@ -1,5 +1,5 @@
 import { generateCustomId } from "@/util/generateCustomId";
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, Model, Types } from "mongoose";
 import { CourseDocument } from "./Courses";
 
 export interface BatchesDocument extends Document {
@@ -7,7 +7,7 @@ export interface BatchesDocument extends Document {
   batch_name: string;
   status: boolean;
   year: string;
-  course: mongoose.Schema.Types.ObjectId | CourseDocument;
+  course: string | Types.ObjectId | CourseDocument;
   start_date?: Date;
   end_date?: Date;
 }

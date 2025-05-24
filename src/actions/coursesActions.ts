@@ -184,7 +184,7 @@ export async function updateaCourse(
       }
 
       updatedCourse.batches = batchArray.map(
-        (id) => new mongoose.Schema.Types.ObjectId(id)
+        (id) => new mongoose.Types.ObjectId(id)
       );
     }
 

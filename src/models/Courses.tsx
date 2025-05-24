@@ -1,12 +1,13 @@
 import { generateCustomId } from "@/util/generateCustomId";
 import mongoose, { Schema, Document, Model } from "mongoose";
 import { BatchesDocument } from "./Batches";
+import { Types } from "mongoose";
 
 export interface CourseDocument extends Document {
   course_id: string;
   course_name: string;
   status: boolean;
-  batches: mongoose.Schema.Types.ObjectId[] | BatchesDocument[];
+  batches: string[] | Types.ObjectId[] | BatchesDocument[];
   course_class?: string;
 }
 
