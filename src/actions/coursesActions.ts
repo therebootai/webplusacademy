@@ -1,4 +1,8 @@
 "use server";
+import "@/models/Students";
+import "@/models/Batches";
+import "@/models/Courses";
+
 import { connectToDataBase } from "@/db/connection";
 import Courses, { CourseDocument } from "@/models/Courses";
 import mongoose from "mongoose";
