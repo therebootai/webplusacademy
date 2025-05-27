@@ -8,12 +8,14 @@ export default function EditFees({
   amount: defaultAmount,
   month,
   year,
+  readOnly = true,
 }: {
   helper: (hostelFeeMonth: any, receiptFile?: File) => any;
   handleClose: () => void;
   month?: string;
   amount?: number;
   year?: string;
+  readOnly?: boolean;
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [amount, setAmount] = useState<string>(defaultAmount?.toString() ?? "");
@@ -51,6 +53,7 @@ export default function EditFees({
           type="text"
           name="amount"
           pattern="[0-9]*"
+          readOnly={readOnly}
           value={amount}
           onChange={(e) => {
             const val = e.target.value;

@@ -8,19 +8,29 @@ export interface EmiType {
   amount?: number;
   dueDate?: Date;
   scholarship?: string;
+  uploadReceipt: {
+    public_id: { type: String };
+    secure_url: { type: String };
+  };
+  remarks: {
+    type: String;
+  };
   paid?: boolean;
 }
 
 export interface CourseFeesType {
   totalAmount?: number;
   emis: EmiType[];
+  currentBatch: mongoose.Types.ObjectId | BatchesDocument[];
+  currentCourse: mongoose.Types.ObjectId | CourseDocument;
+  currentYear?: string;
+  scholarship?: boolean;
 }
 
 export interface HostelFeeMonthType {
   month: string;
   year: number;
   amount: number;
-  scholarship: string;
   uploadReceipt: {
     public_id: string;
     secure_url: string;
@@ -30,6 +40,7 @@ export interface HostelFeeMonthType {
 
 export interface HostelFeesType {
   monthlyAmount: number;
+  scholarship?: boolean;
   monthsDue: HostelFeeMonthType[];
 }
 
@@ -39,6 +50,7 @@ export interface StudentDataType {
   currentClass?: string;
   currentYear?: string;
   bookFees?: string;
+  scholarship?: boolean;
   hostelFees?: HostelFeesType;
 }
 
@@ -46,20 +58,21 @@ export interface IStudentType extends Document {
   student_id: string;
   studentName: string;
   mobileNumber: string;
-  dateOfBirth: string;
-  gurdianName: string;
-  gurdianMobileNumber: string;
+  dateOfBirth?: string;
+  gurdianName?: string;
+  gurdianMobileNumber?: string;
   gender: string;
   selectedCourse: mongoose.Types.ObjectId;
   selectedBatch: mongoose.Types.ObjectId;
-  address: string;
+  address?: string;
   pinCode: string;
-  city: string;
-  caste: string;
+  city?: string;
+  caste?: string;
   class10SchoolName?: string;
   class10PassYear?: string;
   class12SchoolName?: string;
   class12PassYear?: string;
-  courseFees: CourseFeesType;
+  scholarship: boolean;
+  courseFees: CourseFeesType[];
   studentData: StudentDataType[];
 }

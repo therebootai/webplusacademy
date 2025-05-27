@@ -1,10 +1,14 @@
 "use server";
+import "@/models/Students";
+import "@/models/Batches";
+import "@/models/Courses";
 
 import { connectToDataBase } from "@/db/connection";
 import Batches, { BatchesDocument } from "@/models/Batches";
-import Courses from "@/models/Courses";
+import Courses, { CourseDocument } from "@/models/Courses";
 
 import mongoose from "mongoose";
+import { Types } from "mongoose";
 import { revalidatePath } from "next/cache";
 
 export async function createNewBatch({
@@ -161,6 +165,8 @@ export async function updateaBatch(
     start_date?: Date;
     end_date?: Date;
     status?: boolean;
+    year?: string;
+    course?: string | Types.ObjectId | CourseDocument;
   }
 ) {
   try {
@@ -182,9 +188,16 @@ export async function updateaBatch(
     }
 
     updatedBatch.batch_name = updatedData.batch_name ?? updatedBatch.batch_name;
+    updatedBatch.year = updatedData.year ?? updatedBatch.year;
     updatedBatch.start_date = updatedData.start_date ?? updatedBatch.start_date;
     updatedBatch.end_date = updatedData.end_date ?? updatedBatch.end_date;
     updatedBatch.status = updatedData.status ?? updatedBatch.status;
+    if (updatedData.course) {
+      updatedBatch.course =
+        typeof updatedData.course === "string"
+          ? new mongoose.Types.ObjectId(updatedData.course)
+          : updatedData.course;
+    }
 
     await updatedBatch.save();
 

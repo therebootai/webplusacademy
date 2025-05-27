@@ -1,4 +1,8 @@
 "use server";
+import "@/models/Students";
+import "@/models/Batches";
+import "@/models/Courses";
+
 import { connectToDataBase } from "@/db/connection";
 import Courses, { CourseDocument } from "@/models/Courses";
 import mongoose from "mongoose";
@@ -184,7 +188,7 @@ export async function updateaCourse(
       }
 
       updatedCourse.batches = batchArray.map(
-        (id) => new mongoose.Schema.Types.ObjectId(id)
+        (id) => new mongoose.Types.ObjectId(id)
       );
     }
 

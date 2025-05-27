@@ -1,4 +1,8 @@
 "use server";
+import "@/models/Students";
+import "@/models/Batches";
+import "@/models/Courses";
+
 import { connectToDataBase } from "@/db/connection";
 import Students from "@/models/Students";
 import { uploadFile } from "@/util/cloudinary";
@@ -7,6 +11,7 @@ import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
 import fs from "fs/promises";
 import { parseImage } from "@/util/parseImage";
+import { IStudentType } from "@/types/StudentType";
 
 export async function createStudent(data: any) {
   try {
@@ -93,7 +98,9 @@ export async function getStudents({
       .sort({ studentName: 1 })
       .populate("studentData.currentBatch")
       .populate("studentData.currentCourse")
-      .lean();
+      .populate("courseFees.currentBatch")
+      .populate("courseFees.currentCourse")
+      .lean<IStudentType[]>();
 
     return {
       success: true,

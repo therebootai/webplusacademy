@@ -10,7 +10,15 @@ import { BatchesDocument } from "@/models/Batches";
 import { CourseDocument } from "@/models/Courses";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function StudentHeader({ search }: { search?: string }) {
+export default function StudentHeader({
+  search,
+  course,
+  batch,
+}: {
+  search?: string;
+  course?: string;
+  batch?: string;
+}) {
   const [showPopUp, setShowPopUp] = useState(false);
   const [courses, setCourses] = useState([]);
   const [batches, setBatches] = useState([]);
@@ -48,6 +56,34 @@ export default function StudentHeader({ search }: { search?: string }) {
     [searchParams]
   );
 
+  const handelBatchFilter = useCallback(
+    (query: string | null | undefined) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (!query) {
+        params.delete("batch"); // remove "batch" if query is empty, null, or undefined
+      } else {
+        params.set("batch", query); // otherwise set it
+      }
+
+      router.push(`?${params.toString()}`);
+    },
+    [searchParams]
+  );
+
+  const handelCourseFilter = useCallback(
+    (query: string | null | undefined) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (!query) {
+        params.delete("course"); // remove "course" if query is empty, null, or undefined
+      } else {
+        params.set("course", query); // otherwise set it
+      }
+
+      router.push(`?${params.toString()}`);
+    },
+    [searchParams]
+  );
+
   return (
     <>
       <div className="flex gap-3.5">
@@ -68,11 +104,11 @@ export default function StudentHeader({ search }: { search?: string }) {
             className="w-full bg-white rounded-md  text-site-black border border-[#f0f0f0] px-5 h-[3.5rem]"
           />
         </div>
-        <div className="w-[20%]">
+        <div className="basis-[20%]">
           <select
-            name=""
-            id=""
-            className="w-full bg-white rounded-md  text-site-black border border-[#f0f0f0] px-5 h-[3.5rem]"
+            value={batch ?? ""}
+            onChange={(e) => handelBatchFilter(e.target.value)}
+            className="w-full bg-white rounded-md  text-site-black border border-[#f0f0f0] px-5 h-[3.5rem] outline-none"
           >
             <option value="">Select Batch</option>
             {batches.map((batch: BatchesDocument) => (
@@ -82,11 +118,11 @@ export default function StudentHeader({ search }: { search?: string }) {
             ))}
           </select>
         </div>
-        <div className="w-[20%]">
+        <div className="basis-[20%]">
           <select
-            name=""
-            id=""
-            className="w-full bg-white rounded-md  text-site-black border border-[#f0f0f0] px-5 h-[3.5rem]"
+            value={course ?? ""}
+            onChange={(e) => handelCourseFilter(e.target.value)}
+            className="w-full bg-white rounded-md  text-site-black border border-[#f0f0f0] px-5 h-[3.5rem] outline-none"
           >
             <option value="">Select Course</option>
             {courses.map((course: CourseDocument) => (
@@ -101,7 +137,7 @@ export default function StudentHeader({ search }: { search?: string }) {
         showPopUp={showPopUp}
         handleClose={() => setShowPopUp(false)}
       >
-        <AddNewStudent />
+        <AddNewStudent onSuccess={() => setShowPopUp(false)} />
       </SidePopUpSlider>
     </>
   );

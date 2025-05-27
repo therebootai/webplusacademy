@@ -237,10 +237,22 @@ export default function FeesTable({
               className="flex-1"
               style={{ flexBasis: `${Math.round(100 / tableHeader.length)}%` }}
             >
-              {student.courseFees.totalAmount}
+              {student.courseFees
+                .filter(
+                  (fee) =>
+                    fee.currentYear === String(year ?? new Date().getFullYear())
+                )
+                .reduce((sum, fee) => sum + (fee.totalAmount ?? 0), 0)}
             </div>
             {Array.from({ length: 4 }).map((_, index) => {
-              const emi = student.courseFees.emis[index];
+              const now = new Date();
+              const currentYear = year ? year : now.getFullYear();
+
+              const fee = student.courseFees.find(
+                (fee) => fee.currentYear === String(currentYear)
+              );
+
+              const emi = fee?.emis[index];
 
               return (
                 <div
@@ -281,9 +293,16 @@ export default function FeesTable({
               className="flex-1"
               style={{ flexBasis: `${Math.round(100 / tableHeader.length)}%` }}
             >
-              {student.courseFees.emis
-                .filter((emi) => !emi.paid)
-                .reduce((sum, emi) => sum + (emi.amount ?? 0), 0)}
+              {(() => {
+                const now = new Date();
+                const targetYear = year ? year : now.getFullYear();
+
+                return student.courseFees
+                  .filter((fee) => fee.currentYear === String(targetYear)) // convert to string if needed
+                  .flatMap((fee) => fee.emis || [])
+                  .filter((emi) => !emi.paid)
+                  .reduce((sum, emi) => sum + (emi.amount ?? 0), 0);
+              })()}
             </div>
           </div>
         );

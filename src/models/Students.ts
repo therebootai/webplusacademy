@@ -23,7 +23,11 @@ const emiSchema = new Schema<EmiType>({
     type: Boolean,
     default: false,
   },
-  scholarship: {
+  uploadReceipt: {
+    public_id: { type: String },
+    secure_url: { type: String },
+  },
+  remarks: {
     type: String,
   },
 });
@@ -33,6 +37,23 @@ const courseFeesSchema = new Schema<CourseFeesType>({
     type: Number,
   },
   emis: [emiSchema],
+  currentBatch: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Batches",
+    required: true,
+  },
+  currentCourse: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Courses",
+    required: true,
+  },
+  currentYear: {
+    type: String,
+  },
+  scholarship: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const hostelFeeMonthSchema = new Schema<HostelFeeMonthType>({
@@ -44,9 +65,6 @@ const hostelFeeMonthSchema = new Schema<HostelFeeMonthType>({
   },
   amount: {
     type: Number,
-  },
-  scholarship: {
-    type: String,
   },
   uploadReceipt: {
     public_id: { type: String },
@@ -60,6 +78,10 @@ const hostelFeeMonthSchema = new Schema<HostelFeeMonthType>({
 const hostelFeesSchema = new Schema<HostelFeesType>({
   monthlyAmount: {
     type: Number,
+  },
+  scholarship: {
+    type: Boolean,
+    default: false,
   },
   monthsDue: [hostelFeeMonthSchema],
 });
@@ -81,9 +103,12 @@ const studentDataSchema = new Schema<StudentDataType>({
   currentYear: {
     type: String,
   },
-
   bookFees: {
     type: String,
+  },
+  scholarship: {
+    type: Boolean,
+    default: false,
   },
   hostelFees: hostelFeesSchema,
 });
@@ -106,15 +131,12 @@ const studentSchema = new Schema<IStudentType>(
     },
     dateOfBirth: {
       type: String,
-      required: true,
     },
     gurdianName: {
       type: String,
-      required: true,
     },
     gurdianMobileNumber: {
       type: String,
-      required: true,
     },
     gender: {
       type: String,
@@ -123,7 +145,6 @@ const studentSchema = new Schema<IStudentType>(
 
     address: {
       type: String,
-      required: true,
     },
     pinCode: {
       type: String,
@@ -131,11 +152,9 @@ const studentSchema = new Schema<IStudentType>(
     },
     city: {
       type: String,
-      required: true,
     },
     caste: {
       type: String,
-      required: true,
     },
     class10SchoolName: {
       type: String,
@@ -149,7 +168,11 @@ const studentSchema = new Schema<IStudentType>(
     class12PassYear: {
       type: String,
     },
-    courseFees: courseFeesSchema,
+    scholarship: {
+      type: Boolean,
+      default: false,
+    },
+    courseFees: [courseFeesSchema],
 
     studentData: [studentDataSchema],
   },
