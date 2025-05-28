@@ -80,4 +80,6 @@ export interface IStudentType extends Document {
   scholarship: boolean;
   courseFees: CourseFeesType[];
   studentData: StudentDataType[];
+  createdAt?: string;
+  updatedAt?: string;
 }

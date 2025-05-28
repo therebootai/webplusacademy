@@ -217,7 +217,11 @@ export async function updateStudent(studentId: string, updatedData: any) {
       return { success: false, message: "Student not found" };
     }
 
-    return { success: true, student: updatedStudent };
+    const sanitizedStudent = {
+      ...updatedStudent,
+      _id: updatedStudent._id.toString(),
+    };
+    return { success: true, student: sanitizedStudent };
   } catch (error: any) {
     console.error("Error updating student:", error);
     return { success: false, message: error.message || "Unknown error" };
