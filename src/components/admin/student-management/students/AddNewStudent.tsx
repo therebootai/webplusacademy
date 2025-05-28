@@ -25,17 +25,20 @@ import { TbUserHeart } from "react-icons/tb";
 export default function AddNewStudent({
   existingStudent,
   onSuccess,
+  onCancel,
 }: {
   existingStudent?: IStudentType | null;
   onSuccess?: () => void;
+  onCancel?: () => void;
 }) {
   const [currentYear, setCurrentYear] = useState<string>("");
   const [dob, setDOB] = useState<Date | null>(null);
+  const [doAdmission, setDOAdmission] = useState<Date>(new Date());
   const [tenthPassYear, setTenthPassYear] = useState<Date | null>(null);
   const [twelvethPassYear, setTwelvethPassYear] = useState<Date | null>(null);
   const [courseName, setCourseName] = useState<string>("");
   const [courseId, setCourseId] = useState<string>("");
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<CourseDocument[]>([]);
   const [batchId, setBatchId] = useState<string>("");
   const [batches, setBatches] = useState([]);
   const [courseFees, setCouseFees] = useState<string[]>([]);
@@ -47,6 +50,9 @@ export default function AddNewStudent({
     const studentName = formData.get("student_name") as string;
     const mobileNumber = formData.get("student_mobile") as string;
     const dateOfBirth = formData.get("date_of_birth") as string;
+    const dateOfAdmision = formData.get("date_of_admission") as string;
+    const [day, month, year] = dateOfAdmision.split("/");
+    const formattedDate = new Date(`${year}-${month}-${day}`).toISOString();
     const gurdianName = formData.get("guardian_name") as string;
     const gurdianMobileNumber = formData.get("guardian_mobile") as string;
     const gender = formData.get("gender") as string;
@@ -67,13 +73,6 @@ export default function AddNewStudent({
     const hostelMonthlyAmountRaw = formData.get("hostel_monthly_amount") as
       | string
       | null;
-    const scholarship =
-      (formData.get("scholarship") as string | undefined) === "on";
-
-    if (courseFees.length === 0) {
-      alert("Please enter course fees");
-      return;
-    }
 
     const emis = courseFees.map((amount, index) => ({
       installmentNumber: index + 1,
@@ -94,7 +93,6 @@ export default function AddNewStudent({
           ? Number(hostelMonthlyAmountRaw)
           : undefined,
         monthsDue: [],
-        scholarship,
       },
     };
 
@@ -102,6 +100,7 @@ export default function AddNewStudent({
       studentName,
       mobileNumber,
       dateOfBirth,
+      dateOfAdmision: new Date(formattedDate),
       gurdianName,
       gurdianMobileNumber,
       gender,
@@ -109,7 +108,6 @@ export default function AddNewStudent({
       pinCode,
       city,
       caste,
-      scholarship,
       class10SchoolName: class10SchoolName || undefined,
       class10PassYear: class10PassYear || undefined,
       class12SchoolName: class12SchoolName || undefined,
@@ -123,13 +121,13 @@ export default function AddNewStudent({
               currentBatch: batchId || undefined,
               currentCourse: courseId || undefined,
               currentYear,
-              scholarship,
             },
           ]
         : [],
 
       studentData: batchId && courseId ? [studentDataEntry] : [],
     };
+
     setIsLoading(true);
     try {
       let result;
@@ -227,14 +225,17 @@ export default function AddNewStudent({
     }
   }, [existingStudent]);
 
-  async function searchCourse(search: string) {
-    try {
-      const data = await searchCourses(search);
-      setCourses(data.data);
-    } catch (error) {
-      console.log(error);
+  useEffect(() => {
+    async function loadAllCourses() {
+      try {
+        const data = await searchCourses("");
+        setCourses(data.data);
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }
+    loadAllCourses();
+  }, []);
 
   async function getBatchFromCourse(courseId: string) {
     try {
@@ -296,6 +297,19 @@ export default function AddNewStudent({
             placeholderText="Enter Date of Birth"
             dateFormat="dd/MM/yyyy"
             className="h-[3rem]  outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
+            autoComplete="off"
+          />
+        </div>
+        <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
+          <LuCalendarDays className="text-site-gray text-2xl" />
+          <DatePicker
+            selected={doAdmission}
+            onChange={(date) => setDOAdmission(date!)}
+            name="date_of_admission"
+            placeholderText="Enter Date of Admission"
+            dateFormat="dd/MM/yyyy"
+            className="h-[3rem]  outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
+            autoComplete="off"
           />
         </div>
         <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
@@ -325,7 +339,6 @@ export default function AddNewStudent({
           <TbUserHeart className="text-site-gray size-5" />
           <select
             name="gender"
-            required
             defaultValue={existingStudent?.gender}
             className="h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           >
@@ -357,35 +370,25 @@ export default function AddNewStudent({
         </div>
         <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2 relative">
           <LuBookA className="text-site-gray text-2xl" />
-          <div className="flex flex-1 relative">
-            <input
-              type="text"
-              value={courseName}
-              onChange={(e) => {
-                setCourseName(e.target.value);
-                searchCourse(e.target.value);
-              }}
-              placeholder={`Search Course Name`}
-              className="h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
-            />
-          </div>
-          {courses.length > 0 && (
-            <div className="absolute top-full left-0 w-full z-10 rounded-md p-2 bg-white flex flex-col">
-              {courses.map((course: CourseDocument) => (
-                <button
-                  key={course._id as string}
-                  onClick={() => {
-                    setCourseName(course.course_name);
-                    setCourseId(course._id as string);
-                    setCourses([]);
-                  }}
-                  className="text-left text-site-black capitalize p-1.5 border-b border-site-gray last:border-b-0"
-                >
-                  {course.course_name}
-                </button>
-              ))}
-            </div>
-          )}
+          <select
+            className="h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
+            value={courseId}
+            onChange={(e) => {
+              const selectedCourse = courses.find(
+                (course: CourseDocument) => course._id === e.target.value
+              );
+              setCourseId(e.target.value);
+              setCourseName(selectedCourse?.course_name || "");
+            }}
+            name="course_id"
+          >
+            <option value="">Select Course</option>
+            {courses.map((course: CourseDocument) => (
+              <option key={course._id as string} value={course._id as string}>
+                {course.course_name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
           <LuCalendarDays className="text-site-gray text-2xl" />
@@ -469,7 +472,6 @@ export default function AddNewStudent({
           <PiMapPinPlusBold className="text-site-gray size-5" />
           <input
             type="text"
-            required
             placeholder={`Pincode`}
             name="pincode"
             defaultValue={existingStudent?.pinCode}
@@ -483,13 +485,13 @@ export default function AddNewStudent({
             defaultValue={existingStudent?.caste}
             className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           >
-            <option value="">Select Caste &#40;OBC,SC,ST&#41;</option>
+            <option value="">Select Caste</option>
             <option value="general">General</option>
             <option value="sc">SC</option>
             <option value="st">ST</option>
             <option value="obc">OBC</option>
-            <option value="ews">EWS</option>
-            <option value="other">Other</option>
+            <option value="BL">BL</option>
+            <option value="PL">PL</option>
           </select>
         </div>
         <div className="flex-1 flex-wrap border border-[#cccccc] rounded-md flex gap-2 items-center px-2 col-span-2">
@@ -566,22 +568,7 @@ export default function AddNewStudent({
             className="h-[3rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
           />
         </div>
-        <div className="flex-1 flex gap-2 items-center">
-          <input
-            type="checkbox"
-            name="scholarship"
-            defaultChecked={existingStudent?.scholarship}
-            className="accent-site-darkgreen size-4"
-            id="scholarship"
-            value="on"
-          />
-          <label
-            className="text-site-gray font-semibold cursor-pointer"
-            htmlFor="scholarship"
-          >
-            Is student eligible for Scholarship?
-          </label>
-        </div>
+
         <div className="flex-1 col-span-3 rounded-md flex gap-2 items-center px-2">
           <button
             type="submit"
@@ -602,6 +589,9 @@ export default function AddNewStudent({
           </button>
 
           <button
+            onClick={() => {
+              if (onCancel) onCancel();
+            }}
             type="reset"
             className="py-5 px-7 bg-transparent border border-site-darkgreen text-site-darkgreen rounded-lg text-center font-semibold text-base"
           >

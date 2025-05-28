@@ -23,8 +23,14 @@ export default function StudentHeader({
   const [courses, setCourses] = useState([]);
   const [batches, setBatches] = useState([]);
 
+  const [popupKey, setPopupKey] = useState(0);
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  function openAddPopup() {
+    setPopupKey((k) => k + 1); // new key forces remount
+    setShowPopUp(true);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,7 +95,7 @@ export default function StudentHeader({
       <div className="flex gap-3.5">
         <button
           type="button"
-          onClick={() => setShowPopUp(true)}
+          onClick={openAddPopup}
           className="flex items-center justify-center rounded-lg xl:text-lg md:text-base text-white bg-site-darkgreen px-5 h-[3.5rem] flex-1"
         >
           <LuUserPlus />
@@ -137,7 +143,11 @@ export default function StudentHeader({
         showPopUp={showPopUp}
         handleClose={() => setShowPopUp(false)}
       >
-        <AddNewStudent onSuccess={() => setShowPopUp(false)} />
+        <AddNewStudent
+          key={popupKey}
+          onCancel={() => setShowPopUp(false)}
+          onSuccess={() => setShowPopUp(false)}
+        />
       </SidePopUpSlider>
     </>
   );
