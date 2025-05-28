@@ -7,6 +7,7 @@ import StudentIcon from "@/icon/StudentIcon";
 import { BatchesDocument } from "@/models/Batches";
 import { CourseDocument } from "@/models/Courses";
 import { IStudentType } from "@/types/StudentType";
+import { parse } from "date-fns";
 import { useActionState, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import { BiBookBookmark } from "react-icons/bi";
@@ -193,6 +194,20 @@ export default function AddNewStudent({
         !isNaN(Date.parse(existingStudent.class12PassYear))
       ) {
         setTwelvethPassYear(new Date(existingStudent.class12PassYear));
+      }
+
+      if (
+        existingStudent.dateOfAdmission &&
+        typeof existingStudent.dateOfAdmission === "string"
+      ) {
+        const parsedAdmissionDate = parse(
+          existingStudent.dateOfAdmission,
+          "dd/MM/yyyy",
+          new Date()
+        );
+        if (!isNaN(parsedAdmissionDate.getTime())) {
+          setDOAdmission(parsedAdmissionDate);
+        }
       }
       const course = existingStudent.studentData?.[0]?.currentCourse;
       setCourseName(
@@ -421,7 +436,6 @@ export default function AddNewStudent({
               const selectedBatchId = e.target.value;
               setBatchId(selectedBatchId);
 
-              // Find the selected batch to update the current year
               const selectedBatch = batches.find(
                 (batch: BatchesDocument) => batch?._id === selectedBatchId
               );
@@ -429,9 +443,6 @@ export default function AddNewStudent({
                 setCurrentYear(
                   (selectedBatch as BatchesDocument).year as string
                 );
-
-              // Add a new course fee entry
-              setCouseFees((prevFees) => [...prevFees, ""]);
             }}
           >
             <option value="">Select Batch</option>
@@ -526,8 +537,14 @@ export default function AddNewStudent({
             <button
               type="button"
               onClick={() => {
-                setCouseFees((prev) => [...prev, currentCourseFees]);
-                setCurrentCourseFees("");
+                if (
+                  currentCourseFees.trim() !== "" &&
+                  courseFees.length < 5 &&
+                  !isNaN(Number(currentCourseFees))
+                ) {
+                  setCouseFees((prev) => [...prev, currentCourseFees]);
+                  setCurrentCourseFees("");
+                }
               }}
               className="text-site-darkgreen sticky inline-flex items-center justify-center "
             >
