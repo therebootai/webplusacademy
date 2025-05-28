@@ -6,7 +6,7 @@ export interface EmiType {
   _id?: string;
   installmentNumber?: number;
   amount?: number;
-  dueDate?: Date;
+  due?: string;
   scholarship?: string;
   uploadReceipt: {
     public_id: { type: String };
@@ -15,11 +15,12 @@ export interface EmiType {
   remarks: {
     type: String;
   };
-  paid?: boolean;
+  paid?: string;
 }
 
 export interface CourseFeesType {
   totalAmount?: number;
+  _id?: string;
   emis: EmiType[];
   currentBatch: mongoose.Types.ObjectId | BatchesDocument[];
   currentCourse: mongoose.Types.ObjectId | CourseDocument;
@@ -31,11 +32,13 @@ export interface HostelFeeMonthType {
   month: string;
   year: number;
   amount: number;
+  due: string;
   uploadReceipt: {
     public_id: string;
     secure_url: string;
   };
   remarks: string;
+  scholarship: string;
 }
 
 export interface HostelFeesType {
@@ -45,6 +48,7 @@ export interface HostelFeesType {
 }
 
 export interface StudentDataType {
+  _id?: string;
   currentBatch: mongoose.Types.ObjectId | BatchesDocument[];
   currentCourse: mongoose.Types.ObjectId | CourseDocument;
   currentClass?: string;
@@ -58,6 +62,7 @@ export interface IStudentType extends Document {
   student_id: string;
   studentName: string;
   mobileNumber: string;
+  dateOfAdmission: Date;
   dateOfBirth?: string;
   gurdianName?: string;
   gurdianMobileNumber?: string;

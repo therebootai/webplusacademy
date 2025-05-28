@@ -24,7 +24,11 @@ export async function createStudent(data: any) {
         "STUDENTS-"
       );
     }
+    if (data.dateOfAdmision) {
+      data.dateOfAdmision = new Date(data.dateOfAdmision);
+    }
     const newStudent = new Students(data);
+
     const savedStudent = await newStudent.save();
 
     revalidatePath("/admin/student-management/students");
@@ -43,6 +47,8 @@ export async function getStudents({
   currentCourse,
   currentBatch,
   studentId,
+  mon,
+  year,
 }: {
   page?: number;
   limit?: number;
@@ -51,6 +57,8 @@ export async function getStudents({
   currentCourse?: string;
   currentBatch?: string;
   studentId?: string;
+  mon?: string;
+  year?: number | string;
 } = {}) {
   try {
     await connectToDataBase();
@@ -84,6 +92,17 @@ export async function getStudents({
         filter.studentData.$elemMatch.currentBatch =
           new mongoose.Types.ObjectId(currentBatch);
       }
+    }
+
+    if (mon && year) {
+      filter.studentData = filter.studentData || {};
+      filter.studentData.$elemMatch = filter.studentData.$elemMatch || {};
+      filter.studentData.$elemMatch["hostelFees.monthsDue"] = {
+        $elemMatch: {
+          month: mon,
+          year: Number(year),
+        },
+      };
     }
 
     const pageNumber = Number(page);
@@ -152,33 +171,67 @@ export async function updateStudent(studentId: string, updatedData: any) {
 export async function updateCourseFees(
   studentId: string,
   emiId: string,
-  paid: boolean
+  updateData: Partial<{
+    paid: boolean | string;
+    due: string;
+    remarks: string;
+    scholarship: string;
+    amount: number;
+    uploadReceipt?: { public_id: string; secure_url: string };
+  }>,
+  receiptFile?: File
 ) {
   try {
     await connectToDataBase();
 
-    const updated = await Students.updateOne(
+    if (receiptFile && receiptFile.size > 0) {
+      const receiptFilePath = await parseImage(receiptFile);
+      const result = await uploadFile(receiptFilePath, receiptFile.type);
+
+      if (result instanceof Error) {
+        throw new Error("Failed to upload receipt to Cloudinary");
+      }
+
+      updateData.uploadReceipt = {
+        public_id: result.public_id,
+        secure_url: result.secure_url,
+      };
+
+      await fs.unlink(receiptFilePath);
+    }
+
+    const setObj: any = {};
+    for (const key in updateData) {
+      setObj[`courseFees.$[].emis.$[emi].${key}`] = (updateData as any)[key];
+    }
+
+    const updateResult = await Students.updateOne(
       {
         $or: [
           { student_id: studentId },
           {
             _id: mongoose.Types.ObjectId.isValid(studentId)
-              ? studentId
+              ? new mongoose.Types.ObjectId(studentId)
               : undefined,
           },
         ],
-        "courseFees.emis._id": emiId,
+        "courseFees.emis._id": new mongoose.Types.ObjectId(emiId),
       },
-      { $set: { "courseFees.emis.$.paid": paid } }
+      {
+        $set: setObj,
+      },
+      {
+        arrayFilters: [{ "emi._id": new mongoose.Types.ObjectId(emiId) }],
+      }
     );
 
-    if (updated.modifiedCount === 0) {
+    if (updateResult.modifiedCount === 0) {
       return { success: false, message: "EMI not found or no change made" };
     }
-    revalidatePath("/admin/fees");
+
     return { success: true, message: "EMI updated successfully" };
   } catch (error: any) {
-    console.error("Error updating EMI paid status:", error);
+    console.error("Error updating EMI:", error);
     return { success: false, message: error.message || "Unknown error" };
   }
 }
@@ -209,40 +262,80 @@ export async function updateHostelFees(
       await fs.unlink(receiptFilePath);
     }
 
-    const updatedData =
-      method === "add"
-        ? {
-            $push: {
-              "studentData.$.hostelFees.monthsDue": hostelFeeMonth,
-            },
-          }
-        : {
-            $pull: {
-              "studentData.$.hostelFees.monthsDue": hostelFeeMonth,
-            },
-          };
-
-    const result = await Students.updateOne(
-      {
-        $or: [
-          { student_id: studentId },
-          {
-            _id: mongoose.Types.ObjectId.isValid(studentId)
-              ? studentId
-              : undefined,
+    if (method === "add") {
+      const updateResult = await Students.updateOne(
+        {
+          _id: new mongoose.Types.ObjectId(studentId),
+          "studentData._id": new mongoose.Types.ObjectId(studentDataId),
+          "studentData.hostelFees.monthsDue.month": hostelFeeMonth.month,
+          "studentData.hostelFees.monthsDue.year": +hostelFeeMonth.year,
+        },
+        {
+          $set: {
+            "studentData.$[sd].hostelFees.monthsDue.$[md]": hostelFeeMonth,
           },
-        ],
-        "studentData._id": new mongoose.Types.ObjectId(studentDataId),
-      },
-      updatedData
-    );
+        },
+        {
+          arrayFilters: [
+            { "sd._id": new mongoose.Types.ObjectId(studentDataId) },
+            {
+              "md.month": hostelFeeMonth.month,
+              "md.year": +hostelFeeMonth.year,
+            },
+          ],
+        }
+      );
 
-    if (result.modifiedCount === 0) {
-      return { success: false, message: "Failed to update hostel fees" };
+      console.log("Update result:", updateResult);
+      if (updateResult.matchedCount === 0) {
+        console.log(
+          "No existing monthDue found for update, attempting to push new monthDue..."
+        );
+
+        const pushResult = await Students.updateOne(
+          {
+            _id: new mongoose.Types.ObjectId(studentId),
+            "studentData._id": new mongoose.Types.ObjectId(studentDataId),
+          },
+          {
+            $push: {
+              "studentData.$[sd].hostelFees.monthsDue": hostelFeeMonth,
+            },
+          },
+          {
+            arrayFilters: [
+              { "sd._id": new mongoose.Types.ObjectId(studentDataId) },
+            ],
+          }
+        );
+        console.log("Push result:", pushResult);
+
+        if (pushResult.modifiedCount === 0) {
+          console.error(
+            "Failed to add new hostel fee month - push operation did not modify any document"
+          );
+          throw new Error("Failed to add new hostel fee month");
+        }
+      }
+    } else if (method === "remove") {
+      const removeResult = await Students.updateOne(
+        {
+          _id: new mongoose.Types.ObjectId(studentId),
+          "studentData._id": new mongoose.Types.ObjectId(studentDataId),
+        },
+        {
+          $pull: {
+            "studentData.$.hostelFees.monthsDue": hostelFeeMonth,
+          },
+        }
+      );
+
+      if (removeResult.modifiedCount === 0) {
+        throw new Error("Failed to remove hostel fee month");
+      }
     }
 
-    revalidatePath("/admin/fees");
-    return { success: true, message: "Hostel fee month added successfully" };
+    return { success: true, message: "Hostel fee month updated successfully" };
   } catch (error: any) {
     console.error("Error updating hostel fees:", error);
     return { success: false, message: error.message || "Unknown error" };

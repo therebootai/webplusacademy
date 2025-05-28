@@ -63,7 +63,7 @@ export default function StudentTable({
           return (
             <div
               key={student._id as string}
-              className="flex odd:bg-white even:bg-site-darkgreen/5 p-2.5"
+              className="flex odd:bg-white text-sm even:bg-site-darkgreen/5 p-2.5"
               style={{
                 flexBasis: `${Math.round(100 / studentsData.length)}%`,
               }}
@@ -124,6 +124,7 @@ export default function StudentTable({
         >
           {showViewPopUp === "edit" && (
             <AddNewStudent
+              onCancel={() => setShowPopUp(false)}
               existingStudent={selectedStudent}
               onSuccess={() => {
                 router.refresh();
