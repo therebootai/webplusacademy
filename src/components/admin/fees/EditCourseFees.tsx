@@ -2,13 +2,11 @@
 
 import { useActionState, useState } from "react";
 
-export default function EditFees({
+export default function EditCourseFees({
   helper,
   handleClose,
   amount: defaultAmount,
   baseAmount = 0,
-  month,
-  year,
   scholarship: defaultScholarship = "",
   due: defaultDue = "",
   remarks: defaultRemarks = "",
@@ -16,9 +14,8 @@ export default function EditFees({
   helper: (hostelFeeMonth: any, receiptFile?: File) => any;
   handleClose: () => void;
   baseAmount?: number;
-  month?: string;
   amount?: number;
-  year?: string;
+
   scholarship?: string;
   due?: string;
   remarks?: string;
@@ -36,22 +33,20 @@ export default function EditFees({
 
   async function handelUpdateFees(prevState: unknown, formData: FormData) {
     try {
-      const amount = formData.get("amount") as string;
+      const paid = formData.get("amount") as string;
       const due = formData.get("due") as string;
       const scholarship = formData.get("scholarship") as string;
       const remarks = formData.get("remarks") as string;
       const receiptFile = formData.get("receiptFile") as File;
 
-      const hostelFeeMonth = {
-        month: month ?? new Date().toLocaleString("default", { month: "long" }),
-        year: year ?? new Date().getFullYear().toString(),
-        amount: +amount,
+      const courseFee = {
+        paid: +paid,
         due,
         scholarship,
         remarks,
       };
 
-      const updateResult = await helper(hostelFeeMonth, receiptFile);
+      const updateResult = await helper(courseFee, receiptFile);
       if (!updateResult.success) {
         throw new Error(updateResult.message);
       }
@@ -63,8 +58,6 @@ export default function EditFees({
       alert(error.message);
     }
   }
-
-  const [formAction, isPending] = useActionState(handelUpdateFees, null);
 
   const handleScholarshipChange = (val: string) => {
     if (/^\d*$/.test(val) && +val <= 100) {
@@ -94,7 +87,7 @@ export default function EditFees({
     if (/^\d*$/.test(val)) {
       if (val === "") {
         setDue("");
-        setAmount(finalAmount.toString()); // finalAmount is based on initial scholarship calc
+        setAmount(finalAmount.toString());
       } else {
         const dueVal = +val;
         const newAmount = Math.max(0, finalAmount - dueVal);

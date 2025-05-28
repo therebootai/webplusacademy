@@ -7,7 +7,7 @@ const DisplayTable = ({
 }) => {
   return (
     <div className="flex flex-col border border-[#eeeeee] rounded-md">
-      <div className="flex flex-row p-2 py-4 gap-2 rounded-t-md text-base font-medium bg-site-yellow">
+      <div className="flex flex-row p-2 py-4 gap-2 rounded-t-md text-sm font-medium bg-site-yellow">
         {tableHeader.map((item, index) => (
           <div
             key={index}

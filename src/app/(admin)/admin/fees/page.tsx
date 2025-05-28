@@ -20,7 +20,12 @@ export default async function FeesPage({
   );
 }
 
-async function getPageData(page: number = 1, q: string) {
+async function getPageData(
+  page: number = 1,
+  q: string,
+  mon?: string,
+  year?: string
+) {
   try {
     const { data, pagination } = await getStudents({
       page,

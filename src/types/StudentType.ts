@@ -6,39 +6,55 @@ export interface EmiType {
   _id?: string;
   installmentNumber?: number;
   amount?: number;
-  dueDate?: Date;
+  due?: string;
   scholarship?: string;
-  paid?: boolean;
+  uploadReceipt: {
+    public_id: { type: String };
+    secure_url: { type: String };
+  };
+  remarks: {
+    type: String;
+  };
+  paid?: string;
 }
 
 export interface CourseFeesType {
   totalAmount?: number;
+  _id?: string;
   emis: EmiType[];
+  currentBatch: mongoose.Types.ObjectId | BatchesDocument[];
+  currentCourse: mongoose.Types.ObjectId | CourseDocument;
+  currentYear?: string;
+  scholarship?: boolean;
 }
 
 export interface HostelFeeMonthType {
   month: string;
   year: number;
   amount: number;
-  scholarship: string;
+  due: string;
   uploadReceipt: {
     public_id: string;
     secure_url: string;
   };
   remarks: string;
+  scholarship: string;
 }
 
 export interface HostelFeesType {
   monthlyAmount: number;
+  scholarship?: boolean;
   monthsDue: HostelFeeMonthType[];
 }
 
 export interface StudentDataType {
+  _id?: string;
   currentBatch: mongoose.Types.ObjectId | BatchesDocument[];
   currentCourse: mongoose.Types.ObjectId | CourseDocument;
   currentClass?: string;
   currentYear?: string;
   bookFees?: string;
+  scholarship?: boolean;
   hostelFees?: HostelFeesType;
 }
 
@@ -46,20 +62,22 @@ export interface IStudentType extends Document {
   student_id: string;
   studentName: string;
   mobileNumber: string;
-  dateOfBirth: string;
-  gurdianName: string;
-  gurdianMobileNumber: string;
+  dateOfAdmission: string;
+  dateOfBirth?: string;
+  gurdianName?: string;
+  gurdianMobileNumber?: string;
   gender: string;
   selectedCourse: mongoose.Types.ObjectId;
   selectedBatch: mongoose.Types.ObjectId;
-  address: string;
+  address?: string;
   pinCode: string;
-  city: string;
-  caste: string;
+  city?: string;
+  caste?: string;
   class10SchoolName?: string;
   class10PassYear?: string;
   class12SchoolName?: string;
   class12PassYear?: string;
-  courseFees: CourseFeesType;
+  scholarship: boolean;
+  courseFees: CourseFeesType[];
   studentData: StudentDataType[];
 }

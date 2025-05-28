@@ -9,30 +9,54 @@ import {
 import { generateCustomId } from "@/util/generateCustomId";
 import mongoose, { Model, Schema } from "mongoose";
 
-const emiSchema = new Schema<EmiType>({
-  installmentNumber: {
-    type: Number,
+const emiSchema = new Schema<EmiType>(
+  {
+    installmentNumber: {
+      type: Number,
+    },
+    amount: {
+      type: Number,
+    },
+    due: {
+      type: String,
+    },
+    paid: {
+      type: String,
+    },
+    uploadReceipt: {
+      public_id: { type: String },
+      secure_url: { type: String },
+    },
+    remarks: {
+      type: String,
+    },
+    scholarship: {
+      type: String,
+    },
   },
-  amount: {
-    type: Number,
-  },
-  dueDate: {
-    type: Date,
-  },
-  paid: {
-    type: Boolean,
-    default: false,
-  },
-  scholarship: {
-    type: String,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 const courseFeesSchema = new Schema<CourseFeesType>({
   totalAmount: {
     type: Number,
   },
   emis: [emiSchema],
+  currentBatch: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Batches",
+    required: true,
+  },
+  currentCourse: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Courses",
+    required: true,
+  },
+  currentYear: {
+    type: String,
+  },
 });
 
 const hostelFeeMonthSchema = new Schema<HostelFeeMonthType>({
@@ -45,14 +69,15 @@ const hostelFeeMonthSchema = new Schema<HostelFeeMonthType>({
   amount: {
     type: Number,
   },
-  scholarship: {
-    type: String,
-  },
+  due: { type: String },
   uploadReceipt: {
     public_id: { type: String },
     secure_url: { type: String },
   },
   remarks: {
+    type: String,
+  },
+  scholarship: {
     type: String,
   },
 });
@@ -61,6 +86,7 @@ const hostelFeesSchema = new Schema<HostelFeesType>({
   monthlyAmount: {
     type: Number,
   },
+
   monthsDue: [hostelFeeMonthSchema],
 });
 
@@ -68,12 +94,10 @@ const studentDataSchema = new Schema<StudentDataType>({
   currentBatch: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Batches",
-    required: true,
   },
   currentCourse: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Courses",
-    required: true,
   },
   currentClass: {
     type: String,
@@ -81,10 +105,10 @@ const studentDataSchema = new Schema<StudentDataType>({
   currentYear: {
     type: String,
   },
-
   bookFees: {
     type: String,
   },
+
   hostelFees: hostelFeesSchema,
 });
 
@@ -99,6 +123,10 @@ const studentSchema = new Schema<IStudentType>(
       type: String,
       required: true,
     },
+    dateOfAdmission: {
+      type: String,
+      require: true,
+    },
     mobileNumber: {
       type: String,
       required: true,
@@ -106,36 +134,28 @@ const studentSchema = new Schema<IStudentType>(
     },
     dateOfBirth: {
       type: String,
-      required: true,
     },
     gurdianName: {
       type: String,
-      required: true,
     },
     gurdianMobileNumber: {
       type: String,
-      required: true,
     },
     gender: {
       type: String,
-      required: true,
     },
 
     address: {
       type: String,
-      required: true,
     },
     pinCode: {
       type: String,
-      required: true,
     },
     city: {
       type: String,
-      required: true,
     },
     caste: {
       type: String,
-      required: true,
     },
     class10SchoolName: {
       type: String,
@@ -149,7 +169,8 @@ const studentSchema = new Schema<IStudentType>(
     class12PassYear: {
       type: String,
     },
-    courseFees: courseFeesSchema,
+
+    courseFees: [courseFeesSchema],
 
     studentData: [studentDataSchema],
   },
