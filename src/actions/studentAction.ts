@@ -24,12 +24,13 @@ export async function createStudent(data: any) {
         "STUDENTS-"
       );
     }
-    if (data.dateOfAdmision) {
-      data.dateOfAdmision = new Date(data.dateOfAdmision);
+    if (data.dateOfAdmission) {
+      data.dateOfAdmission = new Date(data.dateOfAdmission);
     }
     const newStudent = new Students(data);
 
     const savedStudent = await newStudent.save();
+
 
     revalidatePath("/admin/student-management/students");
     return { success: true, student: JSON.parse(JSON.stringify(savedStudent)) };

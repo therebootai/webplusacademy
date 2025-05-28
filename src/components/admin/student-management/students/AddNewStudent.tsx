@@ -100,7 +100,7 @@ export default function AddNewStudent({
       studentName,
       mobileNumber,
       dateOfBirth,
-      dateOfAdmision: new Date(formattedDate),
+      dateOfAdmission: new Date(formattedDate),
       gurdianName,
       gurdianMobileNumber,
       gender,
