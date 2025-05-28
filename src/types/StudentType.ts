@@ -62,7 +62,7 @@ export interface IStudentType extends Document {
   student_id: string;
   studentName: string;
   mobileNumber: string;
-  dateOfAdmission: Date;
+  dateOfAdmission: string;
   dateOfBirth?: string;
   gurdianName?: string;
   gurdianMobileNumber?: string;

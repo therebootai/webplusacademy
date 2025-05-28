@@ -31,6 +31,8 @@ export async function GET(request: NextRequest) {
 
     const currentCourse = searchParams.get("currentCourse") || undefined;
     const currentBatch = searchParams.get("currentBatch") || undefined;
+    const startDate = searchParams.get("startDate") || undefined; // format: "dd/mm/yyyy"
+    const endDate = searchParams.get("endDate") || undefined;
 
     const studentsData = await getStudents({
       page,
@@ -40,6 +42,8 @@ export async function GET(request: NextRequest) {
       currentCourse,
       currentBatch,
       studentId,
+      startDate,
+      endDate,
     });
 
     if (studentsData.success) {

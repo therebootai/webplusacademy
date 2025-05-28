@@ -24,13 +24,10 @@ export async function createStudent(data: any) {
         "STUDENTS-"
       );
     }
-    if (data.dateOfAdmission) {
-      data.dateOfAdmission = new Date(data.dateOfAdmission);
-    }
+
     const newStudent = new Students(data);
 
     const savedStudent = await newStudent.save();
-
 
     revalidatePath("/admin/student-management/students");
     return { success: true, student: JSON.parse(JSON.stringify(savedStudent)) };
@@ -50,6 +47,8 @@ export async function getStudents({
   studentId,
   mon,
   year,
+  startDate,
+  endDate,
 }: {
   page?: number;
   limit?: number;
@@ -60,6 +59,8 @@ export async function getStudents({
   studentId?: string;
   mon?: string;
   year?: number | string;
+  startDate?: string;
+  endDate?: string;
 } = {}) {
   try {
     await connectToDataBase();
@@ -106,6 +107,60 @@ export async function getStudents({
       };
     }
 
+    if (startDate && endDate) {
+      const toISO = (d: string) => {
+        const separator = d.includes("/") ? "/" : "-";
+        const [day, month, year] = d.split(separator);
+        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+      };
+
+      const startISO = toISO(startDate);
+      const endISO = toISO(endDate);
+
+      filter.$expr = {
+        $and: [
+          {
+            $gte: [
+              {
+                $dateFromString: {
+                  dateString: {
+                    $concat: [
+                      { $substr: ["$dateOfAdmission", 6, 4] },
+                      "-",
+                      { $substr: ["$dateOfAdmission", 3, 2] },
+                      "-",
+                      { $substr: ["$dateOfAdmission", 0, 2] },
+                    ],
+                  },
+                  format: "%Y-%m-%d",
+                },
+              },
+              new Date(startISO),
+            ],
+          },
+          {
+            $lte: [
+              {
+                $dateFromString: {
+                  dateString: {
+                    $concat: [
+                      { $substr: ["$dateOfAdmission", 6, 4] },
+                      "-",
+                      { $substr: ["$dateOfAdmission", 3, 2] },
+                      "-",
+                      { $substr: ["$dateOfAdmission", 0, 2] },
+                    ],
+                  },
+                  format: "%Y-%m-%d",
+                },
+              },
+              new Date(endISO),
+            ],
+          },
+        ],
+      };
+    }
+
     const pageNumber = Number(page);
     const pageSize = Number(limit);
     const skip = (pageNumber - 1) * pageSize;
@@ -115,7 +170,7 @@ export async function getStudents({
     const students = await Students.find(filter)
       .skip(skip)
       .limit(pageSize)
-      .sort({ studentName: 1 })
+      .sort({ createdAt: -1 })
       .populate("studentData.currentBatch")
       .populate("studentData.currentCourse")
       .populate("courseFees.currentBatch")

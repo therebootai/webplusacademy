@@ -12,18 +12,28 @@ export default async function StudentManagementPage({
     q: string;
     course: string;
     batch: string;
+    startDate?: string;
+    endDate?: string;
   }>;
 }) {
-  const { page, q, course, batch } = await searchParams;
+  const { page, q, course, batch, startDate, endDate } = await searchParams;
   const { data, pagination } = await getPageData(
     parseInt(page) || 1,
     q,
     course,
-    batch
+    batch,
+    startDate,
+    endDate
   );
   return (
     <AdminTemplate>
-      <StudentHeader search={q} course={course} batch={batch} />
+      <StudentHeader
+        search={q}
+        course={course}
+        batch={batch}
+        startDate={startDate}
+        endDate={endDate}
+      />
       <StudentTable studentsData={data} />
       <PaginationBox
         pagination={pagination}
@@ -37,7 +47,9 @@ async function getPageData(
   page: number = 1,
   q: string,
   course: string,
-  batch: string
+  batch: string,
+  startDate?: string,
+  endDate?: string
 ) {
   try {
     const { data, pagination } = await getStudents({
@@ -46,6 +58,8 @@ async function getPageData(
       studentName: q,
       currentCourse: course,
       currentBatch: batch,
+      startDate,
+      endDate,
     });
     return { data, pagination };
   } catch (error) {

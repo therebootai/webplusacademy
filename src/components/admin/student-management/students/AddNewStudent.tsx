@@ -50,9 +50,7 @@ export default function AddNewStudent({
     const studentName = formData.get("student_name") as string;
     const mobileNumber = formData.get("student_mobile") as string;
     const dateOfBirth = formData.get("date_of_birth") as string;
-    const dateOfAdmision = formData.get("date_of_admission") as string;
-    const [day, month, year] = dateOfAdmision.split("/");
-    const formattedDate = new Date(`${year}-${month}-${day}`).toISOString();
+    const dateOfAdmission = formData.get("date_of_admission") as string;
     const gurdianName = formData.get("guardian_name") as string;
     const gurdianMobileNumber = formData.get("guardian_mobile") as string;
     const gender = formData.get("gender") as string;
@@ -100,7 +98,7 @@ export default function AddNewStudent({
       studentName,
       mobileNumber,
       dateOfBirth,
-      dateOfAdmission: new Date(formattedDate),
+      dateOfAdmission,
       gurdianName,
       gurdianMobileNumber,
       gender,

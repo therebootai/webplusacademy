@@ -124,7 +124,7 @@ const studentSchema = new Schema<IStudentType>(
       required: true,
     },
     dateOfAdmission: {
-      type: Date,
+      type: String,
       require: true,
     },
     mobileNumber: {
