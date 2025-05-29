@@ -204,7 +204,16 @@ export async function updateStudent(studentId: string, updatedData: any) {
     await connectToDataBase();
 
     const updatedStudent = await Students.findOneAndUpdate(
-      { student_id: studentId },
+      {
+        $or: [
+          { student_id: studentId },
+          {
+            _id: mongoose.Types.ObjectId.isValid(studentId)
+              ? studentId
+              : undefined,
+          },
+        ],
+      },
       updatedData,
       { new: true }
     ).lean();
@@ -213,7 +222,10 @@ export async function updateStudent(studentId: string, updatedData: any) {
       return { success: false, message: "Student not found" };
     }
 
-    return { success: true, student: updatedStudent };
+    return {
+      success: true,
+      student: JSON.parse(JSON.stringify(updatedStudent)),
+    };
   } catch (error: any) {
     console.error("Error updating student:", error);
     return { success: false, message: error.message || "Unknown error" };
