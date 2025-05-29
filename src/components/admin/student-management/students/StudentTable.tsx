@@ -18,6 +18,7 @@ export default function StudentTable({
     "Mobile Number",
     "Course",
     "Batch",
+    "Admission Date",
     "Location",
     "Guardian Number",
     "Action",
@@ -68,18 +69,24 @@ export default function StudentTable({
                 flexBasis: `${Math.round(100 / studentsData.length)}%`,
               }}
             >
-              <div className="flex-1">{student.studentName}</div>
-              <div className="flex-1">{student.mobileNumber}</div>
-              <div className="flex-1">
+              <div className="flex-1 line-clamp-1">{student.studentName}</div>
+              <div className="flex-1 line-clamp-1">{student.mobileNumber}</div>
+              <div className="flex-1 line-clamp-1">
                 {isCoursePopulated ? (course as any).course_name : "N/A"}
               </div>
-              <div className="flex-1">
+              <div className="flex-1 line-clamp-1">
                 {isBatchPopulated ? (batch as any).batch_name : "N/A"}
               </div>
-              <div className="flex-1">
+              <div className="flex-1 line-clamp-1">
+                {student.dateOfAdmission}
+              </div>
+
+              <div className="flex-1 line-clamp-1">
                 {student.address}, {student.city}, {student.pinCode}
               </div>
-              <div className="flex-1">{student.gurdianMobileNumber}</div>
+              <div className="flex-1 line-clamp-1">
+                {student.gurdianMobileNumber}
+              </div>
               <div className="flex-1 flex gap-1 items-center">
                 <button
                   onClick={() => {

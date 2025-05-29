@@ -6,23 +6,19 @@ import "@/models/Courses";
 import { connectToDataBase } from "@/db/connection";
 import Students from "@/models/Students";
 import { uploadFile } from "@/util/cloudinary";
-import { generateCustomId } from "@/util/generateCustomId";
 import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
 import fs from "fs/promises";
 import { parseImage } from "@/util/parseImage";
 import { IStudentType } from "@/types/StudentType";
+import { generateStudentId } from "@/util/generateStudentId";
 
 export async function createStudent(data: any) {
   try {
     await connectToDataBase();
 
     if (!data.student_id) {
-      data.student_id = await generateCustomId(
-        Students,
-        "student_id",
-        "STUDENTS-"
-      );
+      data.student_id = await generateStudentId(Students, "student_id", "WAVE");
     }
 
     const newStudent = new Students(data);

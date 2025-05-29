@@ -63,28 +63,6 @@ export default function ViewStudent({ student }: { student: IStudentType }) {
       <div>
         <strong>Hostel Fees:</strong> ₹{studentInfo?.hostelFees?.monthlyAmount}
       </div>
-
-      <h2 className="text-lg font-bold pt-4">Installment Details</h2>
-      <ul className="list-disc pl-6">
-        {Array.isArray(student.courseFees) && student.courseFees.length > 0 ? (
-          student.courseFees.map((course) =>
-            Array.isArray(course.emis) ? (
-              course.emis.map((emi) => (
-                <li key={emi._id}>
-                  Installment {emi.installmentNumber}: ₹{emi.amount} -{" "}
-                  {emi.paid ? "Paid" : "Pending"}
-                </li>
-              ))
-            ) : (
-              <li key={course._id || "no-emis"}>
-                No EMIs found for this course
-              </li>
-            )
-          )
-        ) : (
-          <li>No installment data available.</li>
-        )}
-      </ul>
     </div>
   );
 }

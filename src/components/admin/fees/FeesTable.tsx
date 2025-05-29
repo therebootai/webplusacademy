@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import EditCourseFees from "./EditCourseFees";
 import { IoIosEye } from "react-icons/io";
 import ViewCourseFees from "./ViewCourseFees";
+import ViewHostelFees from "./ViewHostelFees";
 
 export default function FeesTable({
   studentsData,
@@ -35,6 +36,9 @@ export default function FeesTable({
   const [viewingEmi, setViewingEmi] = useState<{
     emiData: any;
   } | null>(null);
+  const [viewingHostel, setViewingHostel] = useState<{
+    hostelData: any;
+  } | null>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -45,10 +49,11 @@ export default function FeesTable({
         setEditingStudentId(null);
         setEditingEmi(null);
         setViewingEmi(null);
+        setViewingHostel(null);
       }
     }
 
-    if (editingStudentId || editingEmi || viewingEmi) {
+    if (editingStudentId || editingEmi || viewingEmi || viewingHostel) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -57,7 +62,7 @@ export default function FeesTable({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [editingStudentId, editingEmi, viewingEmi]);
+  }, [editingStudentId, editingEmi, viewingEmi, viewingHostel]);
 
   const tableHeader = [
     "student name",
@@ -169,6 +174,15 @@ export default function FeesTable({
                     >
                       <RiEdit2Line />
                     </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setViewingHostel({ hostelData: paidMonth || {} })
+                      }
+                      className="text-xs text-blue-600 size-4 flex justify-center items-center bg-white border border-[#eeeeee] rounded-full"
+                    >
+                      <IoIosEye />
+                    </button>
                     {editingStudentId === student._id && (
                       <div
                         ref={popupRef}
@@ -212,6 +226,17 @@ export default function FeesTable({
                         />
                       </div>
                     )}
+                    {viewingHostel &&
+                      viewingHostel.hostelData._id === paidMonth._id && (
+                        <div
+                          ref={popupRef}
+                          className="absolute top-[calc(100%_+_0.75rem)] left-1/2 -translate-x-1/2 z-[100]"
+                        >
+                          <ViewHostelFees
+                            hostelData={viewingHostel.hostelData}
+                          />
+                        </div>
+                      )}
                   </div>
                 );
               })}
@@ -331,10 +356,9 @@ export default function FeesTable({
                 const targetYear = year ? year : now.getFullYear();
 
                 return student.courseFees
-                  .filter((fee) => fee.currentYear === String(targetYear)) // convert to string if needed
+                  .filter((fee) => fee.currentYear === String(targetYear))
                   .flatMap((fee) => fee.emis || [])
-                  .filter((emi) => !emi.paid)
-                  .reduce((sum, emi) => sum + (emi.amount ?? 0), 0);
+                  .reduce((sum, emi) => sum + (Number(emi.due) || 0), 0);
               })()}
             </div>
           </div>
