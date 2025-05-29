@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 
 export default function EditCourseFees({
   helper,
@@ -58,6 +58,16 @@ export default function EditCourseFees({
       alert(error.message);
     }
   }
+
+  useEffect(() => {
+    const perc = +scholarship || 0;
+    const discountedAmount = Math.round(baseAmount - (baseAmount * perc) / 100);
+    setFinalAmount(discountedAmount);
+    if (amount === "" || +amount > discountedAmount) {
+      setAmount(discountedAmount.toString());
+      setDue("");
+    }
+  }, [baseAmount, scholarship]);
 
   const handleScholarshipChange = (val: string) => {
     if (/^\d*$/.test(val) && +val <= 100) {
