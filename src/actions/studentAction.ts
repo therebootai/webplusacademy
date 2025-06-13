@@ -12,6 +12,8 @@ import fs from "fs/promises";
 import { parseImage } from "@/util/parseImage";
 import { IStudentType } from "@/types/StudentType";
 import { generateStudentId } from "@/util/generateStudentId";
+import { generateToken, verifyToken } from "@/util/jsonToken";
+import { cookies } from "next/headers";
 
 export async function createStudent(data: any) {
   try {
@@ -204,7 +206,16 @@ export async function updateStudent(studentId: string, updatedData: any) {
     await connectToDataBase();
 
     const updatedStudent = await Students.findOneAndUpdate(
-      { student_id: studentId },
+      {
+        $or: [
+          { student_id: studentId },
+          {
+            _id: mongoose.Types.ObjectId.isValid(studentId)
+              ? studentId
+              : undefined,
+          },
+        ],
+      },
       updatedData,
       { new: true }
     ).lean();
@@ -213,7 +224,10 @@ export async function updateStudent(studentId: string, updatedData: any) {
       return { success: false, message: "Student not found" };
     }
 
-    return { success: true, student: updatedStudent };
+    return {
+      success: true,
+      student: JSON.parse(JSON.stringify(updatedStudent)),
+    };
   } catch (error: any) {
     console.error("Error updating student:", error);
     return { success: false, message: error.message || "Unknown error" };
@@ -410,5 +424,67 @@ export async function deleteStudent(studentId: string) {
   } catch (error: any) {
     console.error("Error deleting student:", error);
     return { success: false, message: error.message || "Unknown error" };
+  }
+}
+
+export async function loginStudent(phone: string, password: string) {
+  try {
+    await connectToDataBase();
+
+    if (!phone) {
+      return { success: false, data: null, message: "All fields are required" };
+    }
+
+    const user = await Students.findOne({ phone: phone });
+
+    if (!user || !(await user.matchPassword(password))) {
+      return { success: false, data: null, message: "Credentials mismatch" };
+    }
+
+    const plainUser = user.toObject();
+
+    const token = generateToken({ ...plainUser });
+
+    const cookieStore = await cookies();
+    cookieStore.set("token", token ?? "");
+
+    return { success: true, data: JSON.parse(JSON.stringify(plainUser)) };
+  } catch (error) {
+    console.log(error);
+    return { success: false, data: null };
+  }
+}
+
+export async function logoutStudent() {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete("token");
+    return { success: true };
+  } catch (error) {
+    console.log(error);
+    return { success: false };
+  }
+}
+
+export async function checkTokenAuth() {
+  try {
+    const cookieStore = await cookies(); // Get cookies from request
+    const token = cookieStore.get("token")?.value;
+    if (!token) {
+      return { success: false, user: null };
+    }
+
+    const userId = verifyToken(token);
+
+    if (userId && typeof userId === "object") {
+      return { success: true, user: JSON.parse(JSON.stringify(userId)) };
+    } else {
+      (await cookies()).delete("token");
+      return { success: false, user: null };
+    }
+  } catch (error) {
+    console.log(error);
+    (await cookies()).delete("token");
+    return { success: false, user: null };
   }
 }
