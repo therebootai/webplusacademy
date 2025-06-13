@@ -8,6 +8,7 @@ import {
 } from "@/types/StudentType";
 import { generateCustomId } from "@/util/generateCustomId";
 import mongoose, { Model, Schema } from "mongoose";
+import bcrypt from "bcryptjs";
 
 const emiSchema = new Schema<EmiType>(
   {
@@ -144,7 +145,6 @@ const studentSchema = new Schema<IStudentType>(
     gender: {
       type: String,
     },
-
     address: {
       type: String,
     },
@@ -169,6 +169,10 @@ const studentSchema = new Schema<IStudentType>(
     class12PassYear: {
       type: String,
     },
+    password: {
+      type: String,
+      required: true,
+    },
 
     courseFees: [courseFeesSchema],
 
@@ -189,9 +193,24 @@ studentSchema.pre<IStudentType>("save", async function (next) {
       console.log(error);
     }
   }
+
+  if (this.isModified("password")) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+    } catch (err) {
+      console.log(err);
+      // No need for `as Error` as TypeScript knows the type of the error.
+    }
+  }
   next();
 });
 
+studentSchema.methods.matchPassword = async function (
+  enteredPassword: string
+): Promise<boolean> {
+  return bcrypt.compare(enteredPassword, this.password);
+};
 const Students: Model<IStudentType> =
   mongoose.models.Students ||
   mongoose.model<IStudentType>("Students", studentSchema);

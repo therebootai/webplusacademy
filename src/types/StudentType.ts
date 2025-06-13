@@ -78,8 +78,10 @@ export interface IStudentType extends Document {
   class12SchoolName?: string;
   class12PassYear?: string;
   scholarship: boolean;
+  password: string;
   courseFees: CourseFeesType[];
   studentData: StudentDataType[];
   createdAt?: string;
   updatedAt?: string;
+  matchPassword(enteredPassword: string): Promise<boolean>;
 }
