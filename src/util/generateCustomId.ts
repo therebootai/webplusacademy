@@ -1,3 +1,4 @@
+"use server";
 import { Model, Document } from "mongoose";
 
 export async function generateCustomId<T extends Document>(
@@ -6,6 +7,9 @@ export async function generateCustomId<T extends Document>(
   prefix: string
 ): Promise<string> {
   try {
+    if (!(Model && typeof Model.find === "function")) {
+      throw new Error("Invalid Mongoose Model");
+    }
     const records = await Model.find({}, { [idField]: 1, _id: 0 }).sort({
       [idField]: 1,
     });

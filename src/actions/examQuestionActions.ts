@@ -1,13 +1,13 @@
 import { connectToDataBase } from "@/db/connection";
 import ExamQuestion from "@/models/ExamQuestion";
 import { examQuestionTypes } from "@/types/ExamQuestionTypes";
-import { generateStudentId } from "@/util/generateStudentId";
+import { generateCustomId } from "@/util/generateCustomId";
 
 export async function createExamQuestions(questionData: examQuestionTypes) {
   try {
     await connectToDataBase();
 
-    const questionId = await generateStudentId(
+    const questionId = await generateCustomId(
       ExamQuestion,
       "questionId",
       "QUESTION-"

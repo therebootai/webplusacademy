@@ -1,3 +1,5 @@
+import { Document } from "mongoose";
+
 export interface ansOptionTypes {
   optionA: string;
   optionB: string;
@@ -5,8 +7,8 @@ export interface ansOptionTypes {
   optionD: string;
 }
 
-export interface examQuestionTypes {
-  _id?: string;
+export interface examQuestionTypes extends Document {
+  _id: string;
   questionId?: string;
   questionName?: string;
   ansOption?: ansOptionTypes;
