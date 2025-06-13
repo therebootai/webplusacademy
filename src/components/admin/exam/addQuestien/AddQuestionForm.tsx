@@ -57,7 +57,7 @@ const AddQuestionForm = ({
 
   async function addQuestion(formData: FormData) {
     const questionName = formData.get("questionName") as string;
-    const answerPoints = formData.getAll("answerPoints");
+    const answerPoints = formData.getAll("answerPoints[]");
     const correctAns = formData.get("correctAns") as string;
     const classValue = formData.get("class") as string;
     const courseName = formData.get("courseName") as string;
@@ -80,8 +80,11 @@ const AddQuestionForm = ({
       qnsType,
     };
 
+    console.log("Question Data to Backend:", questionData);
+
     try {
       const result = await createExamQuestions(questionData);
+      console.log("result", result);
 
       return result;
     } catch (error: any) {
@@ -92,11 +95,21 @@ const AddQuestionForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ": " + pair[1]); // This will show form data key-value pairs
+    }
     const result = await addQuestion(formData);
 
     if (result.success && onSuccess) {
       onSuccess();
       alert("Question created successfully!");
+      setQuestionName("");
+      setAnswerPoints([]);
+      setCorrectAns("");
+      setClassValue("");
+      setCourseName("");
+      setSubject("");
+      setQnsType("Easy");
     } else {
       alert("Failed to create question.");
     }
@@ -114,6 +127,7 @@ const AddQuestionForm = ({
             required
             placeholder="Question"
             value={questionName}
+            name="questionName"
             onChange={(e) => setQuestionName(e.target.value)}
             className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
           />
@@ -142,7 +156,17 @@ const AddQuestionForm = ({
                   key={index}
                   className="flex items-center gap-2 bg-gray-200 p-2 rounded-md"
                 >
-                  <span>{answer}</span>
+                  <input
+                    type="text"
+                    value={answer}
+                    onChange={(e) => {
+                      const updatedAnswers = [...answerPoints];
+                      updatedAnswers[index] = e.target.value;
+                      setAnswerPoints(updatedAnswers);
+                    }}
+                    name="answerPoints[]"
+                    className="h-[3.5rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
+                  />
                   <button
                     type="button"
                     onClick={() => handleRemoveAnswer(index)}
@@ -159,6 +183,7 @@ const AddQuestionForm = ({
         <select
           value={correctAns}
           onChange={(e) => setCorrectAns(e.target.value)}
+          name="correctAns"
           className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
         >
           <option value="">Choose Correct Ans</option>
@@ -173,6 +198,7 @@ const AddQuestionForm = ({
             type="text"
             placeholder="Class"
             value={classValue}
+            name="class"
             onChange={(e) => setClassValue(e.target.value)}
             className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
           />
@@ -180,6 +206,7 @@ const AddQuestionForm = ({
             type="text"
             placeholder="Coursename"
             value={courseName}
+            name="courseName"
             onChange={(e) => setCourseName(e.target.value)}
             className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
           />
@@ -187,11 +214,13 @@ const AddQuestionForm = ({
             type="text"
             placeholder="Subject"
             value={subject}
+            name="subject"
             onChange={(e) => setSubject(e.target.value)}
             className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
           />
           <select
             value={qnsType}
+            name="qnsType"
             onChange={(e) => setQnsType(e.target.value)}
             className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
           >
