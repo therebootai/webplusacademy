@@ -174,6 +174,11 @@ const studentSchema = new Schema<IStudentType>(
       required: true,
     },
 
+    attendance_id: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Attendance",
+    },
+
     courseFees: [courseFeesSchema],
 
     studentData: [studentDataSchema],
@@ -200,7 +205,6 @@ studentSchema.pre<IStudentType>("save", async function (next) {
       this.password = await bcrypt.hash(this.password, salt);
     } catch (err) {
       console.log(err);
-      // No need for `as Error` as TypeScript knows the type of the error.
     }
   }
   next();

@@ -1,3 +1,4 @@
+import { AttendanceDocument } from "@/models/Attendance";
 import { BatchesDocument } from "@/models/Batches";
 import { CourseDocument } from "@/models/Courses";
 import mongoose, { Document } from "mongoose";
@@ -79,6 +80,7 @@ export interface IStudentType extends Document {
   class12PassYear?: string;
   scholarship: boolean;
   password: string;
+  attendance_id: mongoose.Types.ObjectId[] | AttendanceDocument[];
   courseFees: CourseFeesType[];
   studentData: StudentDataType[];
   createdAt?: string;
