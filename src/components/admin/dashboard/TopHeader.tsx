@@ -50,6 +50,12 @@ export default function TopHeader() {
       path: "/admin/fees",
     },
     {
+      icon: <IoPricetagOutline />,
+      label: "Exam",
+      path: "/admin/fees",
+      dropdown: [{ label: "Add Question", path: "/admin/exam/add-question" }],
+    },
+    {
       icon: <SliderIcon />,
       label: "Slider",
       path: "/admin",
