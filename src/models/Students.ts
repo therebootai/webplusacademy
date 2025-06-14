@@ -177,6 +177,7 @@ const studentSchema = new Schema<IStudentType>(
     attendance_id: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Attendance",
+      default: [],
     },
 
     courseFees: [courseFeesSchema],

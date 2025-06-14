@@ -9,6 +9,7 @@ import ToggleInput from "@/ui/ToggleInput";
 import mongoose from "mongoose";
 import { useState } from "react";
 import EditBatch from "./EditBatch";
+import AddManageAttendance from "./AddManageAttendance";
 
 export default function BatchTable({
   tableHeader,
@@ -21,6 +22,8 @@ export default function BatchTable({
   const [selectedBatch, setSelectedBatch] = useState<BatchesDocument | null>(
     null
   );
+  const [modalOpenFor, setModalOpenFor] = useState("");
+
   async function handleDelete(id: string) {
     try {
       const deleted = await deleteaBatch(id);
@@ -77,12 +80,25 @@ export default function BatchTable({
                 }
               />
             </div>
-            <div className="flex-1 flex gap-1">
+            <div className="flex-1 flex gap-1 items-center">
               <button
                 type="button"
-                className="text-shadow-site-black"
+                className="text-site-black"
                 onClick={() => {
                   setSelectedBatch(item);
+                  setModalOpenFor("view");
+                  setShowPopUp(true);
+                }}
+              >
+                Manage Attendence
+              </button>
+              |
+              <button
+                type="button"
+                className="text-site-black"
+                onClick={() => {
+                  setSelectedBatch(item);
+                  setModalOpenFor("edit");
                   setShowPopUp(true);
                 }}
               >
@@ -105,13 +121,16 @@ export default function BatchTable({
         handleClose={() => setShowPopUp(false)}
       >
         <h3 className="px-4 text-2xl text-site-darkgreen font-bold">
-          Update Batch
+          {modalOpenFor === "edit" ? "Update Batch" : "Manage Attendence"}
         </h3>
-        {selectedBatch && (
+        {selectedBatch && modalOpenFor === "edit" && (
           <EditBatch
             updatedBatch={selectedBatch as BatchesDocument}
             handleClose={() => setShowPopUp(false)}
           />
+        )}
+        {selectedBatch && modalOpenFor === "view" && (
+          <AddManageAttendance batch_id={selectedBatch._id as string} />
         )}
       </SidePopUpSlider>
     </>
