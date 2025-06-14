@@ -176,11 +176,23 @@ export async function createExamQuestionsFromCSV(formData: any) {
 
     const questionsToSave = [];
 
+    const latestRecord = await ExamQuestion.findOne({}, { questionId: 1 })
+      .sort({ questionId: -1 })
+      .lean();
+
+    let lastNumber = latestRecord
+      ? parseInt(
+          (latestRecord.questionId as string).replace("QUESTION-", ""),
+          10
+        )
+      : 0;
+
     for (let question of questionsData) {
       const questionId = await generateCustomId(
         ExamQuestion,
         "questionId",
-        "QUESTION-"
+        "QUESTION-",
+        ++lastNumber
       );
       if (!questionId) {
         throw new Error("Failed to generate question ID");

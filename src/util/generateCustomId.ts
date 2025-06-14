@@ -4,16 +4,23 @@ import { Model, Document } from "mongoose";
 export async function generateCustomId<T extends Document>(
   Model: Model<T>,
   idField: string,
-  prefix: string
+  prefix: string,
+  nextNumber?: number
 ): Promise<string> {
   try {
     if (!(Model && typeof Model.find === "function")) {
       throw new Error("Invalid Mongoose Model");
     }
 
-    const records = await Model.find({}, { [idField]: 1, _id: 0 }).sort({
-      [idField]: 1,
-    });
+    if (nextNumber !== undefined) {
+      return `${prefix}${String(nextNumber).padStart(4, "0")}`;
+    }
+
+    const records = await Model.find({}, { [idField]: 1, _id: 0 })
+      .sort({
+        [idField]: 1,
+      })
+      .limit(1);
 
     if (records.length === 0) {
       return `${prefix}0001`;
