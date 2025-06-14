@@ -1,9 +1,13 @@
+"use server";
 import { connectToDataBase } from "@/db/connection";
 import ExamQuestion from "@/models/ExamQuestion";
 import { examQuestionTypes } from "@/types/ExamQuestionTypes";
 import { generateCustomId } from "@/util/generateCustomId";
-
-export async function createExamQuestions(questionData: examQuestionTypes) {
+import fs from "fs";
+import path from "path";
+import { parse } from "fast-csv";
+import { parseCSV } from "@/util/parseCSV";
+export async function createExamQuestions(questionData: any) {
   try {
     await connectToDataBase();
 
@@ -21,61 +25,83 @@ export async function createExamQuestions(questionData: examQuestionTypes) {
     const savedQuestion = await newQuestion.save();
     return {
       success: true,
-      question: savedQuestion,
+      question: JSON.parse(JSON.stringify(savedQuestion)),
     };
   } catch (error: any) {
     return { success: false, error: error.message || "Unknown error" };
   }
 }
 
-export async function getExamQuestions(
-  page: number,
-  filters: {
-    class?: string;
-    courseName?: string;
-    qnsType?: string;
-  }
-) {
+export async function getExamQuestions({
+  page = 1,
+  limit = 10,
+  className,
+  courseName,
+  qnsType,
+}: {
+  page?: number;
+  limit?: number;
+  className?: string;
+  courseName?: string;
+  qnsType?: string;
+} = {}) {
   try {
     await connectToDataBase();
 
-    const filterCriteria: any = {};
+    const filter: any = {};
 
-    if (filters.class) {
-      filterCriteria.class = filters.class;
+    if (className) {
+      filter.className = className;
     }
 
-    if (filters.courseName) {
-      filterCriteria.courseName = filters.courseName;
+    if (courseName) {
+      filter.courseName = courseName;
     }
 
-    if (filters.qnsType) {
-      filterCriteria.qnsType = filters.qnsType;
+    if (qnsType) {
+      filter.qnsType = qnsType;
     }
 
-    const limit = 40;
-    const skip = (page - 1) * limit;
+    const pageNumber = Number(page);
+    const pageSize = Number(limit);
+    const skip = (pageNumber - 1) * pageSize;
 
-    const totalQuestions = await ExamQuestion.countDocuments(filterCriteria);
-    const questions = await ExamQuestion.find(filterCriteria)
+    const totalCount = await ExamQuestion.countDocuments(filter);
+
+    const questions = await ExamQuestion.find(filter)
       .skip(skip)
-      .limit(limit);
+      .limit(pageSize)
+      .lean();
 
     return {
       success: true,
       data: questions,
-      total: totalQuestions,
-      totalPages: Math.ceil(totalQuestions / limit),
-      currentPage: page,
+      pagination: {
+        totalCount,
+        currentPage: pageNumber,
+        limit: pageSize,
+        totalPages: Math.ceil(totalCount / pageSize),
+      },
     };
   } catch (error: any) {
-    return { success: false, error: error.message || "Unknown error" };
+    console.error("Error fetching questions:", error);
+    return {
+      success: false,
+      data: [],
+      pagination: {
+        totalCount: 0,
+        currentPage: 1,
+        limit: 10,
+        totalPages: 0,
+      },
+      error: error.message || "Unknown error",
+    };
   }
 }
 
 export const updateExamQuestion = async (
   questionId: string,
-  updateData: Partial<examQuestionTypes>
+  updateData: any
 ) => {
   try {
     await connectToDataBase();
@@ -84,7 +110,7 @@ export const updateExamQuestion = async (
       { questionId },
       { $set: updateData },
       { new: true }
-    );
+    ).lean();
 
     if (!updatedQuestion) {
       throw new Error("Exam question not found");
@@ -95,6 +121,7 @@ export const updateExamQuestion = async (
       data: updatedQuestion,
     };
   } catch (error: any) {
+    console.error("Error during update:", error);
     return { success: false, error: error.message || "Unknown error" };
   }
 };
@@ -118,4 +145,103 @@ export const deleteExamQuestion = async (questionId: string) => {
   } catch (error: any) {
     return { success: false, error: error.message || "Unknown error" };
   }
+};
+
+export async function createExamQuestionsFromCSV(formData: any) {
+  try {
+    await connectToDataBase();
+
+    const csvFile = formData.get("file");
+    const classValue = formData.get("class");
+    const courseName = formData.get("courseName");
+    const subject = formData.get("subject");
+    const qnsType = formData.get("qnsType");
+
+    if (!csvFile) {
+      throw new Error("CSV file is missing");
+    }
+
+    const tempFilePath = await parseCSV(csvFile);
+
+    const questionsData = await readCSVFile(tempFilePath);
+
+    console.log("File Path: ", tempFilePath);
+    if (!fs.existsSync(tempFilePath)) {
+      console.error("CSV file does not exist.");
+      return { success: false, error: "CSV file does not exist" };
+    }
+
+    const questionsToSave = [];
+
+    for (let question of questionsData) {
+      const questionId = await generateCustomId(
+        ExamQuestion,
+        "questionId",
+        "QUESTION-"
+      );
+      if (!questionId) {
+        throw new Error("Failed to generate question ID");
+      }
+
+      const newQuestionData = {
+        questionId,
+        questionName: question.questionName,
+        ansOption: {
+          optionA: question.ansOptionA,
+          optionB: question.ansOptionB,
+          optionC: question.ansOptionC,
+          optionD: question.ansOptionD,
+        },
+        correctAns: question.correctAns,
+        class: classValue || "Default Class",
+        courseName: courseName || "Default Course",
+        subject: subject || "Default Subject",
+        qnsType: qnsType || "Easy",
+      };
+
+      questionsToSave.push(newQuestionData);
+    }
+
+    const savedQuestions = await ExamQuestion.insertMany(questionsToSave);
+
+    return {
+      success: true,
+      message: `${savedQuestions.length} questions added successfully`,
+      data: savedQuestions,
+    };
+  } catch (error: any) {
+    console.error("Error creating questions from CSV:", error);
+    return { success: false, error: error.message || "Unknown error" };
+  }
+}
+
+const readCSVFile = async (filePath: string) => {
+  const results: any[] = [];
+
+  if (!fs.existsSync(filePath)) {
+    console.error("CSV file does not exist.");
+    return [];
+  }
+
+  const fileStream = fs.createReadStream(filePath);
+
+  await new Promise((resolve, reject) => {
+    fileStream
+      .pipe(parse({ headers: true, skipEmptyLines: true }))
+      .on("data", (row) => {
+        console.log("CSV Row:", row);
+        results.push({
+          questionName: row["questionName"],
+          ansOptionA: row["ansOptionA"],
+          ansOptionB: row["ansOptionB"],
+          ansOptionC: row["ansOptionC"],
+          ansOptionD: row["ansOptionD"],
+          correctAns: row["correctAns"],
+        });
+      })
+      .on("end", resolve)
+      .on("error", reject);
+  });
+
+  return results;
 };

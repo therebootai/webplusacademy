@@ -1,7 +1,10 @@
 "use client";
-import { createExamQuestions } from "@/actions/examQuestionActions";
+import {
+  createExamQuestions,
+  updateExamQuestion,
+} from "@/actions/examQuestionActions";
 import { examQuestionTypes } from "@/types/ExamQuestionTypes";
-import React, { useActionState, useEffect, useState } from "react";
+import React, { useActionState, useEffect, useRef, useState } from "react";
 import { CiCirclePlus, CiCircleRemove } from "react-icons/ci";
 
 const AddQuestionForm = ({
@@ -80,38 +83,85 @@ const AddQuestionForm = ({
       qnsType,
     };
 
-    console.log("Question Data to Backend:", questionData);
-
     try {
-      const result = await createExamQuestions(questionData);
-      console.log("result", result);
+      let result;
+      if (existingQuestion && existingQuestion.questionId) {
+        result = await updateExamQuestion(
+          existingQuestion.questionId,
+          questionData
+        );
+      } else {
+        result = await createExamQuestions(questionData);
+      }
 
-      return result;
+      if (result && result.success === true) {
+        return result;
+      } else {
+        return { success: false, error: "Unknown error" };
+      }
     } catch (error: any) {
       console.error("Error creating question:", error);
       return { success: false, error: error.message || "Unknown error" };
     }
   }
+
+  const isSubmitting = useRef(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ": " + pair[1]); // This will show form data key-value pairs
-    }
-    const result = await addQuestion(formData);
 
-    if (result.success && onSuccess) {
-      onSuccess();
-      alert("Question created successfully!");
-      setQuestionName("");
-      setAnswerPoints([]);
-      setCorrectAns("");
-      setClassValue("");
-      setCourseName("");
-      setSubject("");
-      setQnsType("Easy");
-    } else {
-      alert("Failed to create question.");
+    if (isSubmitting.current) {
+      console.log("Form is already being submitted.");
+      return; // Prevent multiple submissions
+    }
+
+    isSubmitting.current = true;
+
+    const formData = new FormData(e.target as HTMLFormElement);
+    try {
+      // Check if we are creating a new question or updating an existing one
+      if (existingQuestion && existingQuestion.questionId) {
+        // We are updating an existing question
+        const result = await addQuestion(formData);
+        console.log("Form submission result:", result);
+
+        if (result.success === true) {
+          // Reset form after successful update
+          setQuestionName("");
+          setAnswerPoints([]);
+          setCorrectAns("");
+          setClassValue("");
+          setCourseName("");
+          setSubject("");
+          setQnsType("");
+
+          if (onSuccess) onSuccess();
+        } else {
+          console.log("Error during question creation:", result.error);
+          alert("Failed to create question.");
+        }
+      } else {
+        const result = await addQuestion(formData);
+        console.log("Form submission result:", result);
+
+        if (result.success === true) {
+          setQuestionName("");
+          setAnswerPoints([]);
+          setCorrectAns("");
+          setClassValue("");
+          setCourseName("");
+          setSubject("");
+          setQnsType("");
+
+          if (onSuccess) onSuccess();
+        } else {
+          console.log("Error during question creation:", result.error);
+          alert("Failed to create question.");
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
+      isSubmitting.current = false; // Reset the submitting flag
     }
   };
 
