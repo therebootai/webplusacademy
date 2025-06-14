@@ -1,7 +1,10 @@
 "use client";
-import { createExamQuestions } from "@/actions/examQuestionActions";
+import {
+  createExamQuestions,
+  updateExamQuestion,
+} from "@/actions/examQuestionActions";
 import { examQuestionTypes } from "@/types/ExamQuestionTypes";
-import React, { useActionState, useEffect, useState } from "react";
+import React, { useActionState, useEffect, useRef, useState } from "react";
 import { CiCirclePlus, CiCircleRemove } from "react-icons/ci";
 
 const AddQuestionForm = ({
@@ -57,7 +60,7 @@ const AddQuestionForm = ({
 
   async function addQuestion(formData: FormData) {
     const questionName = formData.get("questionName") as string;
-    const answerPoints = formData.getAll("answerPoints");
+    const answerPoints = formData.getAll("answerPoints[]");
     const correctAns = formData.get("correctAns") as string;
     const classValue = formData.get("class") as string;
     const courseName = formData.get("courseName") as string;
@@ -81,24 +84,84 @@ const AddQuestionForm = ({
     };
 
     try {
-      const result = await createExamQuestions(questionData);
+      let result;
+      if (existingQuestion && existingQuestion.questionId) {
+        result = await updateExamQuestion(
+          existingQuestion.questionId,
+          questionData
+        );
+      } else {
+        result = await createExamQuestions(questionData);
+      }
 
-      return result;
+      if (result && result.success === true) {
+        return result;
+      } else {
+        return { success: false, error: "Unknown error" };
+      }
     } catch (error: any) {
       console.error("Error creating question:", error);
       return { success: false, error: error.message || "Unknown error" };
     }
   }
+
+  const isSubmitting = useRef(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const result = await addQuestion(formData);
 
-    if (result.success && onSuccess) {
-      onSuccess();
-      alert("Question created successfully!");
-    } else {
-      alert("Failed to create question.");
+    if (isSubmitting.current) {
+      console.log("Form is already being submitted.");
+      return; // Prevent multiple submissions
+    }
+
+    isSubmitting.current = true;
+
+    const formData = new FormData(e.target as HTMLFormElement);
+    try {
+      // Check if we are creating a new question or updating an existing one
+      if (existingQuestion && existingQuestion.questionId) {
+        // We are updating an existing question
+        const result = await addQuestion(formData);
+        console.log("Form submission result:", result);
+
+        if (result.success === true) {
+          // Reset form after successful update
+          setQuestionName("");
+          setAnswerPoints([]);
+          setCorrectAns("");
+          setClassValue("");
+          setCourseName("");
+          setSubject("");
+          setQnsType("");
+
+          if (onSuccess) onSuccess();
+        } else {
+          console.log("Error during question creation:", result.error);
+          alert("Failed to create question.");
+        }
+      } else {
+        const result = await addQuestion(formData);
+        console.log("Form submission result:", result);
+
+        if (result.success === true) {
+          setQuestionName("");
+          setAnswerPoints([]);
+          setCorrectAns("");
+          setClassValue("");
+          setCourseName("");
+          setSubject("");
+          setQnsType("");
+
+          if (onSuccess) onSuccess();
+        } else {
+          console.log("Error during question creation:", result.error);
+          alert("Failed to create question.");
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
+      isSubmitting.current = false; // Reset the submitting flag
     }
   };
 
@@ -114,6 +177,7 @@ const AddQuestionForm = ({
             required
             placeholder="Question"
             value={questionName}
+            name="questionName"
             onChange={(e) => setQuestionName(e.target.value)}
             className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
           />
@@ -142,7 +206,17 @@ const AddQuestionForm = ({
                   key={index}
                   className="flex items-center gap-2 bg-gray-200 p-2 rounded-md"
                 >
-                  <span>{answer}</span>
+                  <input
+                    type="text"
+                    value={answer}
+                    onChange={(e) => {
+                      const updatedAnswers = [...answerPoints];
+                      updatedAnswers[index] = e.target.value;
+                      setAnswerPoints(updatedAnswers);
+                    }}
+                    name="answerPoints[]"
+                    className="h-[3.5rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
+                  />
                   <button
                     type="button"
                     onClick={() => handleRemoveAnswer(index)}
@@ -159,6 +233,7 @@ const AddQuestionForm = ({
         <select
           value={correctAns}
           onChange={(e) => setCorrectAns(e.target.value)}
+          name="correctAns"
           className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
         >
           <option value="">Choose Correct Ans</option>
@@ -173,6 +248,7 @@ const AddQuestionForm = ({
             type="text"
             placeholder="Class"
             value={classValue}
+            name="class"
             onChange={(e) => setClassValue(e.target.value)}
             className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
           />
@@ -180,6 +256,7 @@ const AddQuestionForm = ({
             type="text"
             placeholder="Coursename"
             value={courseName}
+            name="courseName"
             onChange={(e) => setCourseName(e.target.value)}
             className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
           />
@@ -187,11 +264,13 @@ const AddQuestionForm = ({
             type="text"
             placeholder="Subject"
             value={subject}
+            name="subject"
             onChange={(e) => setSubject(e.target.value)}
             className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
           />
           <select
             value={qnsType}
+            name="qnsType"
             onChange={(e) => setQnsType(e.target.value)}
             className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
           >
