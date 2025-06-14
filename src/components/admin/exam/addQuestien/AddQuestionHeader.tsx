@@ -51,7 +51,10 @@ const AddQuestionHeader = () => {
         showPopUp={showBulkPopUp}
         handleClose={() => setShowBulkPopUp(false)}
       >
-        <BulkUploadQuestion key={bulkPopupKey} />
+        <BulkUploadQuestion
+          key={bulkPopupKey}
+          onClose={() => setShowBulkPopUp(false)}
+        />
       </SidePopUpSlider>
     </div>
   );

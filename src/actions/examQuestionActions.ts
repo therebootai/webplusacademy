@@ -74,6 +74,7 @@ export async function getExamQuestions({
     const questions = await ExamQuestion.find(filter)
       .skip(skip)
       .limit(pageSize)
+      .sort({ createdAt: -1 })
       .lean();
 
     return {
@@ -168,7 +169,6 @@ export async function createExamQuestionsFromCSV(formData: any) {
 
     const questionsData = await readCSVFile(tempFilePath);
 
-    console.log("File Path: ", tempFilePath);
     if (!fs.existsSync(tempFilePath)) {
       console.error("CSV file does not exist.");
       return { success: false, error: "CSV file does not exist" };
@@ -176,11 +176,23 @@ export async function createExamQuestionsFromCSV(formData: any) {
 
     const questionsToSave = [];
 
+    const latestRecord = await ExamQuestion.findOne({}, { questionId: 1 })
+      .sort({ questionId: -1 })
+      .lean();
+
+    let lastNumber = latestRecord
+      ? parseInt(
+          (latestRecord.questionId as string).replace("QUESTION-", ""),
+          10
+        )
+      : 0;
+
     for (let question of questionsData) {
       const questionId = await generateCustomId(
         ExamQuestion,
         "questionId",
-        "QUESTION-"
+        "QUESTION-",
+        ++lastNumber
       );
       if (!questionId) {
         throw new Error("Failed to generate question ID");
@@ -210,7 +222,7 @@ export async function createExamQuestionsFromCSV(formData: any) {
     return {
       success: true,
       message: `${savedQuestions.length} questions added successfully`,
-      data: savedQuestions,
+      data: JSON.parse(JSON.stringify(savedQuestions)),
     };
   } catch (error: any) {
     console.error("Error creating questions from CSV:", error);
@@ -230,9 +242,8 @@ const readCSVFile = async (filePath: string) => {
 
   await new Promise((resolve, reject) => {
     fileStream
-      .pipe(parse({ headers: true, skipEmptyLines: true }))
+      .pipe(parse({ headers: true, skipEmptyLines: true } as any))
       .on("data", (row) => {
-        console.log("CSV Row:", row);
         results.push({
           questionName: row["questionName"],
           ansOptionA: row["ansOptionA"],
