@@ -6,9 +6,11 @@ export interface AttendanceDocument extends Document {
   batch_id: Types.ObjectId;
   student_id: Types.ObjectId;
   attendance_date: Date;
-  attttendance_month: string;
-  attttendance_year: string;
+  attendance_month: string;
+  attendance_year: string;
   batch_subject: string;
+  attendance_status: "present" | "absent" | "leave";
+  leave_reason: string | undefined;
 }
 
 const attendanceSchema = new Schema<AttendanceDocument>(
@@ -31,15 +33,24 @@ const attendanceSchema = new Schema<AttendanceDocument>(
       type: Date,
       required: true,
     },
-    attttendance_month: {
+    attendance_month: {
       type: String,
       required: true,
     },
-    attttendance_year: {
+    attendance_year: {
       type: String,
       required: true,
     },
     batch_subject: {
+      type: String,
+    },
+    attendance_status: {
+      type: String,
+      required: true,
+      enum: ["present", "absent", "leave"],
+      default: "present",
+    },
+    leave_reason: {
       type: String,
     },
   },

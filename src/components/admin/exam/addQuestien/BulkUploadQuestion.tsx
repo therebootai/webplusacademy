@@ -3,10 +3,10 @@ import { createExamQuestionsFromCSV } from "@/actions/examQuestionActions";
 import React, { useState } from "react";
 const BulkUploadQuestion = ({
   onSuccess,
-  onCancel,
+  onClose,
 }: {
   onSuccess?: () => void;
-  onCancel?: () => void;
+  onClose?: () => void;
 }) => {
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [classValue, setClassValue] = useState<string>("");
@@ -20,7 +20,7 @@ const BulkUploadQuestion = ({
     const file = e.target.files ? e.target.files[0] : null;
     if (file && file.type === "text/csv") {
       setCsvFile(file);
-      setError(null); // Clear any previous errors
+      setError(null);
     } else {
       setError("Please upload a valid CSV file.");
     }
@@ -34,7 +34,7 @@ const BulkUploadQuestion = ({
       return;
     }
 
-    if (isLoading) return; // Prevent multiple submissions
+    if (isLoading) return;
     setIsLoading(true);
 
     const formData = new FormData();
@@ -48,7 +48,12 @@ const BulkUploadQuestion = ({
       const result = await createExamQuestionsFromCSV(formData);
 
       if (result.success) {
-        if (onSuccess) onSuccess();
+        if (onSuccess) {
+          onSuccess();
+        }
+        if (onClose) {
+          onClose();
+        }
       } else {
         setError(result.error || "Failed to upload questions.");
       }
@@ -66,7 +71,6 @@ const BulkUploadQuestion = ({
         Bulk Upload Questions
       </h3>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* CSV File Upload */}
         <div>
           <input
             type="file"
@@ -76,7 +80,6 @@ const BulkUploadQuestion = ({
           />
         </div>
 
-        {/* Other form fields */}
         <div className="grid grid-cols-2 gap-4">
           <input
             type="text"
@@ -110,10 +113,8 @@ const BulkUploadQuestion = ({
           </select>
         </div>
 
-        {/* Error Message */}
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-        {/* Submit Button */}
         <button
           type="submit"
           className="h-[3.5rem] flex justify-center items-center bg-site-darkgreen text-white text-lg font-medium px-8 w-fit rounded-md"
