@@ -7,7 +7,7 @@ export default function ToggleAttendance({
   onChangeLeaveReason,
 }: {
   status: string;
-  onChangeStatus: (value: string) => void;
+  onChangeStatus: (value: "present" | "absent" | "leave" | "") => void;
   leaveReason: string;
   onChangeLeaveReason: (value: string) => void;
 }) {

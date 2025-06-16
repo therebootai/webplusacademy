@@ -130,7 +130,13 @@ export default function BatchTable({
           />
         )}
         {selectedBatch && modalOpenFor === "view" && (
-          <AddManageAttendance batch_id={selectedBatch._id as string} />
+          <AddManageAttendance
+            batch_id={selectedBatch._id as string}
+            onCancel={() => {
+              setModalOpenFor("");
+              setShowPopUp(false);
+            }}
+          />
         )}
       </SidePopUpSlider>
     </>
