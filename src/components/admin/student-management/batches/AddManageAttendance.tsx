@@ -1,8 +1,10 @@
 "use client";
 
 import { getStudents } from "@/actions/studentAction";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
+import ToggleAttendance from "./ToggleAttendancePopup";
+import useClickOutside from "@/hooks/useClickOutside";
 
 function getDaysCountInMonth(dateString: string) {
   try {
@@ -34,40 +36,64 @@ export default function AddManageAttendance({
 }: {
   batch_id: string;
 }) {
-  const [month, setMonth] = useState<Date | null>(new Date());
+  const [monthYear, setMonthYear] = useState<Date | null>(new Date());
   const [batchStudenrts, setBatchStudents] = useState([]);
+  const [day, setDay] = useState<string | number>("");
+  const [attendanceData, setAttendanceData] = useState<any>([]);
+
+  const attendanceToggleRef = useClickOutside<HTMLDivElement>(() => setDay(""));
 
   async function getBatchStudents() {
     try {
       const students = await getStudents({ currentBatch: batch_id });
       setBatchStudents(students.data);
+      setAttendanceData(
+        students.data.map((student: any) => ({
+          batch_id: batch_id,
+          student_id: student._id,
+          attendance_date: new Date((monthYear as Date) ?? "")
+            .getDay()
+            .toString(),
+          attendance_month: new Date((monthYear as Date) ?? "").toLocaleString(
+            "default",
+            { month: "long" }
+          ),
+          attendance_year: new Date((monthYear as Date) ?? "")
+            .getFullYear()
+            .toString(),
+          batch_subject: "",
+          attendance_status: "",
+          leave_reason: "",
+        }))
+      );
     } catch (error) {
       console.log(error);
     }
   }
 
-  useMemo(() => {
+  useEffect(() => {
     getBatchStudents();
   }, [batch_id]);
 
   const daysCount = useMemo(() => {
-    if (month) {
-      return getDaysCountInMonth(month.toISOString());
+    if (monthYear) {
+      return getDaysCountInMonth(monthYear.toISOString());
     }
     return 0;
-  }, [month]);
+  }, [monthYear]);
 
   return (
-    <section className="flex flex-col gap-5 p-4 bg-white">
+    <section className="flex flex-col gap-5 p-4 bg-white mx-4 my-2 rounded-lg">
       <div className="flex items-center gap-4">
         <div className="flex-1 bg-site-litegreen/5 rounded-md flex gap-2 items-center px-2 relative">
           <DatePicker
-            selected={month}
+            selected={monthYear}
             name="attendance_month"
-            onChange={(date) => setMonth(date)}
+            onChange={(date) => setMonthYear(date)}
             placeholderText="Choose attendence month and year"
             dateFormat="MM/yyyy"
-            showMonthDropdown
+            showMonthYearPicker
+            showFullMonthYearPicker
             className="h-[3rem] !w-full outline-none placeholder:text-site-gray !flex-1 capitalize placeholder:capitalize"
           />
         </div>
@@ -76,20 +102,67 @@ export default function AddManageAttendance({
         <h1 className="text-site-darkgreen text-lg font-bold">
           List of Students
         </h1>
-        {batchStudenrts.length < 0 ? (
+        {attendanceData.length < 0 ? (
           <h1>No student found in this batch</h1>
         ) : (
-          batchStudenrts.map((student: any, index: number) => (
-            <div key={student._id as string} className="flex flex-col gap-2">
+          attendanceData.map((attendance: any, index: number) => (
+            <div key={index} className="flex flex-col gap-2">
               <h3 className="font-medium text-lg text-site-darkgreen">
-                {index + 1}. {student.studentName} | {student.student_id}
+                {index + 1}.{" "}
+                {batchStudenrts.find(
+                  (student: any) => student._id === attendance.student_id
+                )?.studentName ?? ""}{" "}
+                |{" "}
+                {batchStudenrts.find(
+                  (student: any) => student._id === attendance.student_id
+                )?.student_id ?? ""}
               </h3>
               <div className="flex items-center gap-1">
                 {Array.from({ length: daysCount }).map((_, dayIndex) => (
-                  <span
-                    key={dayIndex}
-                    className="size-7 bg-[#F0F0F0] rounded-xl"
-                  ></span>
+                  <div key={dayIndex} className="relative flex">
+                    <button
+                      className={`size-7 rounded-xl relative ${
+                        attendance.attendance_status === "present" &&
+                        attendance.attendance_date === dayIndex + 1 &&
+                        "bg-[#00D59D]"
+                      } ${
+                        attendance.attendance_status === "absent" &&
+                        attendance.attendance_date === dayIndex + 1 &&
+                        "bg-[#E10000]"
+                      } ${
+                        attendance.attendance_status === "" &&
+                        attendance.attendance_date === dayIndex + 1 &&
+                        "bg-[#F0F0F0]"
+                      }`}
+                      onClick={() => {
+                        setDay(dayIndex + 1);
+                      }}
+                    />
+                    {Number(day) === dayIndex + 1 &&
+                      attendanceData.student_id === student.student_id && (
+                        <div
+                          className="absolute top-[calc(100%_+_0.75rem)] left-1/2 -translate-x-1/2 z-[100]"
+                          ref={attendanceToggleRef}
+                        >
+                          <ToggleAttendance
+                            status={attendanceData.attendance_status}
+                            onChangeStatus={(value: string) => {
+                              setAttendanceData({
+                                ...attendanceData,
+                                attendance_status: value,
+                              });
+                            }}
+                            leaveReason={attendanceData.leave_reason}
+                            onChangeLeaveReason={(value: string) => {
+                              setAttendanceData({
+                                ...attendanceData,
+                                leave_reason: value,
+                              });
+                            }}
+                          />
+                        </div>
+                      )}
+                  </div>
                 ))}
               </div>
             </div>

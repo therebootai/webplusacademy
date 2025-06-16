@@ -3,14 +3,14 @@ import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
 export interface AttendanceDocument extends Document {
   attendance_id: string;
-  batch_id: Types.ObjectId;
-  student_id: Types.ObjectId;
-  attendance_date: Date;
+  batch_id: Types.ObjectId | string;
+  student_id: Types.ObjectId | string;
+  attendance_date: number;
   attendance_month: string;
   attendance_year: string;
-  batch_subject: string;
+  batch_subject?: string;
   attendance_status: "present" | "absent" | "leave";
-  leave_reason: string | undefined;
+  leave_reason?: string;
 }
 
 const attendanceSchema = new Schema<AttendanceDocument>(
@@ -30,7 +30,7 @@ const attendanceSchema = new Schema<AttendanceDocument>(
       required: true,
     },
     attendance_date: {
-      type: Date,
+      type: Number,
       required: true,
     },
     attendance_month: {
