@@ -5,7 +5,10 @@ import { useEffect, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
 import ToggleAttendance from "./ToggleAttendancePopup";
 import useClickOutside from "@/hooks/useClickOutside";
-import { performDailyAttendanceBulkWrite } from "@/actions/attendanceActions";
+import {
+  getAllAttendance,
+  performDailyAttendanceBulkWrite,
+} from "@/actions/attendanceActions";
 
 function getDaysCountInMonth(dateString: string) {
   try {
@@ -54,10 +57,19 @@ export default function AddManageAttendance({
   async function getBatchStudents() {
     try {
       const students = await getStudents({ currentBatch: batch_id });
+      const attendanceData = await getAllAttendance({ batch_id });
+
+      const allAttendances = attendanceData.data;
+
       const initialAttendanceState = students.data.map((student: any) => {
         const dailyAttendance = Array.from({ length: daysCount }).map(
           (_, dayIndex) => {
             const date = new Date((monthYear as Date) ?? "");
+            const attendance = allAttendances.find(
+              (item: any) =>
+                item.student_id === student._id &&
+                item.attendance_date === dayIndex + 1
+            );
             return {
               batch_id: batch_id,
               student_id: student._id,
@@ -67,7 +79,7 @@ export default function AddManageAttendance({
               }),
               attendance_year: date.getFullYear().toString(),
               batch_subject: "", // You might want to set this based on context
-              attendance_status: "", // Initial empty status
+              attendance_status: attendance?.attendance_status ?? "", // Initial empty status
               leave_reason: "",
             };
           }
@@ -80,6 +92,7 @@ export default function AddManageAttendance({
           dailyAttendance: dailyAttendance,
         };
       });
+
       setAttendanceData(initialAttendanceState);
     } catch (error) {
       console.log(error);
@@ -176,7 +189,6 @@ export default function AddManageAttendance({
       });
       await performDailyAttendanceBulkWrite(submitData);
       onCancel();
-      console.log(submitData);
     } catch (error) {
       console.log(error);
       alert("Something occured");
