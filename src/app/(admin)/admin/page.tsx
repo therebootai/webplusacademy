@@ -1,9 +1,8 @@
-import { deleteComponent, getAllSliders } from "@/actions/sliderActions";
+import { getAllSliders } from "@/actions/sliderActions";
 import AddNewSlider from "@/components/admin/dashboard/sliders/AddNewSlider";
 import SliderList from "@/components/admin/dashboard/sliders/SliderList";
 import { Component } from "@/models/Sliders";
 import AdminTemplate from "@/templates/AdminTemplate";
-import AdminCard from "@/ui/AdminCard";
 import PaginationBox from "@/ui/PaginationBox";
 
 type SliderResponse = {

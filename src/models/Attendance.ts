@@ -9,7 +9,7 @@ export interface AttendanceDocument extends Document {
   attendance_month: string;
   attendance_year: string;
   batch_subject?: string;
-  attendance_status: "present" | "absent" | "leave";
+  attendance_status: "present" | "absent" | "leave" | "holiday";
   leave_reason?: string;
 }
 
@@ -47,7 +47,7 @@ const attendanceSchema = new Schema<AttendanceDocument>(
     attendance_status: {
       type: String,
       required: true,
-      enum: ["present", "absent", "leave"],
+      enum: ["present", "absent", "leave", "holiday"],
       default: "present",
     },
     leave_reason: {

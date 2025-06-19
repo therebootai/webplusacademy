@@ -75,12 +75,6 @@ export default function ToggleAttendance({
             className="px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded"
           />
         )}
-        <button
-          type="submit"
-          className="px-3 py-2 bg-site-darkgreen text-white text-center text-xs rounded"
-        >
-          Submit
-        </button>
       </form>
     </div>
   );

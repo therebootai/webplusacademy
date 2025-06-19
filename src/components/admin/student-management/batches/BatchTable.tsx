@@ -10,6 +10,7 @@ import mongoose from "mongoose";
 import { useState } from "react";
 import EditBatch from "./EditBatch";
 import AddManageAttendance from "./AddManageAttendance";
+import { addDays, subDays } from "date-fns";
 
 export default function BatchTable({
   tableHeader,
@@ -132,6 +133,8 @@ export default function BatchTable({
         {selectedBatch && modalOpenFor === "view" && (
           <AddManageAttendance
             batch_id={selectedBatch._id as string}
+            minDate={subDays(new Date(selectedBatch.start_date ?? ""), 0)}
+            maxDate={addDays(new Date(selectedBatch.end_date ?? ""), 0)}
             onCancel={() => {
               setModalOpenFor("");
               setShowPopUp(false);

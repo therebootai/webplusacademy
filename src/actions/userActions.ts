@@ -2,7 +2,7 @@
 
 import { connectToDataBase } from "@/db/connection";
 import User from "@/models/User";
-import { generateToken, verifyToken } from "@/util/jsonToken";
+import { generateToken } from "@/util/jsonToken";
 import { cookies } from "next/headers";
 
 export async function getUser(userId: string | undefined) {
@@ -62,27 +62,3 @@ export async function logoutUser() {
   }
 }
 
-export async function checkTokenAuth() {
-  try {
-    const cookieStore = await cookies(); // Get cookies from request
-    const token = cookieStore.get("token")?.value;
-    if (!token) {
-      return { success: false, user: null };
-    }
-
-    const userId = verifyToken(token);
-
-    if (userId && typeof userId === 'object') {
-
-      return { success: true, user: JSON.parse(JSON.stringify(userId)) };
-    } else {
-      (await cookies()).delete("token");
-      return { success: false, user: null };
-    }
-
-  } catch (error) {
-    console.log(error);
-    (await cookies()).delete("token");
-    return { success: false, user: null };
-  }
-}

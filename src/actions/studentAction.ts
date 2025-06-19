@@ -13,7 +13,7 @@ import fs from "fs/promises";
 import { parseImage } from "@/util/parseImage";
 import { IStudentType } from "@/types/StudentType";
 import { generateStudentId } from "@/util/generateStudentId";
-import { generateToken, verifyToken } from "@/util/jsonToken";
+import { generateToken } from "@/util/jsonToken";
 import { cookies } from "next/headers";
 
 export async function createStudent(data: any) {
@@ -172,6 +172,7 @@ export async function getStudents({
       .sort({ createdAt: -1 })
       .populate("studentData.currentBatch")
       .populate("studentData.currentCourse")
+      .populate("studentData.attendance_id")
       .populate("courseFees.currentBatch")
       .populate("courseFees.currentCourse")
       .lean<IStudentType[]>();
@@ -436,7 +437,12 @@ export async function loginStudent(phone: string, password: string) {
       return { success: false, data: null, message: "All fields are required" };
     }
 
-    const user = await Students.findOne({ phone: phone });
+    const user = await Students.findOne({ mobileNumber: phone })
+      .populate("studentData.currentBatch")
+      .populate("studentData.currentCourse")
+      .populate("studentData.attendance_id")
+      .populate("courseFees.currentBatch")
+      .populate("courseFees.currentCourse");
 
     if (!user || !(await user.matchPassword(password))) {
       return { success: false, data: null, message: "Credentials mismatch" };
@@ -464,28 +470,5 @@ export async function logoutStudent() {
   } catch (error) {
     console.log(error);
     return { success: false };
-  }
-}
-
-export async function checkTokenAuth() {
-  try {
-    const cookieStore = await cookies(); // Get cookies from request
-    const token = cookieStore.get("token")?.value;
-    if (!token) {
-      return { success: false, user: null };
-    }
-
-    const userId = verifyToken(token);
-
-    if (userId && typeof userId === "object") {
-      return { success: true, user: JSON.parse(JSON.stringify(userId)) };
-    } else {
-      (await cookies()).delete("token");
-      return { success: false, user: null };
-    }
-  } catch (error) {
-    console.log(error);
-    (await cookies()).delete("token");
-    return { success: false, user: null };
   }
 }

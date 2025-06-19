@@ -7,7 +7,7 @@ import {
   StudentDataType,
 } from "@/types/StudentType";
 import { generateCustomId } from "@/util/generateCustomId";
-import mongoose, { Model, Schema } from "mongoose";
+import mongoose, { Model, QueryWithHelpers, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
 const emiSchema = new Schema<EmiType>(
@@ -109,6 +109,11 @@ const studentDataSchema = new Schema<StudentDataType>({
   bookFees: {
     type: String,
   },
+  attendance_id: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Attendance",
+    default: [],
+  },
 
   hostelFees: hostelFeesSchema,
 });
@@ -174,12 +179,6 @@ const studentSchema = new Schema<IStudentType>(
       required: true,
     },
 
-    attendance_id: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Attendance",
-      default: [],
-    },
-
     courseFees: [courseFeesSchema],
 
     studentData: [studentDataSchema],
@@ -211,11 +210,48 @@ studentSchema.pre<IStudentType>("save", async function (next) {
   next();
 });
 
+studentSchema.pre<QueryWithHelpers<IStudentType, IStudentType>>(
+  "findOneAndUpdate",
+  async function (next) {
+    // Access the update operations being applied
+    const update = this.getUpdate();
+
+    // Ensure 'update' is an object and contains 'password'
+    // 'update' can be null or undefined if no updates are specified,
+    // or it could be a raw BSON update object.
+    if (update && typeof update === "object" && "password" in update) {
+      try {
+        const salt = await bcrypt.genSalt(10);
+        // Hash the new password from the update object
+        // Cast `update` to ensure TypeScript knows it has a password property.
+        // It's safer to check the type more thoroughly, or use type assertions carefully.
+        const passwordToHash = (update as { password?: string }).password;
+
+        if (passwordToHash) {
+          // Only hash if passwordToHash is not undefined
+          (update as { password: string }).password = await bcrypt.hash(
+            passwordToHash,
+            salt
+          );
+          // Set the modified update back to the query
+          this.setUpdate(update);
+        }
+      } catch (err: any) {
+        console.error("Error hashing password during findOneAndUpdate:", err);
+        // Pass the error to the next middleware or save operation
+        return next(err);
+      }
+    }
+    next();
+  }
+);
+
 studentSchema.methods.matchPassword = async function (
   enteredPassword: string
 ): Promise<boolean> {
   return bcrypt.compare(enteredPassword, this.password);
 };
+
 const Students: Model<IStudentType> =
   mongoose.models.Students ||
   mongoose.model<IStudentType>("Students", studentSchema);

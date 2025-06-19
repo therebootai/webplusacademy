@@ -1,5 +1,5 @@
 "use client";
-import { checkTokenAuth } from "@/actions/userActions";
+import { checkTokenAuth } from "@/actions/authAction";
 import { UserDocument } from "@/models/User";
 import { createContext, Dispatch, useEffect, useReducer } from "react";
 

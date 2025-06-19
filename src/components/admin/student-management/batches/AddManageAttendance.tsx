@@ -9,41 +9,22 @@ import {
   getAllAttendance,
   performDailyAttendanceBulkWrite,
 } from "@/actions/attendanceActions";
-
-function getDaysCountInMonth(dateString: string) {
-  try {
-    const date = new Date(dateString);
-
-    // Check if the date is valid.
-    if (isNaN(date.getTime())) {
-      throw new Error("Invalid date string provided.");
-    }
-
-    const year = date.getFullYear();
-    const month = date.getMonth(); // 0-indexed month (0 for January, 11 for December)
-
-    // A clever trick: Create a Date object for the 1st day of the *next* month,
-    // then subtract one day (one millisecond) from it. The .getDate() of
-    // this resulting date will be the number of days in the *original* month.
-    const nextMonthFirstDay = new Date(year, month + 1, 1);
-    const lastDayOfMonth = new Date(nextMonthFirstDay.getTime() - 1);
-
-    return lastDayOfMonth.getDate();
-  } catch (error: any) {
-    console.error(`Error getting days count in month: ${error.message}`);
-    return 0; // Return null on error
-  }
-}
+import { getDaysCountInMonth } from "@/util/ListOfDays";
 
 export default function AddManageAttendance({
   batch_id,
   onCancel,
+  minDate,
+  maxDate,
 }: {
   batch_id: string;
   onCancel: () => void;
+  minDate?: Date;
+  maxDate?: Date;
 }) {
   const [monthYear, setMonthYear] = useState<Date | null>(new Date());
   const [attendanceData, setAttendanceData] = useState<any>([]);
+  const [allStudents, setAllStudents] = useState([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null); // To track which day's toggle is open
   const [selectedStudentIndex, setSelectedStudentIndex] = useState<
     number | null
@@ -57,6 +38,9 @@ export default function AddManageAttendance({
   async function getBatchStudents() {
     try {
       const students = await getStudents({ currentBatch: batch_id });
+
+      setAllStudents(students.data);
+
       const attendanceData = await getAllAttendance({ batch_id });
 
       const allAttendances = attendanceData.data;
@@ -99,9 +83,62 @@ export default function AddManageAttendance({
     }
   }
 
+  async function getAttendanceOfBatches() {
+    try {
+      const attendanceData = await getAllAttendance({ batch_id });
+
+      const allAttendances = attendanceData.data;
+
+      const currentAttendanceState = allStudents.map((student: any) => {
+        const dailyAttendance = Array.from({ length: daysCount }).map(
+          (_, dayIndex) => {
+            const date = new Date((monthYear as Date) ?? "");
+            const attendance = allAttendances.find(
+              (item: any) =>
+                item.student_id === student._id &&
+                item.attendance_date === dayIndex + 1 &&
+                item.attendance_month ===
+                  date.toLocaleString("default", {
+                    month: "long",
+                  }) &&
+                item.attendance_year === date.getFullYear().toString()
+            );
+            return {
+              batch_id: batch_id,
+              student_id: student._id,
+              attendance_date: dayIndex + 1, // Day of the month (1-based)
+              attendance_month: date.toLocaleString("default", {
+                month: "long",
+              }),
+              attendance_year: date.getFullYear().toString(),
+              batch_subject: "", // You might want to set this based on context
+              attendance_status: attendance?.attendance_status ?? "", // Initial empty status
+              leave_reason: "",
+            };
+          }
+        );
+
+        return {
+          student_id: student._id,
+          studentName: student.studentName,
+          studentPersonalId: student.student_id, // Store this for display
+          dailyAttendance: dailyAttendance,
+        };
+      });
+
+      setAttendanceData(currentAttendanceState);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     getBatchStudents();
   }, [batch_id]);
+
+  useEffect(() => {
+    getAttendanceOfBatches();
+  }, [monthYear]);
 
   const handleAttendanceChange = (
     studentIndex: number,
@@ -204,6 +241,8 @@ export default function AddManageAttendance({
             name="attendance_month"
             onChange={(date) => setMonthYear(date)}
             placeholderText="Choose attendence month and year"
+            minDate={minDate}
+            maxDate={maxDate}
             dateFormat="MM/yyyy"
             showMonthYearPicker
             showFullMonthYearPicker

@@ -15,10 +15,11 @@ import { BsBuildings } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { FaRegUser } from "react-icons/fa";
 import { GrDocumentUser } from "react-icons/gr";
+import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { LiaObjectGroupSolid } from "react-icons/lia";
 import { LuBookA, LuCalendarDays } from "react-icons/lu";
-import { MdOutlinePhone } from "react-icons/md";
+import { MdLockOutline, MdOutlinePhone } from "react-icons/md";
 import { PiMapPinArea, PiMapPinPlusBold } from "react-icons/pi";
 import { RiMoneyRupeeCircleLine } from "react-icons/ri";
 import { TbUserHeart } from "react-icons/tb";
@@ -46,8 +47,23 @@ export default function AddNewStudent({
   const [currentCourseFees, setCurrentCourseFees] = useState<string>("");
   const [hostelMonthlyAmount, setHostelMonthlyAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
 
-  async function addStudent(prevState: unknown, formData: FormData) {
+  const generatePassword = (name: string, mobileNumber: string) => {
+    if (name && mobileNumber) {
+      const namePart = name.split(" ")[0].substring(0, 4);
+      const mobilePart = mobileNumber.substring(0, 4);
+      const newPassword = `${
+        namePart.charAt(0).toUpperCase() + namePart.slice(1)
+      }@${mobilePart}`;
+      return newPassword;
+    } else {
+      alert("Please ensure name and mobile number are set.");
+    }
+  };
+
+  async function addStudent(prevState: {}, formData: FormData) {
     const studentName = formData.get("student_name") as string;
     const mobileNumber = formData.get("student_mobile") as string;
     const dateOfBirth = formData.get("date_of_birth") as string;
@@ -111,7 +127,7 @@ export default function AddNewStudent({
       class10PassYear: class10PassYear || undefined,
       class12SchoolName: class12SchoolName || undefined,
       class12PassYear: class12PassYear || undefined,
-
+      password,
       courseFees: emis.length
         ? [
             {
@@ -151,6 +167,7 @@ export default function AddNewStudent({
         setCouseFees([]);
         setCourseName("");
         setHostelMonthlyAmount("");
+        setPassword("");
         onSuccess();
       }
     } catch (error: any) {
@@ -163,6 +180,7 @@ export default function AddNewStudent({
       return false;
     } finally {
       setIsLoading(false);
+      return { ...prevState };
     }
   }
 
@@ -265,7 +283,7 @@ export default function AddNewStudent({
     }
   }, [courseId]);
 
-  const [, formActtion] = useActionState(addStudent, null);
+  const [, formActtion] = useActionState(addStudent, {});
 
   return (
     <div className="flex flex-col px-6 gap-5">
@@ -502,6 +520,27 @@ export default function AddNewStudent({
             <option value="BL">BL</option>
             <option value="PL">PL</option>
           </select>
+        </div>
+        <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
+          <MdLockOutline className="text-site-gray size-5" />
+          <div className="flex flex-1">
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={`Password`}
+              name="password"
+              className=" h-[3rem] outline-none placeholder:text-site-gray flex-1 placeholder:capitalize"
+            />
+            <button
+              type="button"
+              className="text-site-gray"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <IoIosEyeOff /> : <IoIosEye />}
+            </button>
+          </div>
         </div>
         <div className="flex-1 flex-wrap border border-[#cccccc] rounded-md flex gap-2 items-center px-2 col-span-2">
           {courseFees.length > 0 && (

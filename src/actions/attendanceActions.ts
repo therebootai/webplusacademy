@@ -88,22 +88,33 @@ export async function performDailyAttendanceBulkWrite(
             },
           });
         } else {
+          const latestRecord = await Attendance.findOne(
+            {},
+            { attendance_id: 1 }
+          )
+            .sort({ attendance_id: -1 })
+            .lean();
+
+          let lastNumber = latestRecord
+            ? parseInt(
+                (latestRecord.attendance_id as string).replace(
+                  "Attendance_ID-",
+                  ""
+                ),
+                10
+              )
+            : 0;
           const newAttendanceId = await generateCustomId(
             Attendance,
             "attendance_id",
-            "Attendance_ID-"
+            "Attendance_ID-",
+            ++lastNumber
           );
 
           bulkOperations.push({
             insertOne: {
               document: {
-                attendance_id:
-                  newAttendanceId +
-                  dailyRecord.attendance_date +
-                  "-" +
-                  dailyRecord.attendance_month +
-                  "-" +
-                  dailyRecord.attendance_year,
+                attendance_id: newAttendanceId,
                 batch_id: batchObjectId,
                 student_id: studentObjectId,
                 attendance_date: dailyRecord.attendance_date,
@@ -165,7 +176,7 @@ export async function performDailyAttendanceBulkWrite(
 
         return Students.findByIdAndUpdate(
           studentId,
-          { $set: { attendance_id: idsToSet } },
+          { $set: { "studentData.$[].attendance_id": idsToSet } },
           { new: true, upsert: false }
         );
       })()
