@@ -1,3 +1,4 @@
+import { AttendanceDocument } from "@/models/Attendance";
 import { BatchesDocument } from "@/models/Batches";
 import { CourseDocument } from "@/models/Courses";
 import mongoose, { Document } from "mongoose";
@@ -56,6 +57,7 @@ export interface StudentDataType {
   bookFees?: string;
   scholarship?: boolean;
   hostelFees?: HostelFeesType;
+  attendance_id: mongoose.Types.ObjectId[] | AttendanceDocument[];
 }
 
 export interface IStudentType extends Document {
@@ -78,8 +80,11 @@ export interface IStudentType extends Document {
   class12SchoolName?: string;
   class12PassYear?: string;
   scholarship: boolean;
+  password: string;
+
   courseFees: CourseFeesType[];
   studentData: StudentDataType[];
   createdAt?: string;
   updatedAt?: string;
+  matchPassword(enteredPassword: string): Promise<boolean>;
 }

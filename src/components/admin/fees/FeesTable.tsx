@@ -12,6 +12,7 @@ import EditCourseFees from "./EditCourseFees";
 import { IoIosEye } from "react-icons/io";
 import ViewCourseFees from "./ViewCourseFees";
 import ViewHostelFees from "./ViewHostelFees";
+import useClickOutside from "@/hooks/useClickOutside";
 
 export default function FeesTable({
   studentsData,
@@ -23,7 +24,6 @@ export default function FeesTable({
   year?: string;
 }) {
   const [editingStudentId, setEditingStudentId] = useState<string | null>(null);
-  const popupRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const [editingEmi, setEditingEmi] = useState<{
     studentId: string;
@@ -40,29 +40,12 @@ export default function FeesTable({
     hostelData: any;
   } | null>(null);
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(event.target as Node)
-      ) {
-        setEditingStudentId(null);
-        setEditingEmi(null);
-        setViewingEmi(null);
-        setViewingHostel(null);
-      }
-    }
-
-    if (editingStudentId || editingEmi || viewingEmi || viewingHostel) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [editingStudentId, editingEmi, viewingEmi, viewingHostel]);
+  const popupRef = useClickOutside<HTMLDivElement>(() => {
+    setEditingStudentId(null);
+    setEditingEmi(null);
+    setViewingEmi(null);
+    setViewingHostel(null);
+  });
 
   const tableHeader = [
     "student name",
@@ -177,7 +160,7 @@ export default function FeesTable({
                     <button
                       type="button"
                       onClick={() =>
-                        setViewingHostel({ hostelData: paidMonth || {} })
+                        setViewingHostel({ hostelData: paidMonth || null })
                       }
                       className="text-xs text-blue-600 size-4 flex justify-center items-center bg-white border border-[#eeeeee] rounded-full"
                     >

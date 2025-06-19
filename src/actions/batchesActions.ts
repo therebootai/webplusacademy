@@ -2,6 +2,7 @@
 import "@/models/Students";
 import "@/models/Batches";
 import "@/models/Courses";
+import "@/models/Attendance";
 
 import { connectToDataBase } from "@/db/connection";
 import Batches, { BatchesDocument } from "@/models/Batches";

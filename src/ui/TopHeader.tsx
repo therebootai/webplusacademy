@@ -27,13 +27,9 @@ export default function TopHeader({
 
   useEffect(() => {
     const fetchNotices = async () => {
-      const response: NoticeResponse = await getAllNotices(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        true
-      );
+      const response: NoticeResponse = await getAllNotices({
+        status: true,
+      });
       if (response.success) {
         setNotices(response.data);
       }
@@ -44,7 +40,7 @@ export default function TopHeader({
   return (
     <div ref={ref}>
       <div className="h-1 w-full bg-site-litegreen" />
-      <header className="flex bg-site-yellow">
+      <header className="flex bg-site-yellow relative">
         <div className="[clip-path:_polygon(0%_0%,_100%_0%,_95%_100%,_0%_100%)] bg-green-dark-to-light py-6 pl-16 pr-9 hidden md:flex gap-4 z-10">
           <div className="flex md:gap-2 sm:gap-1 items-center text-[10px] lg:text-sm xl:text-base text-white">
             <BiSolidPhoneCall size={20} className="text-site-yellow" />
@@ -88,6 +84,12 @@ export default function TopHeader({
             )}
           </div>
         </div>
+        <Link
+          href="/guardian-login"
+          className="absolute right-0 top-1/2 -translate-y-1/2 xl:text-2xl md:text-xl inline-flex bg-site-yellow text-site-darkgreen px-4"
+        >
+          Student Login
+        </Link>
       </header>
     </div>
   );

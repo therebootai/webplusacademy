@@ -7,6 +7,8 @@ import fs from "fs";
 import path from "path";
 import { parse } from "fast-csv";
 import { parseCSV } from "@/util/parseCSV";
+import { revalidatePath } from "next/cache";
+
 export async function createExamQuestions(questionData: any) {
   try {
     await connectToDataBase();
@@ -23,6 +25,7 @@ export async function createExamQuestions(questionData: any) {
 
     const newQuestion = new ExamQuestion(questionData);
     const savedQuestion = await newQuestion.save();
+    revalidatePath("/admin/exam/add-questions");
     return {
       success: true,
       question: JSON.parse(JSON.stringify(savedQuestion)),
@@ -76,7 +79,7 @@ export async function getExamQuestions({
 
     return {
       success: true,
-      data: questions,
+      data: JSON.parse(JSON.stringify(questions)),
       pagination: {
         totalCount,
         currentPage: pageNumber,
@@ -116,10 +119,10 @@ export const updateExamQuestion = async (
     if (!updatedQuestion) {
       throw new Error("Exam question not found");
     }
-
+    revalidatePath("/admin/exam/add-questions");
     return {
       success: true,
-      data: updatedQuestion,
+      data: JSON.parse(JSON.stringify(updatedQuestion)),
     };
   } catch (error: any) {
     console.error("Error during update:", error);
@@ -138,7 +141,7 @@ export const deleteExamQuestion = async (questionId: string) => {
     if (!deletedQuestion) {
       throw new Error("Exam question not found");
     }
-
+    revalidatePath("/admin/exam/add-questions");
     return {
       success: true,
       message: "Exam question deleted successfully",
@@ -215,7 +218,7 @@ export async function createExamQuestionsFromCSV(formData: any) {
     }
 
     const savedQuestions = await ExamQuestion.insertMany(questionsToSave);
-
+    revalidatePath("/admin/exam/add-questions");
     return {
       success: true,
       message: `${savedQuestions.length} questions added successfully`,

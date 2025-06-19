@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getStudents } from "@/actions/studentAction";
 import StudentHeader from "@/components/admin/student-management/students/StudentHeader";
 import StudentTable from "@/components/admin/student-management/students/StudentTable";
