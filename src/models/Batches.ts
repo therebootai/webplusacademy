@@ -1,6 +1,7 @@
 import { generateCustomId } from "@/util/generateCustomId";
 import mongoose, { Schema, Document, Model, Types } from "mongoose";
 import { CourseDocument } from "./Courses";
+import { AttendanceDocument } from "./Attendance";
 
 export interface BatchesDocument extends Document {
   batch_id: string;
@@ -8,6 +9,7 @@ export interface BatchesDocument extends Document {
   status: boolean;
   year: string;
   course: string | Types.ObjectId | CourseDocument;
+  attendance_list: string[] | Types.ObjectId[] | AttendanceDocument[];
   start_date?: Date;
   end_date?: Date;
 }
@@ -41,6 +43,11 @@ const batchSchema = new Schema<BatchesDocument>(
     },
     end_date: {
       type: Date,
+    },
+    attendance_list: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Attendances",
+      default: [],
     },
   },
   { timestamps: true }

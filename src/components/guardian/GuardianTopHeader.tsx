@@ -1,5 +1,5 @@
 "use client";
-import { logoutUser } from "@/actions/userActions";
+import { logoutStudent } from "@/actions/studentAction";
 import { AuthContext } from "@/context/AuthContext";
 import MediaIcon from "@/icon/MediaIcon";
 import PopUpIcon from "@/icon/PopUpIcon";
@@ -16,7 +16,7 @@ import { IoPricetagOutline } from "react-icons/io5";
 import { LuMessageSquareText } from "react-icons/lu";
 import { PiUserCircleFill } from "react-icons/pi";
 
-export default function TopHeader() {
+export default function GuardianTopHeader() {
   const pathname = usePathname();
 
   const router = useRouter();
@@ -79,11 +79,11 @@ export default function TopHeader() {
 
   async function handleLogout() {
     try {
-      const response = await logoutUser();
+      const response = await logoutStudent();
 
       if (response.success) {
         logout();
-        router.push("/reboots");
+        router.push("/");
       }
     } catch (error) {
       console.error("Logout failed:", error);

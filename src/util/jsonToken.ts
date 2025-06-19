@@ -1,16 +1,8 @@
 import jwt from "jsonwebtoken";
 
 // Define the Payload type for the token (you can modify this to suit your payload structure)
-interface TokenPayload {
-  userId: string;
-  name: string;
-  email: string;
-  phone: string;
-  password: string;
-  // Add other properties if needed
-}
 
-export function generateToken(payload: TokenPayload): string | null {
+export function generateToken(payload: any): string | null {
   try {
     if (!process.env.SECRET_KEY) throw new Error("SECRET_KEY is missing");
 

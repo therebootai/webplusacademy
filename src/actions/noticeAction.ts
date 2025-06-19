@@ -83,13 +83,19 @@ export async function deleteNotice(noticeId: string) {
   }
 }
 
-export async function getAllNotices(
-  page: number | string = 1,
-  limit: number | string = 10,
-  sort: string = "createdAt",
-  order: "asc" | "desc" = "desc",
-  status?: boolean
-) {
+export async function getAllNotices({
+  page,
+  limit = 10,
+  sort = "createdAt",
+  order = "desc",
+  status,
+}: {
+  page?: number | string;
+  limit?: number | string;
+  sort?: string;
+  order?: "asc" | "desc";
+  status?: boolean;
+}) {
   try {
     let filter: { status?: boolean } = {};
 
