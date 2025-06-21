@@ -94,7 +94,7 @@ export default function GuardianTopHeader() {
             <div className="group" key={index}>
               {!link.dropdown ? (
                 <Link
-                  href={link.path + "?page=1"}
+                  href={link.path}
                   className={`inline-flex gap-2 items-center group hover:text-site-darkgreen  font-medium text-base lg:text-base xlg:text-base xl:text-xl ${
                     isActive(link.path)
                       ? "text-site-darkgreen"
@@ -121,7 +121,7 @@ export default function GuardianTopHeader() {
                     {link.dropdown.map((item, index) => (
                       <Link
                         key={index}
-                        href={item.path + "?page=1"}
+                        href={item.path}
                         className="flex gap-4 items-center font-medium text-sm lg:text-lg text-site-darkgreen border-b border-transparent hover:border-site-darkgreen"
                       >
                         {item.label}
