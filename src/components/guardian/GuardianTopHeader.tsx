@@ -36,13 +36,8 @@ export default function GuardianTopHeader() {
   }[] = [
     {
       icon: <StudentIcon />,
-      label: "Students",
-      path: "/admin/student-management",
-      dropdown: [
-        { label: "Batches", path: "/admin/student-management/batches" },
-        { label: "Courses", path: "/admin/student-management/courses" },
-        { label: "Students", path: "/admin/student-management/students" },
-      ],
+      label: "Profile",
+      path: "/student/profile",
     },
     {
       icon: <IoPricetagOutline />,
@@ -56,19 +51,9 @@ export default function GuardianTopHeader() {
       dropdown: [{ label: "Add Question", path: "/admin/exam/add-question" }],
     },
     {
-      icon: <SliderIcon />,
-      label: "Slider",
-      path: "/admin",
-    },
-    {
       icon: <PopUpIcon />,
       label: "Notices",
       path: "/admin/notices",
-    },
-    {
-      icon: <MediaIcon />,
-      label: "Media",
-      path: "/admin/media",
     },
     {
       icon: <ResultIcon />,
@@ -163,7 +148,7 @@ export default function GuardianTopHeader() {
               {user && (
                 <div className="flex flex-col gap-2">
                   <h1 className="text-white text-base font-bold lg:text-xl">
-                    {user.name}
+                    {user.studentName}
                   </h1>
                 </div>
               )}
