@@ -65,6 +65,12 @@
   --animate-marquee: marquee 10s linear infinite;
 }
 
+@media print {
+  .print-hidden {
+    display: none !important;
+  }
+}
+
 @layer base {
   body {
     @apply font-outfit;
