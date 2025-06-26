@@ -28,23 +28,17 @@ export const generateQuestions = async (
   chapters?: string[]
 ) => {
   try {
-    console.log("Received questionData:", questionData);
     if (!Array.isArray(questionData)) {
       throw new Error("questionData must be an array");
     }
 
     let totalRequestedQuestions = 0;
 
-    // Log questionData to verify the structure
-    console.log("questionData:", questionData);
-
     questionData.forEach((item) => {
       item.questions.forEach((q) => {
         totalRequestedQuestions += q.number;
       });
     });
-
-    console.log("Total Questions Requested:", totalRequestedQuestions);
 
     await connectToDataBase();
 
@@ -61,11 +55,7 @@ export const generateQuestions = async (
       filters.chapter = { $in: chapters };
     }
 
-    console.log("Applied filters:", filters);
-
     const questions = await ExamQuestion.find(filters).lean();
-
-    console.log("Total questions available:", questions.length);
 
     if (questions.length === 0) {
       throw new Error("No questions found matching the filters");
@@ -76,10 +66,6 @@ export const generateQuestions = async (
     for (const item of questionData) {
       for (const { type, number } of item.questions) {
         const filteredQuestions = questions.filter((q) => q.qnsType === type);
-        console.log(
-          `Available questions for ${type}:`,
-          filteredQuestions.length
-        );
 
         if (filteredQuestions.length < number) {
           throw new Error(`Not enough questions found for ${type}`);
@@ -92,8 +78,6 @@ export const generateQuestions = async (
         selectedQuestions.push(...randomizedQuestions);
       }
     }
-
-    console.log("Total Questions Selected:", selectedQuestions.length);
 
     return {
       success: true,

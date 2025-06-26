@@ -204,8 +204,6 @@ const AddGanerateQuestion = () => {
         number: Number(q.number),
       })),
     }));
-    console.log("subjectQuestions:", subjectQuestions);
-    console.log("addedTotalQuestions", addedTotalQuestions);
 
     const result = await generateQuestions(
       selectedClasses,
