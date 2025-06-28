@@ -109,6 +109,8 @@ export default function AddNewStudent({
           : undefined,
         monthsDue: [],
       },
+      attendance_id:
+        existingStudent?.studentData?.[0]?.attendance_id || undefined,
     };
 
     const data = {

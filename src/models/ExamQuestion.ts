@@ -24,6 +24,9 @@ const examQuestionSchema = new Schema<examQuestionTypes>(
     correctAns: {
       type: String,
     },
+    chapter: {
+      type: String,
+    },
     class: {
       type: String,
     },

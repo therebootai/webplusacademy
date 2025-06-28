@@ -1,10 +1,8 @@
 "use server";
 import { connectToDataBase } from "@/db/connection";
 import ExamQuestion from "@/models/ExamQuestion";
-import { examQuestionTypes } from "@/types/ExamQuestionTypes";
 import { generateCustomId } from "@/util/generateCustomId";
 import fs from "fs";
-import path from "path";
 import { parse } from "fast-csv";
 import { parseCSV } from "@/util/parseCSV";
 import { revalidatePath } from "next/cache";
@@ -13,19 +11,34 @@ export async function createExamQuestions(questionData: any) {
   try {
     await connectToDataBase();
 
+    const latestRecord = await ExamQuestion.findOne({}, { questionId: 1 })
+      .sort({ questionId: -1 })
+      .lean();
+
+    let lastNumber = latestRecord
+      ? parseInt(
+          (latestRecord.questionId as string).replace("QUESTION-", ""),
+          10
+        )
+      : 0;
+
     const questionId = await generateCustomId(
       ExamQuestion,
       "questionId",
-      "QUESTION-"
+      "QUESTION-",
+      ++lastNumber
     );
+
     if (!questionId) {
       throw new Error("Failed to generate question ID");
     }
+
     questionData.questionId = questionId;
 
     const newQuestion = new ExamQuestion(questionData);
     const savedQuestion = await newQuestion.save();
     revalidatePath("/admin/exam/add-questions");
+
     return {
       success: true,
       question: JSON.parse(JSON.stringify(savedQuestion)),
@@ -208,6 +221,7 @@ export async function createExamQuestionsFromCSV(formData: any) {
           optionD: question.ansOptionD,
         },
         correctAns: question.correctAns,
+        chapter: question.chapter,
         class: classValue || "Default Class",
         courseName: courseName || "Default Course",
         subject: subject || "Default Subject",
@@ -251,6 +265,7 @@ const readCSVFile = async (filePath: string) => {
           ansOptionC: row["ansOptionC"],
           ansOptionD: row["ansOptionD"],
           correctAns: row["correctAns"],
+          chapter: row["chapter"],
         });
       })
       .on("end", resolve)
@@ -258,4 +273,111 @@ const readCSVFile = async (filePath: string) => {
   });
 
   return results;
+};
+
+export const getUniqueCourseNames = async () => {
+  try {
+    await connectToDataBase();
+
+    const uniqueCourseNames = await ExamQuestion.distinct("courseName", {
+      courseName: { $ne: "" },
+    });
+
+    return {
+      success: true,
+      data: uniqueCourseNames,
+    };
+  } catch (error: any) {
+    console.error("Error fetching unique course names:", error);
+    return {
+      success: false,
+      error: error.message || "Unknown error",
+    };
+  }
+};
+
+export const getUniqueClass = async () => {
+  try {
+    await connectToDataBase();
+
+    const uniqueClass = await ExamQuestion.distinct("class", {
+      class: { $ne: "" },
+    });
+
+    return {
+      success: true,
+      data: uniqueClass,
+    };
+  } catch (error: any) {
+    console.error("Error fetching unique classes:", error);
+    return {
+      success: false,
+      error: error.message || "Unknown error",
+    };
+  }
+};
+export const getUniqueSubject = async () => {
+  try {
+    await connectToDataBase();
+
+    const uniqueSubject = await ExamQuestion.distinct("subject", {
+      subject: { $ne: "" },
+    });
+
+    return {
+      success: true,
+      data: uniqueSubject,
+    };
+  } catch (error: any) {
+    console.error("Error fetching unique subjects:", error);
+    return {
+      success: false,
+      error: error.message || "Unknown error",
+    };
+  }
+};
+export const getUniqueQnstype = async () => {
+  try {
+    await connectToDataBase();
+
+    const uniqueQnsType = await ExamQuestion.distinct("qnsType", {
+      qnsType: { $ne: "" },
+    });
+
+    return {
+      success: true,
+      data: uniqueQnsType,
+    };
+  } catch (error: any) {
+    console.error("Error fetching unique question Type:", error);
+    return {
+      success: false,
+      error: error.message || "Unknown error",
+    };
+  }
+};
+
+export const getUniqueChapter = async (subject?: string) => {
+  try {
+    await connectToDataBase();
+
+    const query: any = { chapter: { $ne: "" } };
+
+    if (subject) {
+      query.subject = subject;
+    }
+
+    const uniqueChapters = await ExamQuestion.distinct("chapter", query);
+
+    return {
+      success: true,
+      data: uniqueChapters,
+    };
+  } catch (error: any) {
+    console.error("Error fetching unique chapters:", error);
+    return {
+      success: false,
+      error: error.message || "Unknown error",
+    };
+  }
 };

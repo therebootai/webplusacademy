@@ -16,11 +16,34 @@ export async function createComponent(name: string, component_image: File) {
 
     await connectToDataBase();
 
+    const latestRecord = await Sliders.findOne({}, { componentId: 1 })
+      .sort({ componentId: -1 })
+      .lean();
+
+    let lastNumber = latestRecord
+      ? parseInt(
+          (latestRecord.componentId as string).replace("componentId-", ""),
+          10
+        )
+      : 0;
+
+    const newComponentId = await generateCustomId(
+      Sliders,
+      "componentId",
+      "componentId-",
+      ++lastNumber
+    );
+
+    if (!newComponentId) {
+      throw new Error("Failed to generate component ID");
+    }
+
+    const componentId = newComponentId;
+
     const tempFilePath = await parseImage(component_image);
 
-    const [fileUploadResult, componentId] = await Promise.all([
+    const [fileUploadResult] = await Promise.all([
       uploadFile(tempFilePath, component_image.type),
-      generateCustomId(Sliders, "componentId", "componentId"),
     ]);
 
     if (fileUploadResult instanceof Error) {
