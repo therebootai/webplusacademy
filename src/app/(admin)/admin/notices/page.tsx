@@ -32,7 +32,13 @@ export default async function NoticesPage() {
 
 async function getNoticeData(): Promise<NoticeResponse> {
   try {
-    const notices = await getAllNotices();
+    const notices = await getAllNotices({
+      page: 1,
+      limit: 10,
+      sort: "createdAt",
+      order: "desc",
+      status: true,
+    });
     return notices;
   } catch (error) {
     console.log(error);
