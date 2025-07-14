@@ -14,6 +14,7 @@ import { FaRegBell } from "react-icons/fa";
 import { IoIosArrowDown, IoIosLogOut } from "react-icons/io";
 import { IoPricetagOutline } from "react-icons/io5";
 import { LuMessageSquareText } from "react-icons/lu";
+import { MdOutlineAssessment } from "react-icons/md";
 import { PiUserCircleFill } from "react-icons/pi";
 
 export default function GuardianTopHeader() {
@@ -24,7 +25,7 @@ export default function GuardianTopHeader() {
   const { user, logout } = useContext(AuthContext);
 
   const isActive = (path: string) => {
-    if (path === "/admin") return pathname === "/admin";
+    if (path === "/student") return pathname === "/student";
     return pathname === path || pathname.startsWith(path + "/");
   };
 
@@ -34,6 +35,11 @@ export default function GuardianTopHeader() {
     path: string;
     dropdown?: { label: string; path: string }[];
   }[] = [
+    {
+      icon: <MdOutlineAssessment />,
+      label: "Dashboard",
+      path: "/student",
+    },
     {
       icon: <StudentIcon />,
       label: "Profile",

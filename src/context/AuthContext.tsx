@@ -1,7 +1,6 @@
 "use client";
 import { checkTokenAuth } from "@/actions/authAction";
 import { UserDocument } from "@/models/User";
-import { IStudentType } from "@/types/StudentType";
 import { createContext, Dispatch, useEffect, useReducer } from "react";
 
 interface AuthState {
