@@ -233,6 +233,36 @@ export async function updateStudent(studentId: string, updatedData: any) {
   try {
     await connectToDataBase();
 
+    const existingStudent = await Students.findOne({
+      $or: [
+        { student_id: studentId },
+        {
+          _id: mongoose.Types.ObjectId.isValid(studentId)
+            ? studentId
+            : undefined,
+        },
+      ],
+    });
+
+    if (!existingStudent) {
+      return { success: false, message: "Student not found" };
+    }
+
+    if (
+      "studentData" in updatedData &&
+      Array.isArray(updatedData.studentData)
+    ) {
+      updatedData.studentData = updatedData.studentData.map(
+        (data: any, index: number) => {
+          const existing = existingStudent.studentData?.[index];
+          if (existing && !("attendance_id" in data)) {
+            data.attendance_id = existing.attendance_id;
+          }
+          return data;
+        }
+      );
+    }
+
     const updatedStudent = await Students.findOneAndUpdate(
       {
         $or: [

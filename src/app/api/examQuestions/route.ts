@@ -26,18 +26,19 @@ export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const page = Number(url.searchParams.get("page")) || 1;
+    const limit = Number(url.searchParams.get("limit")) || 10;
+
     const classFilter = url.searchParams.get("class") || undefined;
     const courseNameFilter = url.searchParams.get("courseName") || undefined;
     const qnsTypeFilter = url.searchParams.get("qnsType") || undefined;
 
-    // Build the filter object
-    const filters = {
-      class: classFilter,
+    const result = await getExamQuestions({
+      page,
+      limit,
+      className: classFilter,
       courseName: courseNameFilter,
       qnsType: qnsTypeFilter,
-    };
-
-    const result = await getExamQuestions(page, filters);
+    });
 
     if (result.success) {
       return NextResponse.json(result, { status: 200 });

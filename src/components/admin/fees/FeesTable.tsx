@@ -209,7 +209,8 @@ export default function FeesTable({
                         />
                       </div>
                     )}
-                    {viewingHostel &&
+                    {viewingHostel?.hostelData &&
+                      paidMonth &&
                       viewingHostel.hostelData._id === paidMonth._id && (
                         <div
                           ref={popupRef}

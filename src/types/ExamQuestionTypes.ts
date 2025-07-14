@@ -13,6 +13,7 @@ export interface examQuestionTypes extends Document {
   questionName?: string;
   ansOption?: ansOptionTypes;
   correctAns?: string;
+  chapter?: string;
   class?: string;
   courseName?: string;
   subject?: string;

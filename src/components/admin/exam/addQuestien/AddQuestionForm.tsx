@@ -24,6 +24,7 @@ const AddQuestionForm = ({
   const [questionName, setQuestionName] = useState<string>("");
   const [correctAns, setCorrectAns] = useState<string>("");
   const [classValue, setClassValue] = useState<string>("");
+  const [chapter, setChapter] = useState<string>("");
   const [courseName, setCourseName] = useState<string>("");
   const [subject, setSubject] = useState<string>("");
   const [qnsType, setQnsType] = useState<string>("");
@@ -35,6 +36,7 @@ const AddQuestionForm = ({
       setAnswerPoints(Object.values(existingQuestion.ansOption || {}));
       setCorrectAns(existingQuestion.correctAns || "");
       setClassValue(existingQuestion.class || "");
+      setChapter(existingQuestion.chapter || "");
       setCourseName(existingQuestion.courseName || "");
       setSubject(existingQuestion.subject || "");
       setQnsType(existingQuestion.qnsType || "Easy");
@@ -63,6 +65,7 @@ const AddQuestionForm = ({
     const answerPoints = formData.getAll("answerPoints[]");
     const correctAns = formData.get("correctAns") as string;
     const classValue = formData.get("class") as string;
+    const chapter = formData.get("chapter") as string;
     const courseName = formData.get("courseName") as string;
     const subject = formData.get("subject") as string;
     const qnsType = formData.get("qnsType") as string;
@@ -77,6 +80,7 @@ const AddQuestionForm = ({
         optionD: answerPoints[3] || "",
       },
       correctAns,
+      chapter,
       class: classValue,
       courseName,
       subject,
@@ -111,25 +115,32 @@ const AddQuestionForm = ({
 
     if (isSubmitting.current) {
       console.log("Form is already being submitted.");
-      return; // Prevent multiple submissions
+      return;
     }
 
     isSubmitting.current = true;
 
+    const capitalizeFirstLetter = (str: string) => {
+      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    };
+
+    setQuestionName(capitalizeFirstLetter(questionName));
+    setClassValue(capitalizeFirstLetter(classValue));
+    setChapter(capitalizeFirstLetter(chapter));
+    setCourseName(capitalizeFirstLetter(courseName));
+    setSubject(capitalizeFirstLetter(subject));
+
     const formData = new FormData(e.target as HTMLFormElement);
     try {
-      // Check if we are creating a new question or updating an existing one
       if (existingQuestion && existingQuestion.questionId) {
-        // We are updating an existing question
         const result = await addQuestion(formData);
-        console.log("Form submission result:", result);
 
         if (result.success === true) {
-          // Reset form after successful update
           setQuestionName("");
           setAnswerPoints([]);
           setCorrectAns("");
           setClassValue("");
+          setChapter("");
           setCourseName("");
           setSubject("");
           setQnsType("");
@@ -141,13 +152,13 @@ const AddQuestionForm = ({
         }
       } else {
         const result = await addQuestion(formData);
-        console.log("Form submission result:", result);
 
         if (result.success === true) {
           setQuestionName("");
           setAnswerPoints([]);
           setCorrectAns("");
           setClassValue("");
+          setChapter("");
           setCourseName("");
           setSubject("");
           setQnsType("");
@@ -161,7 +172,7 @@ const AddQuestionForm = ({
     } catch (error) {
       console.error("Error submitting form:", error);
     } finally {
-      isSubmitting.current = false; // Reset the submitting flag
+      isSubmitting.current = false;
     }
   };
 
@@ -179,7 +190,7 @@ const AddQuestionForm = ({
             value={questionName}
             name="questionName"
             onChange={(e) => setQuestionName(e.target.value)}
-            className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
+            className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2  placeholder:capitalize"
           />
         </div>
         <div className="flex-1 flex-wrap border border-[#cccccc] rounded-md flex gap-2 items-center px-2 col-span-2">
@@ -189,7 +200,7 @@ const AddQuestionForm = ({
               value={newAnswer}
               onChange={(e) => setNewAnswer(e.target.value)}
               placeholder={`Ans Points (4 max & min)`}
-              className=" h-[3.5rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
+              className=" h-[3.5rem] outline-none placeholder:text-site-gray flex-1  placeholder:capitalize"
             />
             <button
               type="button"
@@ -215,7 +226,7 @@ const AddQuestionForm = ({
                       setAnswerPoints(updatedAnswers);
                     }}
                     name="answerPoints[]"
-                    className="h-[3.5rem] outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
+                    className="h-[3.5rem] outline-none placeholder:text-site-gray flex-1  placeholder:capitalize"
                   />
                   <button
                     type="button"
@@ -234,7 +245,7 @@ const AddQuestionForm = ({
           value={correctAns}
           onChange={(e) => setCorrectAns(e.target.value)}
           name="correctAns"
-          className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
+          className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2  placeholder:capitalize"
         >
           <option value="">Choose Correct Ans</option>
           {answerPoints.map((answer, index) => (
@@ -243,6 +254,16 @@ const AddQuestionForm = ({
             </option>
           ))}
         </select>
+        <div className="w-full">
+          <input
+            type="text"
+            placeholder="Chapter"
+            value={chapter}
+            name="chapter"
+            onChange={(e) => setChapter(e.target.value)}
+            className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2  placeholder:capitalize"
+          />
+        </div>
         <div className=" grid grid-cols-2 gap-4">
           <input
             type="text"
@@ -250,7 +271,7 @@ const AddQuestionForm = ({
             value={classValue}
             name="class"
             onChange={(e) => setClassValue(e.target.value)}
-            className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
+            className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2  placeholder:capitalize"
           />
           <input
             type="text"
@@ -258,7 +279,7 @@ const AddQuestionForm = ({
             value={courseName}
             name="courseName"
             onChange={(e) => setCourseName(e.target.value)}
-            className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
+            className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2  placeholder:capitalize"
           />
           <input
             type="text"
@@ -266,13 +287,13 @@ const AddQuestionForm = ({
             value={subject}
             name="subject"
             onChange={(e) => setSubject(e.target.value)}
-            className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
+            className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2  placeholder:capitalize"
           />
           <select
             value={qnsType}
             name="qnsType"
             onChange={(e) => setQnsType(e.target.value)}
-            className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 capitalize placeholder:capitalize"
+            className=" h-[3.5rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2  placeholder:capitalize"
           >
             <option value="">Choose Type</option>
             <option value="Easy">Easy</option>

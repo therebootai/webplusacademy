@@ -112,6 +112,8 @@ export default function AddNewStudent({
           ? [...existingStudent.studentData?.[0]?.attendance_id]
           : [],
       },
+      attendance_id:
+        existingStudent?.studentData?.[0]?.attendance_id || undefined,
     };
 
     const data = {

@@ -16,6 +16,7 @@ const ManageQuestion = ({ QuestionData }: { QuestionData: any[] }) => {
     "Question",
     "Options",
     "Correct Ans",
+    "Chapter",
     "Class",
     "Course",
     "Subject",
@@ -56,10 +57,12 @@ const ManageQuestion = ({ QuestionData }: { QuestionData: any[] }) => {
                 <span>{item.ansOption.optionD}</span>
               </div>
               <div className="flex-1 line-clamp-1">{item.correctAns}</div>
-              <div className="flex-1 line-clamp-1">{item.class}</div>
-              <div className="flex-1 line-clamp-1">{item.courseName}</div>
-              <div className="flex-1 line-clamp-1">{item.subject}</div>
-              <div className="flex-1 line-clamp-1">{item.qnsType}</div>
+              <div className="flex-1 line-clamp-1">{item.chapter || ""}</div>
+
+              <div className="flex-1 line-clamp-1">{item.class || ""}</div>
+              <div className="flex-1 line-clamp-1">{item.courseName || ""}</div>
+              <div className="flex-1 line-clamp-1">{item.subject || ""}</div>
+              <div className="flex-1 line-clamp-1">{item.qnsType || ""}</div>
               <div className=" flex-1 flex flex-row gap-2 items-center">
                 <button
                   onClick={() => {
