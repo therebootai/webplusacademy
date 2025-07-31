@@ -2,7 +2,7 @@
 import { connectToDataBase } from "@/db/connection";
 import Gallery, { GalleryDocument } from "@/models/Gallery";
 import { deleteFile, uploadFile } from "@/util/cloudinary";
-import { generateCustomId } from "@/util/generateCustomId";
+import { generateId } from "@/util/generateId";
 import { parseImage } from "@/util/parseImage";
 import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
@@ -28,7 +28,7 @@ export async function addNewGallery(
 
     await connectToDataBase();
 
-    const galleryId = await generateCustomId(Gallery, "galleryId", "galleryId");
+    const galleryId = await generateId(Gallery, "galleryId", "galleryId");
 
     let fileUploadResult = null;
 

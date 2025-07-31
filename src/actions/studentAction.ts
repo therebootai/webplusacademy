@@ -410,7 +410,6 @@ export async function updateHostelFees(
         }
       );
 
-      console.log("Update result:", updateResult);
       if (updateResult.matchedCount === 0) {
         console.log(
           "No existing monthDue found for update, attempting to push new monthDue..."

@@ -3,7 +3,7 @@
 import { connectToDataBase } from "@/db/connection";
 import Result, { ResultDocument } from "@/models/Results";
 import { deleteFile, uploadFile } from "@/util/cloudinary";
-import { generateCustomId } from "@/util/generateCustomId";
+import { generateId } from "@/util/generateId";
 import { parseImage } from "@/util/parseImage";
 import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
@@ -20,7 +20,7 @@ export async function addNewResult(
 
     await connectToDataBase();
 
-    const resultId = await generateCustomId(Result, "resultId", "resultId");
+    const resultId = await generateId(Result, "resultId", "resultId");
 
     let fileUploadResult = null;
     const tempFilePath = await parseImage(result_file);

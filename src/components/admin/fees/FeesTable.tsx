@@ -1,6 +1,10 @@
 "use client";
 
-import { IStudentType } from "@/types/StudentType";
+import {
+  HostelFeeMonthType,
+  IStudentType,
+  StudentDataType,
+} from "@/types/StudentType";
 import DisplayTable from "@/ui/DisplayTable";
 import { useEffect, useRef, useState } from "react";
 import { FaCheckCircle, FaClock } from "react-icons/fa";
@@ -13,6 +17,12 @@ import { IoIosEye } from "react-icons/io";
 import ViewCourseFees from "./ViewCourseFees";
 import ViewHostelFees from "./ViewHostelFees";
 import useClickOutside from "@/hooks/useClickOutside";
+import SidePopUpSlider from "@/ui/SidePopup";
+import dynamic from "next/dynamic";
+
+const ViewHostelInvoice = dynamic(() => import("./ViewHostelInvoice"), {
+  ssr: false,
+});
 
 export default function FeesTable({
   studentsData,
@@ -38,6 +48,12 @@ export default function FeesTable({
   } | null>(null);
   const [viewingHostel, setViewingHostel] = useState<{
     hostelData: any;
+  } | null>(null);
+
+  const [invoiceData, setInvoiceData] = useState<{
+    student: IStudentType;
+    studentData: StudentDataType;
+    hostelFeeMonth: HostelFeeMonthType;
   } | null>(null);
 
   const popupRef = useClickOutside<HTMLDivElement>(() => {
@@ -159,17 +175,27 @@ export default function FeesTable({
                     </button>
                     <button
                       type="button"
-                      onClick={() =>
-                        setViewingHostel({ hostelData: paidMonth || null })
-                      }
+                      onClick={() => {
+                        setInvoiceData({
+                          student,
+                          studentData: data,
+                          hostelFeeMonth: paidMonth ?? {
+                            month: currentMonth,
+                            year: currentYear,
+                            amount: hostelFees?.monthlyAmount ?? 0,
+                            scholarship: "",
+                            due: "",
+                          },
+                        });
+                      }}
                       className="text-xs text-blue-600 size-4 flex justify-center items-center bg-white border border-[#eeeeee] rounded-full"
                     >
                       <IoIosEye />
                     </button>
                     {editingStudentId === student._id && (
-                      <div
-                        ref={popupRef}
-                        className="absolute top-[calc(100%_+_0.75rem)] left-1/2 -translate-x-1/2 z-[100]"
+                      <SidePopUpSlider
+                        showPopUp={!!editingStudentId}
+                        handleClose={() => setEditingStudentId(null)}
                       >
                         <EditFees
                           amount={paidMonth?.amount}
@@ -197,30 +223,27 @@ export default function FeesTable({
                                 m.year === currentYear
                             )?.remarks ?? ""
                           }
-                          helper={(hostelFeeMonth: any, receiptFile?: File) =>
-                            updateStudentHostelFees(
+                          helper={async (hostelFeeMonth, receiptFile) => {
+                            const result = await updateStudentHostelFees(
                               student._id as string,
-                              data?._id ?? "",
+                              data._id,
                               receiptFile,
                               hostelFeeMonth
-                            )
-                          }
+                            );
+                            if (result.success) {
+                              // After successful update, show invoice
+                              setInvoiceData({
+                                student,
+                                studentData: data,
+                                hostelFeeMonth,
+                              });
+                            }
+                            return result;
+                          }}
                           handleClose={() => setEditingStudentId(null)}
                         />
-                      </div>
+                      </SidePopUpSlider>
                     )}
-                    {viewingHostel?.hostelData &&
-                      paidMonth &&
-                      viewingHostel.hostelData._id === paidMonth._id && (
-                        <div
-                          ref={popupRef}
-                          className="absolute top-[calc(100%_+_0.75rem)] left-1/2 -translate-x-1/2 z-[100]"
-                        >
-                          <ViewHostelFees
-                            hostelData={viewingHostel.hostelData}
-                          />
-                        </div>
-                      )}
                   </div>
                 );
               })}
@@ -348,6 +371,26 @@ export default function FeesTable({
           </div>
         );
       })}
+
+      {invoiceData && (
+        <div className="fixed z-50 inset-0  h-full w-full  overflow-scroll ">
+          <div className=" w-full  p-8 shadow-xl bg-black/40 relative flex justify-center items-center ">
+            <button
+              className="absolute top-2 right-2 size-[2rem] bg-custom-pink rounded-full flex justify-center items-center text-xl text-white hover:text-red-500"
+              onClick={() => setInvoiceData(null)}
+            >
+              &times;
+            </button>
+            <div className="w-fit">
+              <ViewHostelInvoice
+                student={invoiceData.student}
+                studentData={invoiceData.studentData}
+                hostelFeeMonth={invoiceData.hostelFeeMonth}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </DisplayTable>
   );
 }

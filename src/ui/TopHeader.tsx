@@ -86,9 +86,9 @@ export default function TopHeader({
         </div>
         <Link
           href="/guardian-login"
-          className="absolute right-0 top-1/2 -translate-y-1/2 xl:text-2xl md:text-xl inline-flex bg-site-yellow text-site-darkgreen px-4"
+          className="absolute right-0 top-1/2 -translate-y-1/2 xl:text-2xl md:text-xl h-full  inline-flex bg-site-yellow text-site-darkgreen px-4"
         >
-          Student Login
+          <div className=" flex justify-center items-center">Student Login</div>
         </Link>
       </header>
     </div>

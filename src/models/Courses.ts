@@ -1,7 +1,7 @@
-import { generateCustomId } from "@/util/generateCustomId";
 import mongoose, { Schema, Document, Model } from "mongoose";
 import { BatchesDocument } from "./Batches";
 import { Types } from "mongoose";
+import { generateId } from "@/util/generateId";
 
 export interface CourseDocument extends Document {
   course_id: string;
@@ -41,7 +41,7 @@ const courseSchema = new Schema<CourseDocument>(
 courseSchema.pre("save", async function (next) {
   if (!this.course_id) {
     try {
-      this.course_id = await generateCustomId(
+      this.course_id = await generateId(
         mongoose.model("Courses"),
         "course_id",
         "course_id"
