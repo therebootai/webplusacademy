@@ -5,7 +5,7 @@ import { createContext, Dispatch, useEffect, useReducer } from "react";
 
 interface AuthState {
   isAuthenticated: boolean;
-  user: UserDocument | null;
+  user: any;
 }
 
 type AuthAction =

@@ -39,7 +39,7 @@ export async function loginUser(emailOrPhone: string, password: string) {
 
     const plainUser = user.toObject();
 
-    const token = generateToken({ ...plainUser });
+    const token = generateToken({ _id: user._id, role: "admin" });
 
     const cookieStore = await cookies();
     cookieStore.set("token", token ?? "");
@@ -61,4 +61,3 @@ export async function logoutUser() {
     return { success: false };
   }
 }
-

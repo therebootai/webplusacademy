@@ -203,6 +203,32 @@ export async function getStudents({
   }
 }
 
+export async function getAStudentbyId(std_id: string) {
+  try {
+    await connectToDataBase();
+
+    const student = await Students.findOne({
+      $or: [
+        { _id: mongoose.Types.ObjectId.isValid(std_id) ? std_id : undefined },
+        { student_id: std_id },
+      ],
+    })
+      .populate("studentData.currentBatch")
+      .populate("studentData.currentCourse")
+      .populate("studentData.attendance_id")
+      .populate("courseFees.currentBatch")
+      .populate("courseFees.currentCourse")
+      .lean<IStudentType[]>();
+    if (!student) {
+      return { success: false, message: "Student not found" };
+    }
+    return { success: true, student: JSON.parse(JSON.stringify(student)) };
+  } catch (err) {
+    console.error("Error fetching student details:", err);
+    return { success: false, message: "Failed to fetch student details" };
+  }
+}
+
 export async function updateStudent(studentId: string, updatedData: any) {
   try {
     await connectToDataBase();
@@ -480,7 +506,7 @@ export async function loginStudent(phone: string, password: string) {
 
     const plainUser = user.toObject();
 
-    const token = generateToken({ ...plainUser });
+    const token = generateToken({ _id: user._id, role: "student" });
 
     const cookieStore = await cookies();
     cookieStore.set("token", token ?? "");

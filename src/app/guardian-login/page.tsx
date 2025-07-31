@@ -4,11 +4,11 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 
 export default async function GuardianLoginPage() {
-  //   const cookieStore = await cookies();
-  //   const token = cookieStore.get("token");
-  //   if (token && token.value) {
-  //     redirect("/admin?page=1");
-  //   }
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token");
+  if (token && token.value) {
+    redirect("/student");
+  }
 
   return (
     <div className="flex justify-center h-screen bg-[#EDF4F7] overflow-y-scroll bg-no-repeat bg-cover bg-center overflow-x-hidden items-center">
