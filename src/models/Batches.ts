@@ -1,7 +1,7 @@
-import { generateCustomId } from "@/util/generateCustomId";
 import mongoose, { Schema, Document, Model, Types } from "mongoose";
 import { CourseDocument } from "./Courses";
 import { AttendanceDocument } from "./Attendance";
+import { generateId } from "@/util/generateId";
 
 export interface BatchesDocument extends Document {
   batch_id: string;
@@ -56,7 +56,7 @@ const batchSchema = new Schema<BatchesDocument>(
 batchSchema.pre("save", async function (next) {
   if (!this.batch_id) {
     try {
-      this.batch_id = await generateCustomId(
+      this.batch_id = await generateId(
         mongoose.model<BatchesDocument>("Batches"),
         "batch_id",
         "BATCH-"

@@ -7,6 +7,14 @@
 @import "swiper/css/free-mode";
 @import "react-datepicker/dist/react-datepicker.css";
 
+.a4-container {
+  width: 210mm;
+  height: 297mm;
+
+  background-color: white;
+  box-sizing: border-box;
+}
+
 @theme inline {
   --color-site-yellow: #f3cb1e;
   --color-site-litegreen: #27995a;

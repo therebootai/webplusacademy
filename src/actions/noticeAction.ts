@@ -3,7 +3,7 @@
 import { connectToDataBase } from "@/db/connection";
 import Notice, { NoticeDocument } from "@/models/Notice";
 import { deleteFile, uploadFile } from "@/util/cloudinary";
-import { generateCustomId } from "@/util/generateCustomId";
+import { generateId } from "@/util/generateId";
 import { parseImage } from "@/util/parseImage";
 import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
@@ -16,7 +16,7 @@ export async function createNewNotice(name: string, image?: File) {
 
     await connectToDataBase();
 
-    const noticeId = await generateCustomId(Notice, "noticeId", "noticeId");
+    const noticeId = await generateId(Notice, "noticeId", "noticeId");
 
     let fileUploadResult = null;
 

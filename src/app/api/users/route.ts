@@ -1,6 +1,6 @@
 import { connectToDataBase } from "@/db/connection";
 import User from "@/models/User";
-import { generateCustomId } from "@/util/generateCustomId";
+import { generateId } from "@/util/generateId";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // Generate custom user ID (you may already have a method for this)
-    const userId = await generateCustomId(User, "userId", "userId");
+    const userId = await generateId(User, "userId", "userId");
 
     // Create a new user
     const data = new User({

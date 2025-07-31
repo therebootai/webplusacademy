@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import AddNewStudent from "./AddNewStudent";
 import ViewStudent from "./ViewStudents";
+import StudentDataPrint from "./StudentDataPrint";
 
 export default function StudentTable({
   studentsData,
@@ -32,6 +33,8 @@ export default function StudentTable({
   const [selectedStudent, setSelectedStudent] = useState<IStudentType | null>(
     null
   );
+
+  const [printStudent, setPrintStudent] = useState<IStudentType | null>(null);
 
   const handleDelete = (studentId: string) => {
     const confirmed = confirm("Are you sure you want to delete this student?");
@@ -118,6 +121,14 @@ export default function StudentTable({
                   disabled={isPending}
                 >
                   {isPending ? "Deleting..." : "Delete"}
+                </button>{" "}
+                |
+                <button
+                  type="button"
+                  onClick={() => setPrintStudent(student)}
+                  className=" text-base font-medium text-blue-600"
+                >
+                  Print
                 </button>
               </div>
             </div>
@@ -143,6 +154,25 @@ export default function StudentTable({
             <ViewStudent student={selectedStudent} />
           )}
         </SidePopUpSlider>
+      )}
+
+      {printStudent && (
+        <div className="fixed z-50 inset-0  h-full w-full  overflow-scroll ">
+          <div className=" w-full  p-8 shadow-xl bg-black/40 relative flex justify-center items-center ">
+            <button
+              className="absolute top-2 right-2 size-[2rem] bg-custom-pink rounded-full flex justify-center items-center text-xl text-white hover:text-red-500"
+              onClick={() => setPrintStudent(null)}
+            >
+              &times;
+            </button>
+            <div className=" w-fit">
+              <StudentDataPrint
+                student={printStudent}
+                onClose={() => setPrintStudent(null)}
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

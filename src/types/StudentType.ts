@@ -51,7 +51,7 @@ export interface HostelFeesType {
 export interface StudentDataType {
   _id?: string;
   currentBatch: mongoose.Types.ObjectId | BatchesDocument[];
-  currentCourse: mongoose.Types.ObjectId | CourseDocument;
+  currentCourse: mongoose.Types.ObjectId | CourseDocument | any;
   currentClass?: string;
   currentYear?: string;
   bookFees?: string;

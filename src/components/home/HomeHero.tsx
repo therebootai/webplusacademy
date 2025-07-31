@@ -43,7 +43,7 @@ export default function HomeHero() {
               height={868}
               alt="slider"
               priority
-              className="object-cover block w-full h-[85vh]"
+              className="object-cover block w-full h-full lg:h-[85vh]"
             />
           </SwiperSlide>
         ))}

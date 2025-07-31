@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  HostelFeeMonthType,
+  IStudentType,
+  StudentDataType,
+} from "@/types/StudentType";
 import { useEffect, useState } from "react";
 
 export default function EditFees({
@@ -33,6 +38,12 @@ export default function EditFees({
   const [due, setDue] = useState<string>(defaultDue);
 
   const [remarks, setRemarks] = useState<string>(defaultRemarks);
+
+  const [invoiceData, setInvoiceData] = useState<{
+    student: IStudentType;
+    studentData: StudentDataType;
+    hostelFeeMonth: HostelFeeMonthType;
+  } | null>(null);
 
   async function handelUpdateFees(prevState: unknown, formData: FormData) {
     try {
@@ -113,75 +124,55 @@ export default function EditFees({
   };
 
   return (
-    <div className="relative bg-white rounded-2xl px-3 py-5 border border-[#eeeeee] z-[100]">
-      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-white border-l border-t border-gray-300 rotate-45 z-0" />
+    <div className="relative  rounded-2xl px-3 py-5  z-[100]">
       <form
         onSubmit={async (e) => {
           e.preventDefault();
           const formData = new FormData(e.currentTarget);
           await handelUpdateFees(null, formData);
         }}
-        className="flex flex-col gap-1"
+        className="flex flex-col gap-6"
       >
-        <input
-          type="text"
-          name="amount"
-          pattern="[0-9]*"
-          value={amount}
-          onChange={(e) => handleAmountChange(e.target.value)}
-          placeholder="Enter Amount"
-          className="px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded"
-        />
-        <input
-          type="text"
-          name="scholarship"
-          pattern="[0-9]*"
-          value={scholarship}
-          onChange={(e) => handleScholarshipChange(e.target.value)}
-          placeholder="Scholarship %"
-          className="px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded"
-        />
-        <input
-          type="text"
-          name="due"
-          value={due}
-          onChange={(e) => handleDueChange(e.target.value)}
-          placeholder="Due"
-          className="px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded"
-        />
-        <div className="px-3 py-2 border border-[#eeeeee] rounded">
+        <div className=" grid grid-cols-2 gap-4">
           <input
-            type="file"
-            accept="image/*"
-            name="receiptFile"
-            id="receiptFile"
-            onChange={(e) =>
-              setFile(
-                e.target.files && e.target.files.length > 0
-                  ? e.target.files[0]
-                  : null
-              )
-            }
-            className="sr-only"
+            type="text"
+            name="amount"
+            pattern="[0-9]*"
+            value={amount}
+            onChange={(e) => handleAmountChange(e.target.value)}
+            placeholder="Enter Amount"
+            className=" h-[3.5rem] px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded bg-white"
           />
-          <label
-            htmlFor="receiptFile"
-            className="text-site-gray cursor-pointer capitalize"
-          >
-            {file?.name ?? "Upload receipt"}
-          </label>
+          <input
+            type="text"
+            name="scholarship"
+            pattern="[0-9]*"
+            value={scholarship}
+            onChange={(e) => handleScholarshipChange(e.target.value)}
+            placeholder="Scholarship %"
+            className=" h-[3.5rem] px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded bg-white"
+          />
+          <input
+            type="text"
+            name="due"
+            value={due}
+            onChange={(e) => handleDueChange(e.target.value)}
+            placeholder="Due"
+            className=" h-[3.5rem] px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded bg-white"
+          />
+
+          <input
+            type="text"
+            name="remarks"
+            value={remarks}
+            onChange={(e) => setRemarks(e.target.value)}
+            placeholder="Remarks"
+            className=" h-[3.5rem] px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded bg-white"
+          />
         </div>
-        <input
-          type="text"
-          name="remarks"
-          value={remarks}
-          onChange={(e) => setRemarks(e.target.value)}
-          placeholder="Remarks"
-          className="px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded"
-        />
         <button
           type="submit"
-          className="px-3 py-2 bg-site-darkgreen text-white text-center text-xs rounded"
+          className="px-8 h-[3.5rem] w-fit bg-site-darkgreen text-white text-center text-base font-medium rounded"
         >
           Submit
         </button>
