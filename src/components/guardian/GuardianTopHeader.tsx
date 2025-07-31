@@ -14,6 +14,7 @@ import { FaRegBell } from "react-icons/fa";
 import { IoIosArrowDown, IoIosLogOut } from "react-icons/io";
 import { IoPricetagOutline } from "react-icons/io5";
 import { LuMessageSquareText } from "react-icons/lu";
+import { MdOutlineAssessment } from "react-icons/md";
 import { PiUserCircleFill } from "react-icons/pi";
 
 export default function GuardianTopHeader() {
@@ -24,7 +25,7 @@ export default function GuardianTopHeader() {
   const { user, logout } = useContext(AuthContext);
 
   const isActive = (path: string) => {
-    if (path === "/admin") return pathname === "/admin";
+    if (path === "/student") return pathname === "/student";
     return pathname === path || pathname.startsWith(path + "/");
   };
 
@@ -35,14 +36,14 @@ export default function GuardianTopHeader() {
     dropdown?: { label: string; path: string }[];
   }[] = [
     {
+      icon: <MdOutlineAssessment />,
+      label: "Dashboard",
+      path: "/student",
+    },
+    {
       icon: <StudentIcon />,
-      label: "Students",
-      path: "/admin/student-management",
-      dropdown: [
-        { label: "Batches", path: "/admin/student-management/batches" },
-        { label: "Courses", path: "/admin/student-management/courses" },
-        { label: "Students", path: "/admin/student-management/students" },
-      ],
+      label: "Profile",
+      path: "/student/profile",
     },
     {
       icon: <IoPricetagOutline />,
@@ -56,19 +57,9 @@ export default function GuardianTopHeader() {
       dropdown: [{ label: "Add Question", path: "/admin/exam/add-question" }],
     },
     {
-      icon: <SliderIcon />,
-      label: "Slider",
-      path: "/admin",
-    },
-    {
       icon: <PopUpIcon />,
       label: "Notices",
       path: "/admin/notices",
-    },
-    {
-      icon: <MediaIcon />,
-      label: "Media",
-      path: "/admin/media",
     },
     {
       icon: <ResultIcon />,
@@ -109,7 +100,7 @@ export default function GuardianTopHeader() {
             <div className="group" key={index}>
               {!link.dropdown ? (
                 <Link
-                  href={link.path + "?page=1"}
+                  href={link.path}
                   className={`inline-flex gap-2 items-center group hover:text-site-darkgreen  font-medium text-base lg:text-base xlg:text-base xl:text-xl ${
                     isActive(link.path)
                       ? "text-site-darkgreen"
@@ -136,7 +127,7 @@ export default function GuardianTopHeader() {
                     {link.dropdown.map((item, index) => (
                       <Link
                         key={index}
-                        href={item.path + "?page=1"}
+                        href={item.path}
                         className="flex gap-4 items-center font-medium text-sm lg:text-lg text-site-darkgreen border-b border-transparent hover:border-site-darkgreen"
                       >
                         {item.label}
@@ -163,7 +154,7 @@ export default function GuardianTopHeader() {
               {user && (
                 <div className="flex flex-col gap-2">
                   <h1 className="text-white text-base font-bold lg:text-xl">
-                    {user.name}
+                    {user.studentName}
                   </h1>
                 </div>
               )}

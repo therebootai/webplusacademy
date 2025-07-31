@@ -32,11 +32,16 @@ export default function GuardianLoginForm() {
         password as string
       );
 
+      if (!loginResponse.success) {
+        throw Error(loginResponse.message);
+      }
+
       login(loginResponse.data);
 
-      router.push("/admin");
+      router.push("/student");
     } catch (error) {
       console.log(error);
+      error instanceof Error && alert(error.message);
     }
   }
 

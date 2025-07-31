@@ -108,6 +108,9 @@ export default function AddNewStudent({
           ? Number(hostelMonthlyAmountRaw)
           : undefined,
         monthsDue: [],
+        attendance_id: existingStudent
+          ? [...existingStudent.studentData?.[0]?.attendance_id]
+          : [],
       },
       attendance_id:
         existingStudent?.studentData?.[0]?.attendance_id || undefined,
@@ -125,11 +128,11 @@ export default function AddNewStudent({
       pinCode,
       city,
       caste,
+      password: password !== "" ? password : undefined,
       class10SchoolName: class10SchoolName || undefined,
       class10PassYear: class10PassYear || undefined,
       class12SchoolName: class12SchoolName || undefined,
       class12PassYear: class12PassYear || undefined,
-      password,
       courseFees: emis.length
         ? [
             {
@@ -147,31 +150,33 @@ export default function AddNewStudent({
 
     setIsLoading(true);
     try {
-      let result;
-      if (existingStudent) {
-        result = await updateStudent(existingStudent.student_id, data);
-      } else {
-        result = await createStudent(data);
-      }
+      // let result;
+      // if (existingStudent) {
+      //   result = await updateStudent(existingStudent.student_id, data);
+      // } else {
+      //   result = await createStudent(data);
+      // }
 
-      if (!result.success) {
-        const errorMsg =
-          "error" in result
-            ? result.error
-            : "message" in result
-            ? result.message
-            : "Unknown error occurred";
+      // if (!result.success) {
+      //   const errorMsg =
+      //     "error" in result
+      //       ? result.error
+      //       : "message" in result
+      //       ? result.message
+      //       : "Unknown error occurred";
 
-        throw new Error(errorMsg);
-      }
+      //   throw new Error(errorMsg);
+      // }
 
-      if (onSuccess) {
-        setCouseFees([]);
-        setCourseName("");
-        setHostelMonthlyAmount("");
-        setPassword("");
-        onSuccess();
-      }
+      // if (onSuccess) {
+      //   setCouseFees([]);
+      //   setCourseName("");
+      //   setHostelMonthlyAmount("");
+      //   setPassword("");
+      //   onSuccess();
+      // }
+
+      console.log(data);
     } catch (error: any) {
       console.log(error);
       if (error.message.includes("E11000 duplicate key")) {
@@ -528,7 +533,6 @@ export default function AddNewStudent({
           <div className="flex flex-1">
             <input
               type={showPassword ? "text" : "password"}
-              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={`Password`}
