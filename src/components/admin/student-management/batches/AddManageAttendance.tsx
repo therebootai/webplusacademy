@@ -5,10 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
 import ToggleAttendance from "./ToggleAttendancePopup";
 import useClickOutside from "@/hooks/useClickOutside";
-import {
-  getAllAttendance,
-  performDailyAttendanceBulkWrite,
-} from "@/actions/attendanceActions";
+import { getAllAttendance } from "@/actions/attendanceActions";
 import { getDaysCountInMonth } from "@/util/ListOfDays";
 
 export default function AddManageAttendance({
@@ -224,7 +221,7 @@ export default function AddManageAttendance({
           };
         });
       });
-      await performDailyAttendanceBulkWrite(submitData);
+      // await performDailyAttendanceBulkWrite(submitData);
       onCancel();
     } catch (error) {
       console.log(error);
