@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getAStudentbyId } from "@/actions/studentAction";
 import StudentAttendanceChart from "@/components/guardian/StudentAttendanceChart";
 import StudentTemplate from "@/templates/StudentTemplate";
