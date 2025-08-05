@@ -150,31 +150,31 @@ export default function AddNewStudent({
 
     setIsLoading(true);
     try {
-      // let result;
-      // if (existingStudent) {
-      //   result = await updateStudent(existingStudent.student_id, data);
-      // } else {
-      //   result = await createStudent(data);
-      // }
+      let result;
+      if (existingStudent) {
+        result = await updateStudent(existingStudent.student_id, data);
+      } else {
+        result = await createStudent(data);
+      }
 
-      // if (!result.success) {
-      //   const errorMsg =
-      //     "error" in result
-      //       ? result.error
-      //       : "message" in result
-      //       ? result.message
-      //       : "Unknown error occurred";
+      if (!result.success) {
+        const errorMsg =
+          "error" in result
+            ? result.error
+            : "message" in result
+            ? result.message
+            : "Unknown error occurred";
 
-      //   throw new Error(errorMsg);
-      // }
+        throw new Error(errorMsg);
+      }
 
-      // if (onSuccess) {
-      //   setCouseFees([]);
-      //   setCourseName("");
-      //   setHostelMonthlyAmount("");
-      //   setPassword("");
-      //   onSuccess();
-      // }
+      if (onSuccess) {
+        setCouseFees([]);
+        setCourseName("");
+        setHostelMonthlyAmount("");
+        setPassword("");
+        onSuccess();
+      }
 
       console.log(data);
     } catch (error: any) {

@@ -93,7 +93,7 @@ export default function ViewStudent({ student }: { student: IStudentType }) {
       </div>
       <div className="flex items-center gap-1 flex-wrap">
         {Array.from({ length: daysCount }).map((_, dayIndex) => {
-          const currentDayAttendance = attendance.find(
+          const currentDayAttendance = attendance?.find(
             (att: any) =>
               typeof att === "object" &&
               "attendance_date" in att &&
