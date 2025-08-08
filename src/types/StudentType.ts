@@ -3,21 +3,23 @@ import { BatchesDocument } from "@/models/Batches";
 import { CourseDocument } from "@/models/Courses";
 import mongoose, { Document } from "mongoose";
 
-export interface EmiType {
+export type PaymentType = {
+  paymentName: string;
+  amount: number;
+  scholarship?: number;
+  paid?: number;
+  remarks?: string;
+};
+
+export type EmiType = {
   _id?: string;
-  installmentNumber?: number;
-  amount?: number;
-  due?: string;
-  scholarship?: string;
-  uploadReceipt: {
-    public_id: { type: String };
-    secure_url: { type: String };
-  };
-  remarks: {
-    type: String;
-  };
-  paid?: string;
-}
+  installmentNumber: number;
+  payments: PaymentType[];
+  totalPaid?: number;
+  totalDue?: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
 
 export interface CourseFeesType {
   totalAmount?: number;
