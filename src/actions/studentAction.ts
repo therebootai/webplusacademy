@@ -16,6 +16,38 @@ import { generateStudentId } from "@/util/generateStudentId";
 import { generateToken } from "@/util/jsonToken";
 import { cookies } from "next/headers";
 
+type PaymentUpdate = Partial<{
+  amount: number;
+  scholarship?: number;
+  paid?: number;
+  remarks?: string;
+}>;
+
+type Payment = {
+  paymentName: string;
+  amount: number;
+  scholarship?: number;
+  paid?: number;
+  remarks?: string;
+};
+
+type EmiFields = Partial<{
+  totalPaid: number;
+  totalDue: number;
+  installmentNumber: number;
+  remarks: string;
+}>;
+
+type UpdateOptions =
+  | {
+      paymentName: string;
+      paymentUpdate: PaymentUpdate;
+    }
+  | {
+      payments?: Payment[];
+      emiFields?: EmiFields;
+    };
+
 export async function createStudent(data: any) {
   try {
     await connectToDataBase();
@@ -282,6 +314,8 @@ export async function updateStudent(studentId: string, updatedData: any) {
       return { success: false, message: "Student not found" };
     }
 
+    revalidatePath("/admin/student-management/students");
+
     return {
       success: true,
       student: JSON.parse(JSON.stringify(updatedStudent)),
@@ -294,68 +328,101 @@ export async function updateStudent(studentId: string, updatedData: any) {
 
 export async function updateCourseFees(
   studentId: string,
+  courseFeesId: string,
   emiId: string,
-  updateData: Partial<{
-    paid: boolean | string;
-    due: string;
-    remarks: string;
-    scholarship: string;
-    amount: number;
-    uploadReceipt?: { public_id: string; secure_url: string };
-  }>,
-  receiptFile?: File
-) {
+  options: UpdateOptions
+): Promise<{ success: boolean; message: string }> {
   try {
     await connectToDataBase();
 
-    if (receiptFile && receiptFile.size > 0) {
-      const receiptFilePath = await parseImage(receiptFile);
-      const result = await uploadFile(receiptFilePath, receiptFile.type);
+    const filter: any = {
+      $or: [
+        { student_id: studentId },
+        ...(mongoose.Types.ObjectId.isValid(studentId)
+          ? [{ _id: new mongoose.Types.ObjectId(studentId) }]
+          : []),
+      ],
+      "courseFees._id": new mongoose.Types.ObjectId(courseFeesId),
+      "courseFees.emis._id": new mongoose.Types.ObjectId(emiId),
+    };
 
-      if (result instanceof Error) {
-        throw new Error("Failed to upload receipt to Cloudinary");
+    const arrayFilters: Record<string, any>[] = [
+      { "cf._id": new mongoose.Types.ObjectId(courseFeesId) },
+      { "emi._id": new mongoose.Types.ObjectId(emiId) },
+    ];
+    // Case 1: Update single payment field
+    if ("paymentName" in options && options.paymentUpdate) {
+      arrayFilters.push({ "pm.paymentName": options.paymentName });
+
+      const updateDoc: any = {};
+      for (const [field, value] of Object.entries(options.paymentUpdate)) {
+        updateDoc[`courseFees.$[cf].emis.$[emi].payments.$[pm].${field}`] =
+          value;
       }
 
-      updateData.uploadReceipt = {
-        public_id: result.public_id,
-        secure_url: result.secure_url,
+      const updateResult = await Students.updateOne(
+        filter,
+        { $set: updateDoc },
+        { arrayFilters }
+      );
+
+      if (updateResult.modifiedCount === 0) {
+        return {
+          success: false,
+          message: "No payment updated. Check paymentName and IDs.",
+        };
+      }
+
+      return { success: true, message: "Single payment updated successfully." };
+    }
+
+    // Case 2: Replace payments array and/or update EMI fields
+    if ("payments" in options && Array.isArray(options.payments)) {
+      const updateDoc: any = {
+        "courseFees.$[cf].emis.$[emi].payments": options.payments,
       };
 
-      await fs.unlink(receiptFilePath);
-    }
+      if (options.emiFields) {
+        const emiFieldKeys: (keyof EmiFields)[] = [
+          "totalPaid",
+          "totalDue",
+          "installmentNumber",
+          "remarks",
+        ];
 
-    const setObj: any = {};
-    for (const key in updateData) {
-      setObj[`courseFees.$[].emis.$[emi].${key}`] = (updateData as any)[key];
-    }
-
-    const updateResult = await Students.updateOne(
-      {
-        $or: [
-          { student_id: studentId },
-          {
-            _id: mongoose.Types.ObjectId.isValid(studentId)
-              ? new mongoose.Types.ObjectId(studentId)
-              : undefined,
-          },
-        ],
-        "courseFees.emis._id": new mongoose.Types.ObjectId(emiId),
-      },
-      {
-        $set: setObj,
-      },
-      {
-        arrayFilters: [{ "emi._id": new mongoose.Types.ObjectId(emiId) }],
+        emiFieldKeys.forEach((key) => {
+          const value = options.emiFields![key];
+          if (value !== undefined) {
+            updateDoc[`courseFees.$[cf].emis.$[emi].${key}`] = value;
+          }
+        });
       }
-    );
 
-    if (updateResult.modifiedCount === 0) {
-      return { success: false, message: "EMI not found or no change made" };
+      // console.log("UpdateDoc:", updateDoc);
+
+      const updateResult = await Students.updateOne(
+        filter,
+        { $set: updateDoc },
+        { arrayFilters }
+      );
+
+      if (updateResult.modifiedCount === 0) {
+        return {
+          success: false,
+          message: "Payments and/or EMI fields update failed. Check IDs.",
+        };
+      }
+      revalidatePath("/admin/student-management/students");
+      revalidatePath("/admin/fees");
+      return {
+        success: true,
+        message: "Payments and EMI fields updated successfully.",
+      };
     }
 
-    return { success: true, message: "EMI updated successfully" };
+    return { success: false, message: "Invalid update options provided." };
   } catch (error: any) {
-    console.error("Error updating EMI:", error);
+    console.error("Error in updateCourseFees:", error);
     return { success: false, message: error.message || "Unknown error" };
   }
 }
@@ -457,7 +524,8 @@ export async function updateHostelFees(
         throw new Error("Failed to remove hostel fee month");
       }
     }
-
+    revalidatePath("/admin/student-management/students");
+    revalidatePath("/admin/fees");
     return { success: true, message: "Hostel fee month updated successfully" };
   } catch (error: any) {
     console.error("Error updating hostel fees:", error);

@@ -14,11 +14,11 @@ import { updateCourseFees, updateHostelFees } from "@/actions/studentAction";
 import { useRouter } from "next/navigation";
 import EditCourseFees from "./EditCourseFees";
 import { IoIosEye } from "react-icons/io";
-import ViewCourseFees from "./ViewCourseFees";
-import ViewHostelFees from "./ViewHostelFees";
+
 import useClickOutside from "@/hooks/useClickOutside";
 import SidePopUpSlider from "@/ui/SidePopup";
 import dynamic from "next/dynamic";
+import ViewCourseFeesInvoice from "./ViewCourseFeesInvoice";
 
 const ViewHostelInvoice = dynamic(() => import("./ViewHostelInvoice"), {
   ssr: false,
@@ -46,8 +46,12 @@ export default function FeesTable({
   const [viewingEmi, setViewingEmi] = useState<{
     emiData: any;
   } | null>(null);
-  const [viewingHostel, setViewingHostel] = useState<{
-    hostelData: any;
+
+  const [viewingCourseFeesInvoice, setViewingCourseFeesInvoice] = useState<{
+    student: IStudentType;
+    studentData: StudentDataType;
+    courseFee: any;
+    emiData: any;
   } | null>(null);
 
   const [invoiceData, setInvoiceData] = useState<{
@@ -55,13 +59,6 @@ export default function FeesTable({
     studentData: StudentDataType;
     hostelFeeMonth: HostelFeeMonthType;
   } | null>(null);
-
-  const popupRef = useClickOutside<HTMLDivElement>(() => {
-    setEditingStudentId(null);
-    setEditingEmi(null);
-    setViewingEmi(null);
-    setViewingHostel(null);
-  });
 
   const tableHeader = [
     "student name",
@@ -279,12 +276,15 @@ export default function FeesTable({
                 >
                   {emi ? (
                     <>
-                      {emi.paid ? (
+                      {emi.totalPaid && emi.totalPaid > 0 ? (
                         <FaCheckCircle className="text-green-600 text-sm" />
                       ) : (
                         <FaClock className="text-red-600 text-sm" />
                       )}
-                      {emi.amount}
+                      {emi.payments?.reduce(
+                        (sum: number, p: any) => sum + (p.amount || 0),
+                        0
+                      ) ?? "0"}
                       <button
                         type="button"
                         onClick={() => {
@@ -302,49 +302,71 @@ export default function FeesTable({
                       </button>
                       <button
                         type="button"
-                        onClick={() => setViewingEmi({ emiData: emi })}
+                        onClick={() => {
+                          setViewingCourseFeesInvoice({
+                            student,
+                            studentData: student.studentData?.[0],
+                            courseFee,
+                            emiData: emi,
+                          });
+                        }}
                         className="text-xs text-blue-600 size-4 flex justify-center items-center bg-white border border-[#eeeeee] rounded-full"
                       >
                         <IoIosEye />
                       </button>
 
                       {editingEmi && editingEmi.emiId === emi._id && (
-                        <div
-                          ref={popupRef}
-                          className="absolute top-[calc(100%_+_0.75rem)] left-1/2 -translate-x-1/2 z-[100]"
+                        <SidePopUpSlider
+                          showPopUp={!!editingEmi}
+                          handleClose={() => setEditingEmi(null)}
                         >
                           <EditCourseFees
-                            amount={editingEmi.emiData.paid}
-                            baseAmount={editingEmi.emiData.amount}
-                            scholarship={editingEmi.emiData.scholarship}
-                            due={editingEmi.emiData.due}
-                            remarks={editingEmi.emiData.remarks}
-                            helper={async (updateData, receiptFile) => {
+                            emiData={editingEmi.emiData}
+                            baseAmount={editingEmi.emiData.amount ?? 0}
+                            defaultPaid={
+                              editingEmi.emiData.totalPaid?.toString() ?? "0"
+                            }
+                            defaultDue={
+                              editingEmi.emiData.totalDue?.toString() ?? "0"
+                            }
+                            defaultRemarks={editingEmi.emiData.remarks ?? ""}
+                            helper={async (updateData) => {
                               const result = await updateCourseFees(
                                 editingEmi.studentId,
+                                editingEmi.courseFeeId,
                                 editingEmi.emiId,
-                                updateData,
-                                receiptFile
+                                updateData
                               );
                               if (result.success) {
                                 router.refresh();
+                                setEditingEmi(null); // Close the Edit popup
+
+                                // Find the updated courseFee and studentData for showing invoice
+                                const student = studentsData.find(
+                                  (s) => s._id === editingEmi.studentId
+                                );
+                                if (!student) return result;
+
+                                const studentData = student.studentData?.[0]; // adapt if you want the exact studentData
+                                const courseFee = student.courseFees.find(
+                                  (fee) => fee._id === editingEmi.courseFeeId
+                                );
+                                const updatedEmiDataWithDate = {
+                                  ...updateData,
+                                  updatedAt: new Date().toISOString(),
+                                };
+                                setViewingCourseFeesInvoice({
+                                  student,
+                                  studentData,
+                                  courseFee,
+                                  emiData: updatedEmiDataWithDate,
+                                });
                               }
                               return result;
                             }}
                             handleClose={() => setEditingEmi(null)}
                           />
-                        </div>
-                      )}
-                      {viewingEmi && viewingEmi.emiData._id === emi._id && (
-                        <div
-                          ref={popupRef}
-                          className="absolute top-[calc(100%_+_0.75rem)] left-1/2 -translate-x-1/2 z-[100]"
-                        >
-                          <ViewCourseFees
-                            emiData={viewingEmi.emiData}
-                            onClose={() => setViewingEmi(null)}
-                          />
-                        </div>
+                        </SidePopUpSlider>
                       )}
                     </>
                   ) : (
@@ -362,10 +384,20 @@ export default function FeesTable({
                 const now = new Date();
                 const targetYear = year ? year : now.getFullYear();
 
-                return student.courseFees
+                if (!Array.isArray(student.courseFees)) return "0";
+
+                // Filter courseFees by year and flatten emis arrays safely
+                const emis = student.courseFees
                   .filter((fee) => fee.currentYear === String(targetYear))
-                  .flatMap((fee) => fee.emis || [])
-                  .reduce((sum, emi) => sum + (Number(emi.due) || 0), 0);
+                  .flatMap((fee) => (Array.isArray(fee.emis) ? fee.emis : []));
+
+                // Sum due amounts, safely coercing to Number and default 0
+                const totalDue = emis.reduce(
+                  (sum, emi) => sum + (Number(emi.totalDue) || 0),
+                  0
+                );
+
+                return totalDue;
               })()}
             </div>
           </div>
@@ -386,6 +418,27 @@ export default function FeesTable({
                 student={invoiceData.student}
                 studentData={invoiceData.studentData}
                 hostelFeeMonth={invoiceData.hostelFeeMonth}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewingCourseFeesInvoice && (
+        <div className="fixed z-50 inset-0 h-full w-full overflow-scroll ">
+          <div className=" bg-black/40 flex justify-center items-center p-8">
+            <button
+              className="absolute top-2 right-2 size-[2rem] bg-custom-pink rounded-full flex justify-center items-center text-xl text-white hover:text-red-500"
+              onClick={() => setViewingCourseFeesInvoice(null)}
+            >
+              &times;
+            </button>
+            <div className=" w-fit">
+              <ViewCourseFeesInvoice
+                student={viewingCourseFeesInvoice.student}
+                studentData={viewingCourseFeesInvoice.studentData}
+                courseFee={viewingCourseFeesInvoice.courseFee}
+                emiData={viewingCourseFeesInvoice.emiData}
               />
             </div>
           </div>

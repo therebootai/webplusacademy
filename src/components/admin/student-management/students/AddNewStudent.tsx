@@ -89,13 +89,30 @@ export default function AddNewStudent({
       | string
       | null;
 
-    const emis = courseFees.map((amount, index) => ({
-      installmentNumber: index + 1,
-      amount: Number(amount),
-      dueDate: null,
-    }));
+    const emis = courseFees.map((amountStr, index) => {
+      const amount = Number(amountStr);
+      return {
+        installmentNumber: index + 1,
+        payments: [
+          {
+            paymentName: "course fees",
+            amount,
+            scholarship: 0,
+            paid: 0,
+            remarks: "",
+          },
+        ],
+        totalPaid: 0,
+        totalDue: amount,
+        dueDate: null,
+        remarks: "",
+      };
+    });
 
-    const courseFeesTotal = emis.reduce((acc, cur) => acc + cur.amount, 0);
+    const courseFeesTotal = emis.reduce(
+      (acc, emi) => acc + emi.payments.reduce((pAcc, p) => pAcc + p.amount, 0),
+      0
+    );
 
     const studentDataEntry = {
       currentBatch: batchId || undefined,
@@ -256,8 +273,12 @@ export default function AddNewStudent({
               .flatMap((courseFee) =>
                 Array.isArray(courseFee.emis) ? courseFee.emis : []
               )
-              .filter((emi) => typeof emi.amount === "number")
-              .map((emi) => emi.amount!.toString())
+              .map((emi) => {
+                const courseFeesPayment = emi.payments?.find(
+                  (p) => p.paymentName.toLowerCase() === "course fees"
+                );
+                return courseFeesPayment?.amount?.toString() ?? "0";
+              })
           : []
       );
     }
