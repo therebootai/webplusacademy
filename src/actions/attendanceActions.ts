@@ -1,9 +1,11 @@
 "use server";
 
 import { connectToDataBase } from "@/db/connection";
-import Attendance from "@/models/Attendance";
+import Attendance, { AttendanceDocument } from "@/models/Attendance";
 import Batches from "@/models/Batches";
 import Students from "@/models/Students";
+import { generateCustomId } from "@/util/generateCustomId";
+import { Types } from "mongoose";
 
 import { revalidatePath } from "next/cache";
 
@@ -28,175 +30,175 @@ export async function createNewAttendance(data: any) {
   }
 }
 
-// export async function performDailyAttendanceBulkWrite(
-//   studentsDailyAttendanceRecords: any
-// ) {
-//   await connectToDataBase();
+export async function performDailyAttendanceBulkWrite(
+  studentsDailyAttendanceRecords: any
+) {
+  await connectToDataBase();
 
-//   const bulkOperations = [];
-//   const uniqueBatchIds = new Set<string>();
-//   const uniqueStudentIds = new Set<string>();
+  const bulkOperations = [];
+  const uniqueBatchIds = new Set<string>();
+  const uniqueStudentIds = new Set<string>();
 
-//   for (const studentRecords of studentsDailyAttendanceRecords) {
-//     for (const dailyRecord of studentRecords) {
-//       let batchObjectId: Types.ObjectId;
-//       let studentObjectId: Types.ObjectId;
+  for (const studentRecords of studentsDailyAttendanceRecords) {
+    for (const dailyRecord of studentRecords) {
+      let batchObjectId: Types.ObjectId;
+      let studentObjectId: Types.ObjectId;
 
-//       try {
-//         batchObjectId = new Types.ObjectId(dailyRecord.batch_id);
-//         studentObjectId = new Types.ObjectId(dailyRecord.student_id);
+      try {
+        batchObjectId = new Types.ObjectId(dailyRecord.batch_id);
+        studentObjectId = new Types.ObjectId(dailyRecord.student_id);
 
-//         uniqueBatchIds.add(batchObjectId.toHexString());
-//         uniqueStudentIds.add(studentObjectId.toHexString());
-//       } catch (e) {
-//         console.error(e);
-//         continue;
-//       }
+        uniqueBatchIds.add(batchObjectId.toHexString());
+        uniqueStudentIds.add(studentObjectId.toHexString());
+      } catch (e) {
+        console.error(e);
+        continue;
+      }
 
-//       const filter = {
-//         student_id: studentObjectId,
-//         batch_id: batchObjectId,
-//         attendance_date: dailyRecord.attendance_date,
-//         attendance_month: dailyRecord.attendance_month,
-//         attendance_year: dailyRecord.attendance_year,
-//       };
+      const filter = {
+        student_id: studentObjectId,
+        batch_id: batchObjectId,
+        attendance_date: dailyRecord.attendance_date,
+        attendance_month: dailyRecord.attendance_month,
+        attendance_year: dailyRecord.attendance_year,
+      };
 
-//       if (dailyRecord.attendance_status === "") {
-//         bulkOperations.push({
-//           deleteOne: {
-//             filter: filter,
-//           },
-//         });
-//       } else {
-//         const existingAttendance = await Attendance.findOne(filter).lean();
+      if (dailyRecord.attendance_status === "") {
+        bulkOperations.push({
+          deleteOne: {
+            filter: filter,
+          },
+        });
+      } else {
+        const existingAttendance = await Attendance.findOne(filter).lean();
 
-//         const updateData: Partial<AttendanceDocument> = {
-//           attendance_status: dailyRecord.attendance_status,
-//           leave_reason:
-//             dailyRecord.attendance_status === "leave"
-//               ? dailyRecord.leave_reason
-//               : null,
-//           batch_subject: dailyRecord.batch_subject,
-//         };
+        const updateData: Partial<AttendanceDocument> = {
+          attendance_status: dailyRecord.attendance_status,
+          leave_reason:
+            dailyRecord.attendance_status === "leave"
+              ? dailyRecord.leave_reason
+              : null,
+          batch_subject: dailyRecord.batch_subject,
+        };
 
-//         if (existingAttendance) {
-//           bulkOperations.push({
-//             updateOne: {
-//               filter: filter,
-//               update: { $set: updateData },
-//             },
-//           });
-//         } else {
-//           const latestRecord = await Attendance.findOne(
-//             {},
-//             { attendance_id: 1 }
-//           )
-//             .sort({ attendance_id: -1 })
-//             .lean();
+        if (existingAttendance) {
+          bulkOperations.push({
+            updateOne: {
+              filter: filter,
+              update: { $set: updateData },
+            },
+          });
+        } else {
+          const latestRecord = await Attendance.findOne(
+            {},
+            { attendance_id: 1 }
+          )
+            .sort({ attendance_id: -1 })
+            .lean();
 
-//           let lastNumber = latestRecord
-//             ? parseInt(
-//                 (latestRecord.attendance_id as string).replace(
-//                   "Attendance_ID-",
-//                   ""
-//                 ),
-//                 10
-//               )
-//             : 0;
-//           const newAttendanceId = await generateCustomId(
-//             Attendance,
-//             "attendance_id",
-//             "Attendance_ID-",
-//             ++lastNumber
-//           );
+          let lastNumber = latestRecord
+            ? parseInt(
+                (latestRecord.attendance_id as string).replace(
+                  "Attendance_ID-",
+                  ""
+                ),
+                10
+              )
+            : 0;
+          const newAttendanceId = await generateCustomId(
+            Attendance,
+            "attendance_id",
+            "Attendance_ID-",
+            ++lastNumber
+          );
 
-//           bulkOperations.push({
-//             insertOne: {
-//               document: {
-//                 attendance_id: newAttendanceId,
-//                 batch_id: batchObjectId,
-//                 student_id: studentObjectId,
-//                 attendance_date: dailyRecord.attendance_date,
-//                 attendance_month: dailyRecord.attendance_month,
-//                 attendance_year: dailyRecord.attendance_year,
-//                 attendance_status: updateData.attendance_status,
-//                 leave_reason: updateData.leave_reason,
-//                 batch_subject: updateData.batch_subject,
-//               } as AttendanceDocument,
-//             },
-//           });
-//         }
-//       }
-//     }
-//   }
+          bulkOperations.push({
+            insertOne: {
+              document: {
+                attendance_id: newAttendanceId,
+                batch_id: batchObjectId,
+                student_id: studentObjectId,
+                attendance_date: dailyRecord.attendance_date,
+                attendance_month: dailyRecord.attendance_month,
+                attendance_year: dailyRecord.attendance_year,
+                attendance_status: updateData.attendance_status,
+                leave_reason: updateData.leave_reason,
+                batch_subject: updateData.batch_subject,
+              } as AttendanceDocument,
+            },
+          });
+        }
+      }
+    }
+  }
 
-//   if (bulkOperations.length === 0) {
-//     console.log("No bulk operations to perform.");
-//     return { success: true, message: "No bulk operations to perform" };
-//   }
+  if (bulkOperations.length === 0) {
+    console.log("No bulk operations to perform.");
+    return { success: true, message: "No bulk operations to perform" };
+  }
 
-//   let bulkResult;
-//   try {
-//     bulkResult = await Attendance.bulkWrite(bulkOperations);
-//   } catch (error: any) {
-//     throw new Error(`Attendance bulk write failed: ${error.message}`);
-//   }
+  let bulkResult;
+  try {
+    bulkResult = await Attendance.bulkWrite(bulkOperations);
+  } catch (error: any) {
+    throw new Error(`Attendance bulk write failed: ${error.message}`);
+  }
 
-//   const linkingPromises: Promise<any>[] = [];
+  const linkingPromises: Promise<any>[] = [];
 
-//   for (const batchIdHex of uniqueBatchIds) {
-//     const batchId = new mongoose.Types.ObjectId(batchIdHex);
-//     linkingPromises.push(
-//       (async () => {
-//         const currentAttendanceIds = await Attendance.find(
-//           { batch_id: batchId },
-//           { _id: 1 }
-//         ).lean();
-//         const idsToSet = currentAttendanceIds.map((att) => att._id);
+  for (const batchIdHex of uniqueBatchIds) {
+    const batchId = new Types.ObjectId(batchIdHex);
+    linkingPromises.push(
+      (async () => {
+        const currentAttendanceIds = await Attendance.find(
+          { batch_id: batchId },
+          { _id: 1 }
+        ).lean();
+        const idsToSet = currentAttendanceIds.map((att) => att._id);
 
-//         return Batches.findByIdAndUpdate(
-//           batchId,
-//           { $set: { attendance_list: idsToSet } },
-//           { new: true, upsert: false }
-//         );
-//       })()
-//     );
-//   }
+        return Batches.findByIdAndUpdate(
+          batchId,
+          { $set: { attendance_list: idsToSet } },
+          { new: true, upsert: false }
+        );
+      })()
+    );
+  }
 
-//   for (const studentIdHex of uniqueStudentIds) {
-//     const studentId = new mongoose.Types.ObjectId(studentIdHex);
-//     linkingPromises.push(
-//       (async () => {
-//         const currentAttendanceIds = await Attendance.find(
-//           { student_id: studentId },
-//           { _id: 1 }
-//         ).lean();
-//         const idsToSet = currentAttendanceIds.map((att) => att._id);
+  for (const studentIdHex of uniqueStudentIds) {
+    const studentId = new Types.ObjectId(studentIdHex);
+    linkingPromises.push(
+      (async () => {
+        const currentAttendanceIds = await Attendance.find(
+          { student_id: studentId },
+          { _id: 1 }
+        ).lean();
+        const idsToSet = currentAttendanceIds.map((att) => att._id);
 
-//         return Students.findByIdAndUpdate(
-//           studentId,
-//           { $set: { "studentData.$[].attendance_id": idsToSet } },
-//           { new: true, upsert: false }
-//         );
-//       })()
-//     );
-//   }
+        return Students.findByIdAndUpdate(
+          studentId,
+          { $set: { "studentData.$[].attendance_id": idsToSet } },
+          { new: true, upsert: false }
+        );
+      })()
+    );
+  }
 
-//   try {
-//     await Promise.all(linkingPromises);
-//     console.log(
-//       "Batch and student linking successful for all batches and students"
-//     );
-//   } catch (error: any) {
-//     console.error("Batch and student linking failed:", error);
-//     throw new Error(`Batch and student linking failed: ${error.message}`);
-//   }
+  try {
+    await Promise.all(linkingPromises);
+    console.log(
+      "Batch and student linking successful for all batches and students"
+    );
+  } catch (error: any) {
+    console.error("Batch and student linking failed:", error);
+    throw new Error(`Batch and student linking failed: ${error.message}`);
+  }
 
-//   return {
-//     success: true,
-//     message: "Attendance updated successfully",
-//   };
-// }
+  return {
+    success: true,
+    message: "Attendance updated successfully",
+  };
+}
 
 export async function getAllAttendance({
   page = 1,
