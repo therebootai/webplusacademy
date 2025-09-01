@@ -1,6 +1,5 @@
 import {
   CourseFeesType,
-  EmiType,
   HostelFeeMonthType,
   HostelFeesType,
   IStudentType,
@@ -10,34 +9,37 @@ import { generateCustomId } from "@/util/generateCustomId";
 import mongoose, { Model, QueryWithHelpers, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
+export type PaymentType = {
+  paymentName: string;
+  amount: number;
+  scholarship?: number;
+  paid?: number;
+  remarks?: string;
+};
+
+export type EmiType = {
+  installmentNumber: number;
+  payments: PaymentType[];
+  totalPaid?: number;
+  totalDue?: number;
+};
+
+const paymentSchema = new Schema<PaymentType>({
+  paymentName: { type: String, required: true },
+  amount: { type: Number, required: true },
+  scholarship: { type: Number },
+  paid: { type: Number },
+  remarks: { type: String },
+});
+
 const emiSchema = new Schema<EmiType>(
   {
-    installmentNumber: {
-      type: Number,
-    },
-    amount: {
-      type: Number,
-    },
-    due: {
-      type: String,
-    },
-    paid: {
-      type: String,
-    },
-    uploadReceipt: {
-      public_id: { type: String },
-      secure_url: { type: String },
-    },
-    remarks: {
-      type: String,
-    },
-    scholarship: {
-      type: String,
-    },
+    installmentNumber: { type: Number, required: true },
+    payments: [paymentSchema],
+    totalPaid: { type: Number },
+    totalDue: { type: Number },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 const courseFeesSchema = new Schema<CourseFeesType>({

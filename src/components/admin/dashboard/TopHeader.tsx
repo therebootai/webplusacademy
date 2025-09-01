@@ -97,7 +97,7 @@ export default function TopHeader() {
   return (
     <nav className="flex flex-col bg-white">
       <div className="flex flex-row justify-between items-center px-4 xl:px-8 gap-8 py-2 lg:py-4">
-        <Link href={"/"}>
+        <Link href={"/admin/dashboard"}>
           <Image
             src={"/logo.svg"}
             alt="logo"

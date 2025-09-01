@@ -1,182 +1,300 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { HiPlusCircle } from "react-icons/hi2";
+
+type PaymentEntry = {
+  paymentName: string;
+  amount: number;
+  scholarship: number;
+  paid?: number;
+};
+
+type EmiDataType = {
+  payments: PaymentEntry[];
+  totalPaid?: number;
+  totalDue?: number;
+  remarks?: string;
+};
 
 export default function EditCourseFees({
   helper,
   handleClose,
-  amount: defaultAmount,
   baseAmount = 0,
-  scholarship: defaultScholarship = "",
-  due: defaultDue = "",
-  remarks: defaultRemarks = "",
+  defaultPaid = "",
+  defaultDue = 0,
+  defaultRemarks = "",
+  emiData,
 }: {
-  helper: (hostelFeeMonth: any, receiptFile?: File) => any;
+  helper: (courseFee: any) => Promise<any>;
   handleClose: () => void;
   baseAmount?: number;
-  amount?: number;
-
-  scholarship?: string;
-  due?: string;
-  remarks?: string;
+  defaultPaid?: string;
+  defaultDue?: number;
+  defaultRemarks?: string;
+  emiData?: EmiDataType;
 }) {
-  const [file, setFile] = useState<File | null>(null);
-  const [scholarship, setScholarship] = useState<string>(defaultScholarship);
+  // Initialize payments state
+  const [payments, setPayments] = useState<PaymentEntry[]>([
+    { paymentName: "", amount: baseAmount, scholarship: 0, paid: 0 },
+  ]);
 
-  const [finalAmount, setFinalAmount] = useState<number>(baseAmount);
-  const [amount, setAmount] = useState<string>(
-    (defaultAmount ?? baseAmount).toString()
-  );
-  const [due, setDue] = useState<string>(defaultDue);
-
+  const [totalPaid, setTotalPaid] = useState<number>(Number(defaultPaid) || 0);
+  const [totalDue, setTotalDue] = useState<number>(defaultDue);
   const [remarks, setRemarks] = useState<string>(defaultRemarks);
+  const [initialized, setInitialized] = useState(false);
+  const [userEdited, setUserEdited] = useState(false);
 
-  async function handelUpdateFees(prevState: unknown, formData: FormData) {
-    try {
-      const paid = formData.get("amount") as string;
-      const due = formData.get("due") as string;
-      const scholarship = formData.get("scholarship") as string;
-      const remarks = formData.get("remarks") as string;
-      const receiptFile = formData.get("receiptFile") as File;
+  // Calculate total amount after discount (scholarship)
+  const totalAmount = payments.reduce((sum, p) => {
+    const discounted = Math.round(p.amount - (p.amount * p.scholarship) / 100);
+    return sum + discounted;
+  }, 0);
 
-      const courseFee = {
-        paid: +paid,
-        due,
-        scholarship,
-        remarks,
-      };
-
-      const updateResult = await helper(courseFee, receiptFile);
-      if (!updateResult.success) {
-        throw new Error(updateResult.message);
-      }
-
-      handleClose();
-      return updateResult;
-    } catch (error: any) {
-      console.error(error);
-      alert(error.message);
-    }
-  }
-
+  // Load existing emiData on mount or when emiData changes
   useEffect(() => {
-    const perc = +scholarship || 0;
-    const discountedAmount = Math.round(baseAmount - (baseAmount * perc) / 100);
-    setFinalAmount(discountedAmount);
-    if (amount === "" || +amount > discountedAmount) {
-      setAmount(discountedAmount.toString());
-      setDue("");
-    }
-  }, [baseAmount, scholarship]);
+    if (emiData) {
+      setPayments(
+        emiData.payments?.map((p) => {
+          const discounted = Math.round(
+            p.amount - (p.amount * p.scholarship) / 100
+          );
+          return {
+            paymentName: p.paymentName,
+            amount: p.amount,
+            scholarship: p.scholarship ?? 0,
+            paid: p.paid !== undefined && p.paid !== 0 ? p.paid : discounted,
+          };
+        }) ?? [
+          {
+            paymentName: "",
+            amount: baseAmount,
+            scholarship: 0,
+            paid: baseAmount,
+          },
+        ]
+      );
 
-  const handleScholarshipChange = (val: string) => {
-    if (/^\d*$/.test(val) && +val <= 100) {
-      setScholarship(val);
-      const perc = +val;
-      const newFinal = Math.round(baseAmount - (baseAmount * perc) / 100);
-      setFinalAmount(newFinal);
-      setAmount(newFinal.toString());
-      setDue("");
-    }
-  };
-
-  const handleAmountChange = (val: string) => {
-    if (/^\d*$/.test(val)) {
-      setAmount(val);
-      if (val === "") {
-        setDue("");
+      if (
+        typeof emiData.totalPaid === "number" &&
+        typeof emiData.totalDue === "number"
+      ) {
+        setTotalPaid(emiData.totalPaid);
+        setTotalDue(emiData.totalDue);
       } else {
-        const entered = +val;
-        const dueAmt = Math.max(0, finalAmount - entered);
-        setDue(dueAmt.toString());
+        const paidSum = emiData.payments?.reduce(
+          (sum, p) => sum + (p.paid || 0),
+          0
+        );
+        const amountSum = emiData.payments?.reduce(
+          (sum, p) =>
+            sum +
+            Math.round(p.amount - (p.amount * (p.scholarship ?? 0)) / 100),
+          0
+        );
+        setTotalPaid(paidSum || 0);
+        setTotalDue(Math.max(0, (amountSum || 0) - (paidSum || 0)));
       }
+
+      setRemarks(emiData.remarks ?? "");
+      setInitialized(true);
+      setUserEdited(false);
     }
+  }, [emiData, baseAmount]);
+
+  // Recalculate due whenever total paid or total amount changes
+  useEffect(() => {
+    if (!initialized) return;
+    if (!userEdited) return; // only recalc if user changed
+    const sumPaid = payments.reduce((sum, p) => sum + (p.paid ?? 0), 0);
+    setTotalPaid(sumPaid);
+    setTotalDue(Math.max(0, totalAmount - sumPaid));
+  }, [payments, totalAmount, initialized, userEdited]);
+  // Add new empty payment row
+  const addPaymentRow = () => {
+    setPayments((prev) => [
+      ...prev,
+      { paymentName: "", amount: 0, scholarship: 0, paid: 0 },
+    ]);
   };
 
-  const handleDueChange = (val: string) => {
-    if (/^\d*$/.test(val)) {
-      if (val === "") {
-        setDue("");
-        setAmount(finalAmount.toString());
+  // Update the specific field of a payment row, including 'paid'
+
+  // Handle change on total paid input (numeric string)
+  const handlePaidChange = (value: string) => {
+    if (/^\d*$/.test(value)) {
+      const numPaid = Number(value);
+      if (numPaid > totalAmount) {
+        setTotalPaid(totalAmount);
       } else {
-        const dueVal = +val;
-        const newAmount = Math.max(0, finalAmount - dueVal);
-        setDue(val);
-        setAmount(newAmount.toString());
+        setTotalPaid(numPaid);
       }
+      // Also update totalDue synchronously here or rely on the effect:
+      setTotalDue(Math.max(0, totalAmount - numPaid));
     }
   };
 
+  // Submit handler
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Prepare payments payload with trimmed names
+    const paymentsPayload = payments.map((p) => ({
+      paymentName: p.paymentName.trim(),
+      amount: p.amount,
+      scholarship: p.scholarship,
+      paid: p.paid ?? 0,
+    }));
+
+    // Convert totalPaid to number safely
+    const totalPaidNum = Number(totalPaid) || 0;
+
+    // Compose full payload
+    const courseFeePayload = {
+      payments: paymentsPayload,
+      emiFields: {
+        totalPaid: totalPaidNum,
+        totalDue: totalDue,
+        remarks,
+        updatedAt: new Date().toISOString(),
+      },
+    };
+
+    try {
+      const result = await helper(courseFeePayload);
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+      handleClose();
+    } catch (error: any) {
+      alert(error.message || "Failed to update course fees");
+    }
+  };
+
+  const updatePayment = (
+    index: number,
+    field: keyof PaymentEntry,
+    value: string | number
+  ) => {
+    setPayments((prev) => {
+      const newPayments = [...prev];
+      const num = Number(value);
+      setUserEdited(true);
+
+      if (field === "amount" || field === "scholarship") {
+        newPayments[index][field] = isNaN(num) ? 0 : num;
+
+        const amount = field === "amount" ? num : newPayments[index].amount;
+        const scholarship =
+          field === "scholarship" ? num : newPayments[index].scholarship;
+
+        newPayments[index].paid = Math.round(
+          amount - (amount * scholarship) / 100
+        );
+      } else if (field === "paid") {
+        newPayments[index][field] = isNaN(num) ? 0 : num;
+      } else if (field === "paymentName") {
+        newPayments[index][field] = value as string;
+      }
+
+      return newPayments;
+    });
+  };
   return (
-    <div className="relative bg-white rounded-2xl px-3 py-5 border border-[#eeeeee] z-[100]">
-      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-white border-l border-t border-gray-300 rotate-45 z-0" />
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          const formData = new FormData(e.currentTarget);
-          await handelUpdateFees(null, formData);
-        }}
-        className="flex flex-col gap-1"
-      >
-        <input
-          type="text"
-          name="amount"
-          pattern="[0-9]*"
-          value={amount}
-          onChange={(e) => handleAmountChange(e.target.value)}
-          placeholder="Enter Amount"
-          className="px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded"
-        />
-        <input
-          type="text"
-          name="scholarship"
-          pattern="[0-9]*"
-          value={scholarship}
-          onChange={(e) => handleScholarshipChange(e.target.value)}
-          placeholder="Scholarship %"
-          className="px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded"
-        />
-        <input
-          type="text"
-          name="due"
-          value={due}
-          onChange={(e) => handleDueChange(e.target.value)}
-          placeholder="Due"
-          className="px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded"
-        />
-        <div className="px-3 py-2 border border-[#eeeeee] rounded">
-          <input
-            type="file"
-            accept="image/*"
-            name="receiptFile"
-            id="receiptFile"
-            onChange={(e) =>
-              setFile(
-                e.target.files && e.target.files.length > 0
-                  ? e.target.files[0]
-                  : null
-              )
-            }
-            className="sr-only"
-          />
-          <label
-            htmlFor="receiptFile"
-            className="text-site-gray cursor-pointer capitalize"
-          >
-            {file?.name ?? "Upload receipt"}
+    <div className="relative px-3 py-5 z-[100]">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {payments.map((payment, i) => (
+          <div key={i} className="grid grid-cols-4 gap-4 mb-2">
+            <input
+              type="text"
+              placeholder="Payment name"
+              value={payment.paymentName}
+              required
+              onChange={(e) => updatePayment(i, "paymentName", e.target.value)}
+              className="h-[3.5rem] px-3 py-2 border border-gray-300 rounded"
+            />
+            <input
+              type="number"
+              min={0}
+              placeholder="Amount"
+              value={payment.amount || ""}
+              onChange={(e) => updatePayment(i, "amount", e.target.value)}
+              className="h-[3.5rem] px-3 py-2 border border-gray-300 rounded"
+            />
+            <input
+              type="number"
+              min={0}
+              max={100}
+              placeholder="Scholarship %"
+              value={payment.scholarship || ""}
+              onChange={(e) => updatePayment(i, "scholarship", e.target.value)}
+              className="h-[3.5rem] px-3 py-2 border border-gray-300 rounded"
+            />
+            <input
+              type="number"
+              min={0}
+              max={Math.round(
+                payment.amount - (payment.amount * payment.scholarship) / 100
+              )}
+              placeholder="Paid"
+              value={payment.paid ?? ""}
+              onChange={(e) =>
+                updatePayment(
+                  i,
+                  "paid",
+                  e.target.value === "" ? 0 : Number(e.target.value)
+                )
+              }
+              className="h-[3.5rem] px-3 py-2 border border-gray-300 rounded"
+            />
+          </div>
+        ))}
+
+        <button
+          type="button"
+          onClick={addPaymentRow}
+          className="flex items-center gap-2 text-site-darkgreen hover:text-green-600"
+        >
+          <HiPlusCircle size={24} />
+          Add Payment
+        </button>
+
+        <div className="grid grid-cols-2 gap-4 mt-4">
+          <label>
+            total Paid
+            <input
+              type="number"
+              max={totalAmount}
+              value={totalPaid}
+              onChange={(e) => handlePaidChange(e.target.value)}
+              className="h-[3.5rem] px-3 py-2 border border-gray-300 rounded w-full mt-1"
+            />
+          </label>
+          <label>
+            total Due
+            <input
+              type="number"
+              readOnly
+              value={totalDue}
+              className="h-[3.5rem] px-3 py-2 border border-gray-300 rounded w-full mt-1 bg-gray-100 cursor-not-allowed"
+            />
           </label>
         </div>
-        <input
-          type="text"
-          name="remarks"
-          value={remarks}
-          onChange={(e) => setRemarks(e.target.value)}
-          placeholder="Remarks"
-          className="px-3 py-2 border border-[#eeeeee] placeholder:text-site-gray placeholder:capitalize rounded"
-        />
+
+        <label className="mt-4">
+          Remarks
+          <textarea
+            value={remarks}
+            onChange={(e) => setRemarks(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded mt-1"
+            rows={3}
+            placeholder="Remarks"
+          />
+        </label>
+
         <button
           type="submit"
-          className="px-3 py-2 bg-site-darkgreen text-white text-center text-xs rounded"
+          className="mt-6 px-8 h-[3.5rem] bg-site-darkgreen text-white rounded hover:bg-green-800 transition"
         >
           Submit
         </button>

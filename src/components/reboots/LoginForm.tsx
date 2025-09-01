@@ -31,10 +31,20 @@ export default function LoginForm() {
         emailOrPhone as string,
         password as string
       );
-
-      login(loginResponse.data);
-
-      router.push("/admin");
+      if (loginResponse.success) {
+        login(loginResponse.data);
+        router.push("/admin/dashboard");
+      } else {
+        if (!loginResponse.success && loginResponse.message) {
+          if (loginResponse.message.includes("Credentials")) {
+            setEmailorphoneError("Invalid email/phone or password");
+            setPasswordError("Invalid email/phone or password");
+          } else {
+            setEmailorphoneError(loginResponse.message);
+            setPasswordError(loginResponse.message);
+          }
+        }
+      }
     } catch (error) {
       console.log(error);
     }
