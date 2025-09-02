@@ -102,6 +102,21 @@ export default function FeesTable({
     }
   }
 
+  studentsData.map((student) => {
+    let studentCourseFees = student.courseFees.filter(
+      (fee) => fee.currentYear === String(year ?? new Date().getFullYear())
+    );
+    let studenetCourseFessTotal = student.courseFees
+      .filter(
+        (fee) => fee.currentYear === String(year ?? new Date().getFullYear())
+      )
+      .reduce((sum, fee) => sum + (fee.totalAmount ?? 0), 0);
+
+    console.log("Student Course", studentCourseFees);
+
+    console.log("Student Course Total", studenetCourseFessTotal);
+  });
+
   return (
     <DisplayTable tableHeader={tableHeader}>
       {studentsData.map((student) => {

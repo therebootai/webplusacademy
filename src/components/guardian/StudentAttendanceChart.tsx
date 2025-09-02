@@ -73,7 +73,7 @@ export default function StudentAttendanceChart({
       <div className="flex flex-col gap-4 basis-[25%] self-start">
         <select
           name="status"
-          className="h-[3rem] outline-none placeholder:text-site-gray border border-[#cccccc] w-full rounded-md px-2 placeholder:capitalize"
+          className="h-[2.5rem] xlg:px-6 flex justify-center items-center bg-site-darkgreen text-white rounded   font-medium xlg:font-normal text-sm"
           value={presentStatus}
           onChange={(e) => setPresentStatus(e.target.value)}
         >
@@ -82,7 +82,7 @@ export default function StudentAttendanceChart({
           <option value="leave">Leave</option>
           <option value="holiday">Holiday</option>
         </select>
-        <div className="flex-1 flex border border-[#cccccc] rounded-md">
+        <div className="h-[2.5rem] flex justify-center items-center bg-site-darkgreen text-white rounded  font-medium xlg:font-normal text-sm">
           <DatePicker
             selected={year}
             name="year"
@@ -90,7 +90,7 @@ export default function StudentAttendanceChart({
             showYearPicker
             placeholderText="Choose year"
             dateFormat="yyyy"
-            className="px-2 h-[3rem] outline-none placeholder:text-site-gray flex-1 placeholder:capitalize"
+            className="flex-1 placeholder:capitalize"
           />
         </div>
       </div>

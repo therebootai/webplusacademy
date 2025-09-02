@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
 import ToggleAttendance from "./ToggleAttendancePopup";
 import useClickOutside from "@/hooks/useClickOutside";
-import { getAllAttendance } from "@/actions/attendanceActions";
+import { getAllAttendance, performDailyAttendanceBulkWrite } from "@/actions/attendanceActions";
 import { getDaysCountInMonth } from "@/util/ListOfDays";
 
 export default function AddManageAttendance({
@@ -221,7 +221,7 @@ export default function AddManageAttendance({
           };
         });
       });
-      // await performDailyAttendanceBulkWrite(submitData);
+      await performDailyAttendanceBulkWrite(submitData);
       onCancel();
     } catch (error) {
       console.log(error);
@@ -290,7 +290,7 @@ export default function AddManageAttendance({
                       {selectedDay === dayIndex + 1 &&
                         selectedStudentIndex === studentIdx && (
                           <div
-                            className="absolute top-[calc(100%_+_0.75rem)] left-1/2 -translate-x-1/2 z-[100]"
+                            className="absolute top-[calc(100%_+_0.75rem)] left-1/2 -translate-x-1/2 z-[1000] overflow-visible"
                             ref={attendanceToggleRef}
                           >
                             <ToggleAttendance

@@ -1,9 +1,11 @@
 "use server";
 
 import { connectToDataBase } from "@/db/connection";
-import Attendance from "@/models/Attendance";
+import Attendance, { AttendanceDocument } from "@/models/Attendance";
 import Batches from "@/models/Batches";
 import Students from "@/models/Students";
+import { generateCustomId } from "@/util/generateCustomId";
+import { Types } from "mongoose";
 
 import { revalidatePath } from "next/cache";
 
@@ -28,175 +30,220 @@ export async function createNewAttendance(data: any) {
   }
 }
 
-// export async function performDailyAttendanceBulkWrite(
-//   studentsDailyAttendanceRecords: any
-// ) {
-//   await connectToDataBase();
+export async function performDailyAttendanceBulkWrite(
+  studentsDailyAttendanceRecords: any
+) {
+  // It's good practice to ensure a connection is established, though often handled by the calling context.
+  await connectToDataBase();
 
-//   const bulkOperations = [];
-//   const uniqueBatchIds = new Set<string>();
-//   const uniqueStudentIds = new Set<string>();
+  const bulkOperations: any = [];
+  const uniqueBatchIds = new Set<string>();
+  const uniqueStudentIds = new Set<string>();
 
-//   for (const studentRecords of studentsDailyAttendanceRecords) {
-//     for (const dailyRecord of studentRecords) {
-//       let batchObjectId: Types.ObjectId;
-//       let studentObjectId: Types.ObjectId;
+  for (const studentRecords of studentsDailyAttendanceRecords) {
+    for (const dailyRecord of studentRecords) {
+      let batchObjectId: Types.ObjectId;
+      let studentObjectId: Types.ObjectId;
 
-//       try {
-//         batchObjectId = new Types.ObjectId(dailyRecord.batch_id);
-//         studentObjectId = new Types.ObjectId(dailyRecord.student_id);
+      try {
+        // Explicitly check for valid ObjectId strings
+        if (
+          !Types.ObjectId.isValid(dailyRecord.batch_id) ||
+          !Types.ObjectId.isValid(dailyRecord.student_id)
+        ) {
+          console.error(
+            `Invalid ObjectId provided for a record: ${JSON.stringify(
+              dailyRecord
+            )}`
+          );
+          continue;
+        }
 
-//         uniqueBatchIds.add(batchObjectId.toHexString());
-//         uniqueStudentIds.add(studentObjectId.toHexString());
-//       } catch (e) {
-//         console.error(e);
-//         continue;
-//       }
+        batchObjectId = new Types.ObjectId(dailyRecord.batch_id);
+        studentObjectId = new Types.ObjectId(dailyRecord.student_id);
 
-//       const filter = {
-//         student_id: studentObjectId,
-//         batch_id: batchObjectId,
-//         attendance_date: dailyRecord.attendance_date,
-//         attendance_month: dailyRecord.attendance_month,
-//         attendance_year: dailyRecord.attendance_year,
-//       };
+        uniqueBatchIds.add(batchObjectId.toHexString());
+        uniqueStudentIds.add(studentObjectId.toHexString());
+      } catch (e) {
+        console.error(
+          `Failed to create ObjectId for record: ${JSON.stringify(
+            dailyRecord
+          )}`,
+          e
+        );
+        continue;
+      }
 
-//       if (dailyRecord.attendance_status === "") {
-//         bulkOperations.push({
-//           deleteOne: {
-//             filter: filter,
-//           },
-//         });
-//       } else {
-//         const existingAttendance = await Attendance.findOne(filter).lean();
+      const filter = {
+        student_id: studentObjectId,
+        batch_id: batchObjectId,
+        attendance_date: dailyRecord.attendance_date,
+        attendance_month: dailyRecord.attendance_month,
+        attendance_year: dailyRecord.attendance_year,
+      };
 
-//         const updateData: Partial<AttendanceDocument> = {
-//           attendance_status: dailyRecord.attendance_status,
-//           leave_reason:
-//             dailyRecord.attendance_status === "leave"
-//               ? dailyRecord.leave_reason
-//               : null,
-//           batch_subject: dailyRecord.batch_subject,
-//         };
+      if (dailyRecord.attendance_status === "") {
+        bulkOperations.push({
+          deleteOne: {
+            filter: filter,
+          },
+        });
+      } else {
+        const updateData: Partial<AttendanceDocument> = {
+          attendance_status: dailyRecord.attendance_status,
+          leave_reason:
+            dailyRecord.attendance_status === "leave"
+              ? dailyRecord.leave_reason
+              : null,
+          batch_subject: dailyRecord.batch_subject,
+        };
 
-//         if (existingAttendance) {
-//           bulkOperations.push({
-//             updateOne: {
-//               filter: filter,
-//               update: { $set: updateData },
-//             },
-//           });
-//         } else {
-//           const latestRecord = await Attendance.findOne(
-//             {},
-//             { attendance_id: 1 }
-//           )
-//             .sort({ attendance_id: -1 })
-//             .lean();
+        const newAttendanceId = `Attendance_ID-${new Types.ObjectId().toHexString()}`;
 
-//           let lastNumber = latestRecord
-//             ? parseInt(
-//                 (latestRecord.attendance_id as string).replace(
-//                   "Attendance_ID-",
-//                   ""
-//                 ),
-//                 10
-//               )
-//             : 0;
-//           const newAttendanceId = await generateCustomId(
-//             Attendance,
-//             "attendance_id",
-//             "Attendance_ID-",
-//             ++lastNumber
-//           );
+        // Use updateOne with upsert to handle both updates and inserts efficiently
+        bulkOperations.push({
+          updateOne: {
+            filter: filter,
+            update: {
+              $set: updateData,
+              // We'll let MongoDB handle _id generation on insert for simplicity and safety
+              $setOnInsert: {
+                attendance_id: newAttendanceId,
+                batch_id: batchObjectId,
+                student_id: studentObjectId,
+                attendance_date: dailyRecord.attendance_date,
+                attendance_month: dailyRecord.attendance_month,
+                attendance_year: dailyRecord.attendance_year,
+              },
+            },
+            upsert: true,
+          },
+        });
+      }
+    }
+  }
 
-//           bulkOperations.push({
-//             insertOne: {
-//               document: {
-//                 attendance_id: newAttendanceId,
-//                 batch_id: batchObjectId,
-//                 student_id: studentObjectId,
-//                 attendance_date: dailyRecord.attendance_date,
-//                 attendance_month: dailyRecord.attendance_month,
-//                 attendance_year: dailyRecord.attendance_year,
-//                 attendance_status: updateData.attendance_status,
-//                 leave_reason: updateData.leave_reason,
-//                 batch_subject: updateData.batch_subject,
-//               } as AttendanceDocument,
-//             },
-//           });
-//         }
-//       }
-//     }
-//   }
+  if (bulkOperations.length === 0) {
+    return {
+      success: true,
+      message: "No bulk operations to perform.",
+    };
+  }
 
-//   if (bulkOperations.length === 0) {
-//     console.log("No bulk operations to perform.");
-//     return { success: true, message: "No bulk operations to perform" };
-//   }
+  let bulkResult;
+  try {
+    bulkResult = await Attendance.bulkWrite(bulkOperations, {
+      ordered: false,
+    });
+  } catch (error: any) {
+    throw new Error(`Attendance bulk write failed: ${error.message}`);
+  }
 
-//   let bulkResult;
-//   try {
-//     bulkResult = await Attendance.bulkWrite(bulkOperations);
-//   } catch (error: any) {
-//     throw new Error(`Attendance bulk write failed: ${error.message}`);
-//   }
+  const linkingPromises: Promise<any>[] = [];
 
-//   const linkingPromises: Promise<any>[] = [];
+  // Prepare and execute batch linking updates
+  const batchBulkOps = [];
+  for (const batchIdHex of uniqueBatchIds) {
+    const batchId = new Types.ObjectId(batchIdHex);
+    const currentAttendanceIds = await Attendance.find(
+      {
+        batch_id: batchId,
+      },
+      {
+        _id: 1,
+      }
+    ).lean();
+    const idsToSet = currentAttendanceIds.map((att) => att._id);
+    batchBulkOps.push({
+      updateOne: {
+        filter: {
+          _id: batchId,
+        },
+        update: {
+          $set: {
+            attendance_list: idsToSet,
+          },
+        },
+      },
+    });
+  }
 
-//   for (const batchIdHex of uniqueBatchIds) {
-//     const batchId = new mongoose.Types.ObjectId(batchIdHex);
-//     linkingPromises.push(
-//       (async () => {
-//         const currentAttendanceIds = await Attendance.find(
-//           { batch_id: batchId },
-//           { _id: 1 }
-//         ).lean();
-//         const idsToSet = currentAttendanceIds.map((att) => att._id);
+  if (batchBulkOps.length > 0) {
+    linkingPromises.push(
+      Batches.bulkWrite(batchBulkOps, {
+        ordered: false,
+      })
+    );
+  }
 
-//         return Batches.findByIdAndUpdate(
-//           batchId,
-//           { $set: { attendance_list: idsToSet } },
-//           { new: true, upsert: false }
-//         );
-//       })()
-//     );
-//   }
+  // Prepare and execute student linking updates
+  const studentBulkOps = [];
+  for (const studentIdHex of uniqueStudentIds) {
+    const studentId = new Types.ObjectId(studentIdHex);
+    const currentAttendanceIds = await Attendance.find(
+      {
+        student_id: studentId,
+      },
+      {
+        _id: 1,
+      }
+    ).lean();
+    const idsToSet = currentAttendanceIds.map((att) => att._id);
+    studentBulkOps.push({
+      updateOne: {
+        filter: {
+          _id: studentId,
+        },
+        update: {
+          $set: {
+            "studentData.$[].attendance_id": idsToSet,
+          },
+        },
+      },
+    });
+  }
 
-//   for (const studentIdHex of uniqueStudentIds) {
-//     const studentId = new mongoose.Types.ObjectId(studentIdHex);
-//     linkingPromises.push(
-//       (async () => {
-//         const currentAttendanceIds = await Attendance.find(
-//           { student_id: studentId },
-//           { _id: 1 }
-//         ).lean();
-//         const idsToSet = currentAttendanceIds.map((att) => att._id);
+  if (studentBulkOps.length > 0) {
+    linkingPromises.push(
+      Students.bulkWrite(studentBulkOps, {
+        ordered: false,
+      })
+    );
+  }
 
-//         return Students.findByIdAndUpdate(
-//           studentId,
-//           { $set: { "studentData.$[].attendance_id": idsToSet } },
-//           { new: true, upsert: false }
-//         );
-//       })()
-//     );
-//   }
+  try {
+    await Promise.all(linkingPromises);
+  } catch (error: any) {
+    throw new Error(`Batch and student linking failed: ${error.message}`);
+  }
 
-//   try {
-//     await Promise.all(linkingPromises);
-//     console.log(
-//       "Batch and student linking successful for all batches and students"
-//     );
-//   } catch (error: any) {
-//     console.error("Batch and student linking failed:", error);
-//     throw new Error(`Batch and student linking failed: ${error.message}`);
-//   }
+  const sanitizedBulkResult = {
+    insertedCount: bulkResult.insertedCount,
+    matchedCount: bulkResult.matchedCount,
+    modifiedCount: bulkResult.modifiedCount,
+    deletedCount: bulkResult.deletedCount,
+    upsertedCount: bulkResult.upsertedCount,
+    // Convert ObjectId objects to strings for serialization
+    upsertedIds: Object.fromEntries(
+      Object.entries(bulkResult.upsertedIds).map(([key, value]) => [
+        key,
+        (value as Types.ObjectId).toHexString(),
+      ])
+    ),
+    insertedIds: Object.fromEntries(
+      Object.entries(bulkResult.insertedIds).map(([key, value]) => [
+        key,
+        (value as Types.ObjectId).toHexString(),
+      ])
+    ),
+  };
 
-//   return {
-//     success: true,
-//     message: "Attendance updated successfully",
-//   };
-// }
+  return {
+    success: true,
+    message: "Attendance and linking updated successfully",
+    bulkResult: sanitizedBulkResult,
+  };
+}
 
 export async function getAllAttendance({
   page = 1,
