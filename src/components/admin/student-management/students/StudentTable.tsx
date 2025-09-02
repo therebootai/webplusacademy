@@ -138,14 +138,21 @@ export default function StudentTable({
       {selectedStudent && (
         <SidePopUpSlider
           showPopUp={showPopUp}
-          handleClose={() => setShowPopUp(false)}
+          handleClose={() => {
+            setSelectedStudent(null);
+            setShowPopUp(false);
+          }}
         >
           {showViewPopUp === "edit" && (
             <AddNewStudent
-              onCancel={() => setShowPopUp(false)}
+              onCancel={() => {
+                setSelectedStudent(null);
+                setShowPopUp(false);
+              }}
               existingStudent={selectedStudent}
               onSuccess={() => {
                 router.refresh();
+                setSelectedStudent(null);
                 setShowPopUp(false);
               }}
             />

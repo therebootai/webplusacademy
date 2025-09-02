@@ -62,7 +62,7 @@ export default function TopHeader({
           </Link>
         </div>
         <div className="py-3.5 md:py-6 pl-3.5 md:pl-9 md:pr-16 text-base text-site-darkgreen">
-          <div className="inline-block animate-marquee hover:[animation-play-state:paused]">
+          <div className="inline-block animate-marquee hover:[animation-play-state:paused] whitespace-nowrap">
             {notices.map((notice) =>
               notice.notice_file ? (
                 <Link
@@ -86,9 +86,9 @@ export default function TopHeader({
         </div>
         <Link
           href="/guardian-login"
-          className="absolute right-0 top-1/2 -translate-y-1/2 xl:text-2xl md:text-xl h-full  inline-flex bg-site-yellow text-site-darkgreen px-4"
+          className="absolute right-0 top-1/2 -translate-y-1/2 xl:text-2xl md:text-xl h-full hidden md:inline-flex bg-site-yellow text-site-darkgreen px-4"
         >
-          <div className=" flex justify-center items-center">Student Login</div>
+          <div className="flex justify-center items-center">Student Login</div>
         </Link>
       </header>
     </div>
