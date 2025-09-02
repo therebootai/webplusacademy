@@ -16,10 +16,10 @@ export default function GuardianLoginForm() {
 
   async function handleLogin(prevState: unknown, formData: FormData) {
     try {
-      const emailOrPhone = formData.get("emailOrPhone");
-      const password = formData.get("password");
+      const emailOrPhone = formData.get("emailOrPhone") as string;
+      const password = formData.get("password") as string;
 
-      if (!emailOrPhone || !password) {
+      if (!emailOrPhone.trim() || !password.trim()) {
         return {
           success: false,
           data: null,
