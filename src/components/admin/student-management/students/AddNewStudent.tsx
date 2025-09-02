@@ -355,6 +355,9 @@ export default function AddNewStudent({
             name="date_of_birth"
             placeholderText="Enter Date of Birth"
             dateFormat="dd/MM/yyyy"
+            dropdownMode="select"
+            showMonthDropdown
+            showYearDropdown
             className="h-[3rem]  outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
             autoComplete="off"
           />
@@ -367,6 +370,9 @@ export default function AddNewStudent({
             name="date_of_admission"
             placeholderText="Enter Date of Admission"
             dateFormat="dd/MM/yyyy"
+            dropdownMode="select"
+            showMonthDropdown
+            showYearDropdown
             className="h-[3rem]  outline-none placeholder:text-site-gray flex-1 capitalize placeholder:capitalize"
             autoComplete="off"
           />
