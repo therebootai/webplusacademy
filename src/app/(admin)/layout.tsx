@@ -19,6 +19,7 @@ export default async function AdminLayout({
   if (!token) {
     redirect("/reboots");
   }
+
   return (
     <main
       className={`${plusJakartaSans.variable} font-plus-jakarta-sans antialiased`}

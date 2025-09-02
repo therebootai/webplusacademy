@@ -48,23 +48,7 @@ export default function GuardianTopHeader() {
     {
       icon: <IoPricetagOutline />,
       label: "Fees",
-      path: "/admin/fees",
-    },
-    {
-      icon: <IoPricetagOutline />,
-      label: "Exam",
-      path: "/admin/fees",
-      dropdown: [{ label: "Add Question", path: "/admin/exam/add-question" }],
-    },
-    {
-      icon: <PopUpIcon />,
-      label: "Notices",
-      path: "/admin/notices",
-    },
-    {
-      icon: <ResultIcon />,
-      label: "Result",
-      path: "/admin/result",
+      path: "/student/fees",
     },
   ];
 

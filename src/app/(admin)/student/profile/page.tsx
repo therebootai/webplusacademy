@@ -8,7 +8,7 @@ export default async function StudentProfilePage() {
   const studentData = await pageData();
   return (
     <StudentTemplate>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 py-4">
         <h1 className="font-bold lg:text-2xl text-xl text-site-darkgreen">
           Student Details
         </h1>
