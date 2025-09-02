@@ -181,9 +181,7 @@ const ViewCourseFeesInvoice = ({
             <div className="w-full flex flex-col  ">
               <div className="flex justify-end p-4 flex-col gap-2 items-end font-semibold text-lg w-full bg-site-darkgreen/10 border-t-3 border-site-darkgreen text-site-darkgreen">
                 <div>Total Amount: ₹ {totalAmount}</div>
-                {emiData?.emiFields?.totalDue !== 0 && (
-                  <div>Due: ₹{totalDue}</div>
-                )}
+                {totalDue > 0 && <div>Due: ₹{totalDue}</div>}
                 <div className="pt-2 border-t border-[#cccccc]">
                   Paid: ₹{totalPaid}
                 </div>

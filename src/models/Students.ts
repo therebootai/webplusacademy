@@ -178,7 +178,6 @@ const studentSchema = new Schema<IStudentType>(
     },
     password: {
       type: String,
-      required: true,
     },
 
     courseFees: [courseFeesSchema],
