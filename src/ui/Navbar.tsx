@@ -93,10 +93,10 @@ export default function Navbar() {
   }, []);
 
   return (
-    <div className="z-[1000] w-full" style={{ marginBottom: `${navMargin}px` }}>
+    <div className="z-[1000] w-full">
       <TopHeader ref={headerRef} />
       <div
-        className={`flex justify-between items-center xl:px-16 lg:px-8 px-4 fixed xl:py-6 md:py-4 py-2 w-full z-[60]  top-0 transition-colors duration-500 shadow-nav bg-nav`}
+        className={`flex justify-between items-center xxxl:px-40  xxl:px-32 xl:px-24 xlg:px-16 lg:px-8 px-4 fixed h-[4.5rem] md:h-[5rem] xxl:h-[6rem] w-full z-[60]  top-0 transition-colors duration-500 shadow-nav bg-nav`}
         style={{ marginTop: scrolled ? 0 : `${navMargin}px` }}
       >
         {/* Logo */}
@@ -108,7 +108,7 @@ export default function Navbar() {
             width={225}
             height={60}
             priority
-            className="md:h-10 lg:h-12 xl:h-14 h-8 w-fit"
+            className="md:h-10 lg:h-10 xl:h-12 xxl:h-14 xxxl:h-16 h-8 w-fit"
           />
         </Link>
 

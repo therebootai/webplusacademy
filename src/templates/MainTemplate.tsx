@@ -12,7 +12,7 @@ export default function MainTemplate({
       <Navbar />
 
       {/* Main Content */}
-      <div className="flex flex-col gap-6 sm:gap-8 lg:gap-12 mb-8 md:mb-12 xl:mb-24">
+      <div className="flex flex-col gap-6 sm:gap-8 lg:gap-12 mt-[4.5rem] md:mt-[5rem] xxl:mt-[6rem]">
         {children}
       </div>
       <Icongradient />
