@@ -27,6 +27,8 @@
 
   --shadow-nav: 0px 4px 4px 0px var(--tw-shadow-color);
   --shadow-btn: 0px 0px 10px 0px var(--tw-shadow-color) inset;
+  --inset-shadow-custom-light: 0px 0px 10px 2px rgba(0, 0, 0, 0.05);
+  --inset-shadow-custom-dark: rgba(0, 0, 0, 0.35) 0px 2px 7px;
 
   --background-image-nav: linear-gradient(
     90deg,
@@ -69,6 +71,13 @@
     rgba(255, 255, 255, 0.96) 0%,
     rgba(226, 226, 226, 0.96) 100%
   );
+  --breakpoint-sm: 280px;
+  --breakpoint-md: 760px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xlg: 1280px;
+  --breakpoint-xl: 1440px;
+  --breakpoint-xxl: 1900px;
+  --breakpoint-xxxl: 2480px;
 
   --animate-marquee: marquee 10s linear infinite;
 }
