@@ -74,7 +74,7 @@ export default function Footer() {
   return (
     <footer className="w-full">
       <div className="h-1 w-full bg-site-litegreen" />
-      <div className="xl:p-16 lg:p-8 p-4 bg-[#f5f5f5] w-full">
+      <div className="xl:py-16 lg:py-8 py-4 xxxl:px-40 xxl:py-20 xxl:px-32 xl:px-24 xlg:px-16 lg:px-8 px-4 bg-[#f5f5f5] w-full">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col lg:flex-row  gap-4 w-full">
             <div className="flex flex-col gap-4 basis-full lg:basis-[25%] lg:mr-4">
@@ -89,10 +89,11 @@ export default function Footer() {
                 />
               </div>
               <p className="text-site-gray text-base">
-                WavePlus Academy is committed to providing high-quality
-                education for aspiring medical and engineering students. Our
-                courses are designed to help students excel in competitive exams
-                while fostering personal growth.
+                Expert faculty, smart classrooms, mock tests, personal student
+                mentoring and everything a student needs to succeed are all
+                there with <strong>WavePlus Academy</strong> . We are the{" "}
+                <strong>best NEET coaching in Siliguri</strong> because of our
+                regular performance and student-focused policy.
               </p>
               <button
                 className="bg-green-dark-to-light rounded-md text-white flex justify-center items-center text-base h-[3rem] w-full xl:text-lg"
@@ -184,7 +185,7 @@ export default function Footer() {
               </div>
               <div className="w-full">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d4264.216072495763!2d88.37506397543305!3d26.72627777675875!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjbCsDQzJzM0LjYiTiA4OMKwMjInMzkuNSJF!5e1!3m2!1sen!2sin!4v1744739873930!5m2!1sen!2sin"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3582.969770721051!2d88.30843709999999!3d26.6995005!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39e4496860414daf%3A0x941dabfc118b35d5!2sWaveplus%20academy!5e1!3m2!1sen!2sin!4v1757059351808!5m2!1sen!2sin"
                   loading="lazy"
                   className="rounded-lg w-full h-[10rem] lg:h-[12rem] xl:h-[13rem]"
                 ></iframe>
