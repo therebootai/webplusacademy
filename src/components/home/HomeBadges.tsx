@@ -19,8 +19,10 @@ export default function HomeBadges() {
     const handleResize = () => {
       if (window.innerWidth <= 968) {
         setSlidesPerView(2);
-      } else if (window.innerWidth <= 1380) {
+      } else if (window.innerWidth <= 1080) {
         setSlidesPerView(3);
+      } else if (window.innerWidth <= 1380) {
+        setSlidesPerView(4);
       } else if (window.innerWidth <= 2080) {
         setSlidesPerView(4);
       } else {

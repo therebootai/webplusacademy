@@ -39,13 +39,13 @@ export default function HomeCourses() {
       heading: "XII",
       classes: "For Class 12th",
       year: "2027",
-      objectimg: "/extra/coursegirl.png",
+      objectimg: "/extra/xii.png",
     },
     {
       heading: "JEE",
       classes: "For Class 11th",
       year: "2027",
-      objectimg: "/extra/coursegirl.png",
+      objectimg: "/extra/jee.png",
     },
   ];
   return (

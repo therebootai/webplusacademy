@@ -41,21 +41,21 @@ export default function TopHeader({
     <div ref={ref}>
       <div className="h-1 w-full bg-site-litegreen" />
       <header className="flex bg-site-yellow relative">
-        <div className="[clip-path:_polygon(0%_0%,_100%_0%,_95%_100%,_0%_100%)] bg-green-dark-to-light py-4 pl-16 pr-9 hidden md:flex gap-4 z-10">
-          <div className="flex md:gap-2 sm:gap-1 items-center text-[10px] lg:text-sm xl:text-base text-white">
+        <div className="[clip-path:_polygon(0%_0%,_100%_0%,_95%_100%,_0%_100%)] bg-green-dark-to-light py-4 xxxl:pl-[10.5rem]  xxl:pl-[8.5rem] xl:pl-[6.5rem] xlg:pl-[4.5rem] lg:pl-[2.5rem] pl-[1.5rem] pr-6 xl:pr-8 xxl:pr-10 hidden md:flex gap-4 z-10">
+          <div className="xl:flex hidden md:gap-2 sm:gap-1 items-center text-[10px] lg:text-sm xxl:text-base text-white">
             <BiSolidPhoneCall size={20} className="text-site-yellow" />
             <Link href="tel:+919614016184">+91 96140 16184</Link>{" "}
           </div>
           <Link
             href="https://api.whatsapp.com/send?phone=+919614016184"
-            className="flex md:gap-2 sm:gap-1 items-center font-semibold md:flex text-white text-[10px] lg:text-sm xl:text-base"
+            className="flex md:gap-2 sm:gap-1 items-center font-semibold md:flex text-white text-[10px] lg:text-sm xxl:text-base"
           >
             <IoLogoWhatsapp size={20} className="text-site-yellow" />
             <span>+91 96140 16184</span>
           </Link>
           <Link
             href="mailto:info@waveplusacademy.com"
-            className="flex md:gap-2 sm:gap-1 items-center font-semibold md:flex text-white text-[10px] lg:text-sm xl:text-base"
+            className="flex md:gap-2 sm:gap-1 items-center font-semibold md:flex text-white text-[10px] lg:text-sm xxl:text-base"
           >
             <MdEmail size={20} className="text-site-yellow" />
             <span>info@waveplusacademy.com</span>
@@ -86,7 +86,7 @@ export default function TopHeader({
         </div>
         <Link
           href="/guardian-login"
-          className="absolute right-0 top-1/2 -translate-y-1/2 xl:text-xl md:text-xl h-full hidden md:inline-flex bg-gradient-to-b from-site-darkgreen to-site-litegreen text-site-yellow transition-all duration-700 hover:brightness-150 px-4"
+          className="absolute right-0 top-1/2 -translate-y-1/2 xl:text-base md:text-sm h-full hidden md:inline-flex bg-gradient-to-b from-site-darkgreen to-site-litegreen text-site-yellow transition-all duration-700 hover:brightness-150 xl:px-8 lg:px-4 xlg:px-6"
         >
           <div className="flex justify-center items-center">Student Login</div>
         </Link>

@@ -1,4 +1,5 @@
 "use client";
+import Person from "@/icon/Person";
 import { testimonials } from "@/lib/testimonialData";
 import CustomHeading from "@/ui/CustomHeading";
 import Image from "next/image";
@@ -78,24 +79,18 @@ function TestimonailCard({
   desc: string;
 }) {
   return (
-    <div className="flex py-3.5 lg:py-5 px-4 lg:px-7 rounded-md bg-[linear-gradient(90deg,_#FAFAFA_0%,_#F5F5F5_100%)] gap-4 h-full">
-      <div className="rounded-full border-2 lg:border-4 border-site-darkgreen flex items-center justify-center shadow-md shadow-black/25 self-center shrink-0">
-        <div className="rounded-full border lg:border-2 border-site-yellow overflow-hidden">
-          <Image
-            src={proPic}
-            alt={name}
-            width={82} // optional for optimization if you are using next/image
-            height={82} // match width and height
-            className="object-cover w-10 h-10 lg:w-20 lg:h-20 rounded-full"
-          />
-        </div>
-      </div>
+    <div className="flex flex-col py-3.5 lg:py-5 px-4 lg:px-7 rounded-md bg-[linear-gradient(90deg,_#FAFAFA_0%,_#F5F5F5_100%)] gap-4 h-full">
       <div className="flex gap-1.5 lg:gap-3">
-        <div className="h-full w-0.5 rounded-xs bg-site-yellow" />
         <div className="flex flex-col gap-3.5">
-          <h2 className="text-lg lg:text-xl font-semibold text-site-darkgreen">
-            {name}
-          </h2>
+          <div className=" flex flex-row gap-4 items-center">
+            <div className="rounded-full border lg:border-2 size-[3rem] bg-site-darkgreen flex justify-center items-center border-site-yellow overflow-hidden">
+              <Person />
+            </div>
+
+            <h2 className="text-lg lg:text-xl font-semibold text-site-darkgreen">
+              {name}
+            </h2>
+          </div>
           <p className="text-site-gray lg:text-base text-sm">{desc}</p>
         </div>
       </div>

@@ -22,13 +22,13 @@ const StudentCard = ({
         <div className="flex flex-col ">
           <div className=" relative flex flex-col justify-center items-center">
             <div className=" size-[15rem] relative bg-site-yellow rounded-full border-r-4 border-site-darkgreen">
-              <div className=" absolute bottom-0 left-[15%] ">
+              <div className=" absolute bottom-0 left-[12%] ">
                 <Image
                   src={studenticon}
                   alt=""
                   width={504}
                   height={642}
-                  className=" h-[13rem] w-fit "
+                  className=" h-[14rem] w-fit "
                 />
               </div>
             </div>

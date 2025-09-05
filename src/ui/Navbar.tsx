@@ -96,7 +96,7 @@ export default function Navbar() {
     <div className="z-[1000] w-full">
       <TopHeader ref={headerRef} />
       <div
-        className={`flex justify-between items-center xxxl:px-40  xxl:px-32 xl:px-24 xlg:px-16 lg:px-8 px-4 fixed h-[4.5rem] md:h-[5rem] xxl:h-[6rem] w-full z-[60]  top-0 transition-colors duration-500 shadow-nav bg-nav`}
+        className={`flex justify-between items-center xxxl:px-[10.5rem]  xxl:px-[8.5rem] xl:px-[6.5rem] xlg:px-[4.5rem] lg:px-[2.5rem] px-[1.5rem] fixed h-[4.5rem] md:h-[5rem] xxl:h-[6rem] w-full z-[60]  top-0 transition-colors duration-500 shadow-nav bg-nav`}
         style={{ marginTop: scrolled ? 0 : `${navMargin}px` }}
       >
         {/* Logo */}
@@ -123,7 +123,7 @@ export default function Navbar() {
                     isActive(item.href)
                       ? "text-site-litegreen"
                       : "text-site-darkgreen"
-                  } text-sm md:text-base xl:text-lg font-medium capitalize hover:text-site-litegreen transition-colors duration-300`}
+                  } text-sm md:text-base lg:text-sm xl:text-lg font-medium capitalize hover:text-site-litegreen transition-colors duration-300`}
                 >
                   {item.text}
                 </Link>
@@ -134,7 +134,7 @@ export default function Navbar() {
                       item.href && isActive(item.href)
                         ? "text-site-litegreen"
                         : "text-site-darkgreen"
-                    } text-sm md:text-base xl:text-lg font-medium capitalize cursor-pointer hover:text-site-darkgreen transition-colors duration-300`}
+                    } text-sm md:text-base lg:text-sm xl:text-lg font-medium capitalize cursor-pointer hover:text-site-darkgreen transition-colors duration-300`}
                   >
                     {item.text}
                   </span>

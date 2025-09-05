@@ -47,24 +47,24 @@ const OurStudentSection = () => {
 
   const students = [
     {
-      studenticon: "/extra/coursegirl.png",
-      studentname: "Student Full Name",
-      desc: "MBBS, SMIT, TOP",
+      studenticon: "/extra/student1.png",
+      studentname: "Smriti Sharma",
+      desc: "MBBS - SMIMS, Sikkim - 1",
     },
     {
-      studenticon: "/extra/coursegirl.png",
-      studentname: "Student Full Name",
-      desc: "MBBS, SMIT, TOP",
+      studenticon: "/extra/student2.png",
+      studentname: "Samir Sharma",
+      desc: "MBBS - SMIMS, Sikkim - 2",
     },
     {
-      studenticon: "/extra/coursegirl.png",
-      studentname: "Student Full Name",
-      desc: "MBBS, SMIT, TOP",
+      studenticon: "/extra/student3.png",
+      studentname: "Abina Subba",
+      desc: "MBBS - SMIMS, Sikkim 14",
     },
     {
-      studenticon: "/extra/coursegirl.png",
-      studentname: "Student Full Name",
-      desc: "MBBS, SMIT, TOP",
+      studenticon: "/extra/student4.png",
+      studentname: "Vipassna Gurung",
+      desc: "MBBS - SMIMS, Sikkim 12",
     },
   ];
   return (
@@ -72,7 +72,7 @@ const OurStudentSection = () => {
       <div className="flex flex-col gap-3.5 items-center">
         <CustomHeading
           normal="Our "
-          highlight="Student"
+          highlight="Students"
           className="font-bold xl:text-3xl xxl:text-4xl xxxl:text-5xl"
         />
       </div>

@@ -8,32 +8,40 @@ export default function EmpoweringMinds() {
 
   const facilities = [
     {
-      title: "Smart Classroom Technology",
-      desc: "Interactive digital boards and audio-visual tools that make complex concepts incredibly simple.",
+      title: "Smarter NEET Preparation at Siliguri.",
+      desc: "We make complicated things easy and entertaining through the use of digital boards and audio-visual aids to bring ideas into life.",
     },
     {
-      title: "Expert Faculty Team",
-      desc: "Highly qualified, passionate mentors dedicated to personalized guidance and academic excellence.",
+      title: "Guidance from the Best Teachers in Siliguri",
+      desc: "With confidence, our students understand all their subjects taught by our highly qualified mentors who guide them one-on-one.",
     },
     {
-      title: "24/7 Doubt Support",
-      desc: "Students get instant help anytime, boosting confidence and eliminating learning roadblocks.",
+      title: "24/7 Doubt Help – Anytime, Anywhere",
+      desc: "Students who are 24/7 doubt-clearing do not feel trapped. Real-time assistance increases confidence and makes the learning process easy.",
     },
     {
-      title: "Customized Study Plans",
-      desc: "Tailored learning schedules designed to match every student’s pace, strengths, and goals.",
+      title: "Individualized Study Programs to each Aspirant.",
+      desc: "Each student is unique. That is why we create individual learning programs to suit their learning style, strengths, and career objectives.",
     },
     {
-      title: "Regular Mock Tests",
-      desc: "Simulated exams and real-time analysis to sharpen accuracy, speed, and exam temperament.",
+      title: "Test Your Exam Skills with Mock Tests.",
+      desc: "We offer full-length NEET mock tests with real-time feedback to enable students to enhance accuracy, speed and test temperament.",
     },
     {
-      title: "Focused Batch Sizes",
-      desc: "Smaller groups ensure individual attention and deeper engagement in every session.",
+      title: "Better NEET Study Material.",
+      desc: "We update our notes, practice papers and test papers with the new NEET exam patterns to ensure full preparation.",
     },
     {
-      title: "Motivational Growth Sessions",
-      desc: "Weekly pep talks and mindset coaching that inspire students to dream and achieve big.",
+      title: "Better Focus with Limited Students",
+      desc: "Our batch sizes are kept as small as possible and each student receives personal attention and more participation in the classroom.",
+    },
+    {
+      title: "Motivation Workshops to Have You Motivated.",
+      desc: "The weekly growth and mindset therapy sessions ensure the students remain positive, disciplined and focused on their NEET process.",
+    },
+    {
+      title: "WavePlus Academy- The Best NEET Coaching Academy in Siliguri.",
+      desc: "Though the number of NEET coaching academies in Siliguri is quite high, WavePlus Academy will remain unique due to its holistic development, personal mentoring, and academic excellence.",
     },
   ];
   return (
