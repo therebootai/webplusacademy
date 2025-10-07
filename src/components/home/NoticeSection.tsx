@@ -60,10 +60,12 @@ const NoticeSection = () => {
           <div className=" w-full h-[75%] bg-white rounded-b-2xl p-4 flex flex-col gap-4 no-scrollbar overflow-y-scroll ">
             {notices.map((notice) =>
               notice.notice_file ? (
-                <div className="flex flex-row gap-2 group">
+                <div
+                  className="flex flex-row gap-2 group"
+                  key={notice._id as string}
+                >
                   <div className="w-1 h-full group-odd:bg-site-darkgreen group-even:bg-site-yellow rounded-md" />
                   <Link
-                    key={notice._id as string}
                     href={notice.notice_file.secure_url}
                     target="_blank"
                     className="mr-4 relative text-lg font-medium group-odd:text-site-darkgreen group-even:text-site-yellow"
@@ -72,13 +74,13 @@ const NoticeSection = () => {
                   </Link>
                 </div>
               ) : (
-                <div className="flex flex-row gap-2 group">
+                <div
+                  className="flex flex-row gap-2 group"
+                  key={notice._id as string}
+                >
                   <div className="w-1 h-full group-odd:bg-site-darkgreen group-even:bg-site-yellow rounded-md" />
 
-                  <span
-                    key={notice._id as string}
-                    className="mr-4 relative text-lg font-medium group-odd:text-site-darkgreen group-even:text-site-yellow"
-                  >
+                  <span className="mr-4 relative text-lg font-medium group-odd:text-site-darkgreen group-even:text-site-yellow">
                     {notice.title}
                   </span>
                 </div>

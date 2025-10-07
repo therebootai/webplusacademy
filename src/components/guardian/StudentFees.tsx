@@ -1,9 +1,17 @@
 "use client";
 
+import {
+  HostelFeeMonthType,
+  IStudentType,
+  StudentDataType,
+} from "@/types/StudentType";
 import DisplayTable from "@/ui/DisplayTable";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
+import { IoIosEye } from "react-icons/io";
+import ViewCourseFeesInvoice from "../admin/fees/ViewCourseFeesInvoice";
+import ViewHostelInvoice from "../admin/fees/ViewHostelInvoice";
 
 const getDateFromMonthYear = (
   mon: string | undefined,
@@ -15,11 +23,13 @@ const getDateFromMonthYear = (
 };
 
 export default function StudentFees({
+  student,
   studentData,
   courseFees,
   mon,
   year,
 }: {
+  student: IStudentType;
   studentData: any;
   courseFees: any;
   mon: any;
@@ -27,6 +37,19 @@ export default function StudentFees({
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  const [viewingCourseFeesInvoice, setViewingCourseFeesInvoice] = useState<{
+    student: IStudentType;
+    studentData: StudentDataType;
+    courseFee: any;
+    emiData: any;
+  } | null>(null);
+
+  const [invoiceData, setInvoiceData] = useState<{
+    student: IStudentType;
+    studentData: StudentDataType;
+    hostelFeeMonth: HostelFeeMonthType;
+  } | null>(null);
 
   const now = new Date();
   const currentMonth = mon ?? now.toLocaleString("default", { month: "long" });
@@ -115,6 +138,25 @@ export default function StudentFees({
               >
                 {isPaid ? "Paid" : "Due"}
               </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setInvoiceData({
+                    student,
+                    studentData: studentData,
+                    hostelFeeMonth: paidMonth ?? {
+                      month: currentMonth,
+                      year: currentYear,
+                      amount: studentData?.hostelFees?.monthlyAmount ?? 0,
+                      scholarship: "",
+                      due: "",
+                    },
+                  });
+                }}
+                className="text-sm ms-1 text-blue-600 justify-center items-center bg-white border border-[#eeeeee] rounded-full inline-flex"
+              >
+                <IoIosEye />
+              </button>
             </td>
           </tr>
         </tbody>
@@ -140,7 +182,21 @@ export default function StudentFees({
                     {emi.payments?.reduce(
                       (sum: number, p: any) => sum + (p.amount || 0),
                       0
-                    ) ?? "0"}
+                    ) ?? "0"}{" "}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setViewingCourseFeesInvoice({
+                          student,
+                          studentData: studentData,
+                          courseFee,
+                          emiData: emi,
+                        });
+                      }}
+                      className="text-sm text-blue-600 ms-1.5 justify-center items-center bg-white border border-[#eeeeee] rounded-full inline p-1"
+                    >
+                      <IoIosEye />
+                    </button>
                   </>
                 ) : (
                   <p className="text-center">-</p>
@@ -150,6 +206,45 @@ export default function StudentFees({
           })}
         </div>
       </DisplayTable>
+      {invoiceData && (
+        <div className="fixed z-50 inset-0  h-full w-full  overflow-scroll ">
+          <div className=" w-full  p-8 shadow-xl bg-black/40 relative flex justify-center items-center ">
+            <button
+              className="absolute top-2 right-2 size-[2rem] bg-custom-pink rounded-full flex justify-center items-center text-xl text-white hover:text-red-500"
+              onClick={() => setInvoiceData(null)}
+            >
+              &times;
+            </button>
+            <div className="w-fit">
+              <ViewHostelInvoice
+                student={invoiceData.student}
+                studentData={invoiceData.studentData}
+                hostelFeeMonth={invoiceData.hostelFeeMonth}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+      {viewingCourseFeesInvoice && (
+        <div className="fixed z-50 inset-0 h-full w-full overflow-scroll ">
+          <div className=" bg-black/40 flex justify-center items-center p-8">
+            <button
+              className="absolute top-2 right-2 size-[2rem] bg-custom-pink rounded-full flex justify-center items-center text-xl text-white hover:text-red-500"
+              onClick={() => setViewingCourseFeesInvoice(null)}
+            >
+              &times;
+            </button>
+            <div className=" w-fit">
+              <ViewCourseFeesInvoice
+                student={viewingCourseFeesInvoice.student}
+                studentData={viewingCourseFeesInvoice.studentData}
+                courseFee={viewingCourseFeesInvoice.courseFee}
+                emiData={viewingCourseFeesInvoice.emiData}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
