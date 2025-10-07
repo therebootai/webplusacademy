@@ -33,6 +33,14 @@ export default async function StudentProfilePage() {
               </tr>
               <tr className="divide-x">
                 <td className="pl-6 py-4 whitespace-nowrap text-site-darkgreen font-semibold">
+                  Mobile Number
+                </td>
+                <td className="pl-6 py-4 whitespace-nowrap text-site-black">
+                  {studentData?.mobileNumber}
+                </td>
+              </tr>
+              <tr className="divide-x">
+                <td className="pl-6 py-4 whitespace-nowrap text-site-darkgreen font-semibold">
                   Admission Date
                 </td>
                 <td className="pl-6 py-4 whitespace-nowrap text-site-black">
@@ -133,14 +141,6 @@ export default async function StudentProfilePage() {
                 </td>
                 <td className="pl-6 py-4 whitespace-nowrap text-site-black">
                   {studentData?.pinCode}
-                </td>
-              </tr>
-              <tr className="divide-x">
-                <td className="pl-6 py-4 whitespace-nowrap text-site-darkgreen font-semibold">
-                  Mobile Number
-                </td>
-                <td className="pl-6 py-4 whitespace-nowrap text-site-black">
-                  {studentData?.mobileNumber}
                 </td>
               </tr>
             </tbody>

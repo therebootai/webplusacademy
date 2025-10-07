@@ -17,10 +17,6 @@ export default async function StudentDashboard({
 
   const courseFees = student.courseFees;
 
-  console.log(studentData);
-
-  // console.log(courseFees);
-
   return (
     <StudentTemplate>
       <div className="flex flex-col gap-6 py-4">
@@ -28,6 +24,7 @@ export default async function StudentDashboard({
           Fees Details
         </h1>
         <StudentFees
+        student={student}
           studentData={studentData}
           courseFees={courseFees}
           mon={mon}
