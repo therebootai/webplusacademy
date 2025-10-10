@@ -14,6 +14,7 @@ import React, { useEffect, useRef, useState, useTransition } from "react";
 import { FaCirclePlus, FaSquarePlus } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import html2pdf from "html2pdf.js";
+import { randomizeArray } from "@/util/randomizeArray";
 
 const AddGanerateQuestion = () => {
   const [classes, setClasses] = useState<string[]>([]);
@@ -48,6 +49,7 @@ const AddGanerateQuestion = () => {
   const [examSetName, setExamSetName] = useState<string>("");
   const [batch, setBatch] = useState<string>("");
   const [showExamSetPopup, setShowExamSetPopup] = useState(false);
+  const [setNumber, setSetNumber] = useState<string>("1");
 
   const [batches, setBatches] = useState([]);
   const printRef = useRef<HTMLDivElement>(null);
@@ -174,8 +176,15 @@ const AddGanerateQuestion = () => {
     }
   };
 
-  const generatePdfBlob = (element: HTMLElement): Promise<Blob> => {
+  const generatePdfBlob = (
+    element: HTMLElement,
+    setIndex: number, // 0 for Set 1, 1 for Set 2, etc.
+    setQuestions: any[]
+  ): Promise<File> => {
     return new Promise((resolve, reject) => {
+      const setNum = setIndex + 1;
+      const filename = `ExamQuestions_Set${setNum}.pdf`;
+
       const opt = {
         margin: 0.5,
         filename: `ExamQuestions.pdf`,
@@ -184,12 +193,41 @@ const AddGanerateQuestion = () => {
         jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
       };
 
+      const tempElement = document.createElement("div");
+      tempElement.innerHTML = `
+                <div class="bg-white p-6 rounded-md w-full">
+                    <h4 class="text-lg font-bold">Generated Questions - Set ${setNum}</h4>
+                    <div class="flex flex-col gap-4 mt-4">
+                        ${setQuestions
+                          .map(
+                            (question, index) => `
+                            <div key=${index} class="border p-4 rounded-md">
+                                <p class="font-semibold">
+                                    ${index + 1}. ${question.questionName}
+                                </p>
+                                <div class="mt-2 flex flex-col gap-2">
+                                    <div>1. ${question.ansOption.optionA}</div>
+                                    <div>2. ${question.ansOption.optionB}</div>
+                                    <div>3. ${question.ansOption.optionC}</div>
+                                    <div>4. ${question.ansOption.optionD}</div>
+                                </div>
+                            </div>
+                        `
+                          )
+                          .join("")}
+                    </div>
+                </div>
+            `;
+
       html2pdf()
         .set(opt)
-        .from(element)
+        .from(tempElement)
         .outputPdf("blob")
-        .then((pdfBlob: Blob) => {
-          resolve(pdfBlob);
+        .then((pdfBlob: File) => {
+          const pdfFile = new File([pdfBlob], filename, {
+            type: "application/pdf",
+          });
+          resolve(pdfFile);
         })
         .catch((err: any) => reject(err));
     });
@@ -230,21 +268,39 @@ const AddGanerateQuestion = () => {
   };
 
   const handleSaveExamSet = async () => {
-    if (!printRef.current) return;
+    if (
+      !selectedQuestions.length ||
+      !examSetName ||
+      !batch ||
+      !printRef.current
+    )
+      return;
 
     try {
       setLoading(true);
-      const pdfBlob = await generatePdfBlob(printRef.current);
-      const pdfFile = new File([pdfBlob], "exam_set.pdf", {
-        type: "application/pdf",
-      });
+      const numberOfSets = Number(setNumber);
+      const pdfFiles: File[] = [];
+      const originalQuestions = [...selectedQuestions];
+
+      for (let i = 0; i < numberOfSets; i++) {
+        // Shuffle the original questions for each new set
+        const shuffledQuestions = randomizeArray(originalQuestions);
+
+        const pdfFile = await generatePdfBlob(
+          printRef.current,
+          i,
+          shuffledQuestions
+        );
+        pdfFiles.push(pdfFile);
+      }
 
       const response = await createExamSet(
         examSetName,
         batch,
         selectedQuestions.map((question) => question._id),
         undefined,
-        pdfFile
+        pdfFiles,
+        parseInt(setNumber)
       );
 
       if (response.success) {
@@ -337,6 +393,53 @@ const AddGanerateQuestion = () => {
                 </button>
               </span>
             ))}
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <label htmlFor="set" className="capitalize">
+            Set Number
+          </label>
+          <div className="flex gap-2">
+            <div className="flex items-center gap-1">
+              <input
+                type="radio"
+                name="set"
+                id="set1"
+                value="1"
+                onChange={(e) => setSetNumber(e.target.value)}
+              />
+              <label htmlFor="set1">1</label>
+            </div>
+            <div className="flex items-center gap-1">
+              <input
+                type="radio"
+                name="set"
+                id="set2"
+                value="2"
+                onChange={(e) => setSetNumber(e.target.value)}
+              />
+              <label htmlFor="set2">2</label>
+            </div>
+            <div className="flex items-center gap-1">
+              <input
+                type="radio"
+                name="set"
+                id="set3"
+                value="3"
+                onChange={(e) => setSetNumber(e.target.value)}
+              />
+              <label htmlFor="set3">3</label>
+            </div>
+            <div className="flex items-center gap-1">
+              <input
+                type="radio"
+                name="set"
+                id="set4"
+                value="4"
+                onChange={(e) => setSetNumber(e.target.value)}
+              />
+              <label htmlFor="set4">4</label>
+            </div>
           </div>
         </div>
         <div className=" flex flex-col gap-2">

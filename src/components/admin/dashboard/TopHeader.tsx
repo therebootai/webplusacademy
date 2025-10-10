@@ -55,7 +55,7 @@ export default function TopHeader() {
       path: "/admin/fees",
       dropdown: [
         { label: "Add Question", path: "/admin/exam/add-question" },
-        { label: "Ganerate Question", path: "/admin/exam/ganerate-questions" },
+        { label: "Generate Question", path: "/admin/exam/ganerate-questions" },
       ],
     },
     {

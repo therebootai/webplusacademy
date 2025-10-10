@@ -22,7 +22,7 @@ const GanerateQuestionHeader = () => {
           className="flex w-fit items-center justify-center rounded-lg xl:text-base md:text-base text-white bg-site-darkgreen px-5 h-[2.5rem] "
         >
           <LuUserPlus />
-          <span className="ml-2">Ganerate Questions</span>
+          <span className="ml-2">Generate Questions</span>
         </button>
       </div>
       <SidePopUpSlider
