@@ -94,26 +94,34 @@ export const createExamSet = async (
   examSetName: string,
   batch: string,
   questions: string[],
-  questionPdf?: { public_id: string; secure_url: string },
-  receiptFile?: File
+  questionPdf?: { public_id: string; secure_url: string; set_name: string }[],
+  receiptFile?: File[],
+  setNumber: number = 1
 ) => {
   try {
     await connectToDataBase();
 
-    if (receiptFile && receiptFile.size > 0) {
-      const receiptFilePath = await parseImage(receiptFile);
-      const result = await uploadFile(receiptFilePath, receiptFile.type);
+    if (receiptFile && receiptFile.length > 0) {
+      let questionPdfArray = [];
 
-      if (result instanceof Error) {
-        throw new Error("Failed to upload receipt to Cloudinary");
+      for (let i = 0; i < receiptFile.length; i++) {
+        const receiptFilePath = await parseImage(receiptFile[i]);
+        const result = await uploadFile(receiptFilePath, receiptFile[i].type);
+
+        if (result instanceof Error) {
+          throw new Error("Failed to upload receipt to Cloudinary");
+        }
+
+        questionPdfArray.push({
+          public_id: result.public_id,
+          secure_url: result.secure_url,
+          set_name: examSetName + ` - ${i + 1}`,
+        });
+
+        await fs.unlink(receiptFilePath);
       }
 
-      questionPdf = {
-        public_id: result.public_id,
-        secure_url: result.secure_url,
-      };
-
-      await fs.unlink(receiptFilePath);
+      questionPdf = questionPdfArray;
     }
 
     const newExamSet = new ExamSet({
@@ -121,6 +129,7 @@ export const createExamSet = async (
       batch,
       questions,
       questionPdf,
+      set: setNumber,
     });
 
     const savedExamSet = await newExamSet.save();
@@ -270,19 +279,11 @@ export async function deleteExamSet(examsetId: string) {
       return { success: false, message: "Exam Set not found" };
     }
 
-    if (examSetToDelete.questionPdf?.public_id) {
-      const fileDeletionResult = await deleteFile(
-        examSetToDelete.questionPdf.public_id
-      );
-      if (fileDeletionResult instanceof Error) {
-        console.error(
-          "Failed to delete PDF from Cloudinary:",
-          fileDeletionResult.message
-        );
-      } else {
-        console.log("PDF file deleted successfully from Cloudinary");
+    examSetToDelete.questionPdf.forEach(
+      async (questionId: { public_id: string }) => {
+        await deleteFile(questionId.public_id);
       }
-    }
+    );
 
     const deletedExamSet = await ExamSet.findOneAndDelete({ _id: examsetId });
 

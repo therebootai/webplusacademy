@@ -17,9 +17,16 @@ const ExamSetSchema = new mongoose.Schema({
       required: true,
     },
   ],
-  questionPdf: {
-    public_id: { type: String },
-    secure_url: { type: String },
+  questionPdf: [
+    {
+      public_id: { type: String },
+      secure_url: { type: String },
+      set_name: { type: String },
+    },
+  ],
+  set: {
+    type: Number,
+    default: 1,
   },
   createdAt: {
     type: Date,
