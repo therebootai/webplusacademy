@@ -1,7 +1,7 @@
 import Footer from "@/ui/Footer";
 import Icongradient from "@/ui/IconGradient";
 import Navbar from "@/ui/Navbar";
-import OnlyMobile from "./OnlyMobile";
+import OnlyMobile from "./OnlyMobile.jsx";
 
 export default function MainTemplate({
   children,
