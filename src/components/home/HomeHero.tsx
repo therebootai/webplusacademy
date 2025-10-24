@@ -2,7 +2,7 @@
 import { getAllSliders } from "@/actions/sliderActions";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Autoplay } from "swiper/modules";
+import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 export default function HomeHero() {
@@ -28,13 +28,18 @@ export default function HomeHero() {
     getSliders();
   }, []);
   return (
-    <div className="xxxl:px-40 mt-4 xxl:px-32 xl:px-24 xlg:px-16 lg:px-8 px-4 w-full">
-      <div className="flex relative">
+    <div className="max-w-[1440px] mx-auto w-full h-auto">
+      <div className="rounded-[15px] overflow-hidden">
         <Swiper
-          spaceBetween={10}
+          modules={[Autoplay, Pagination]}
+          spaceBetween={0}
+          slidesPerView={1}
           loop={true}
-          modules={[Autoplay]}
-          autoplay={{ delay: 4500, disableOnInteraction: false }}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          pagination={{
+            clickable: true,
+            el: ".custom-pagination", // custom pagination container
+          }}
         >
           {allSiders.map((img, index) => (
             <SwiperSlide key={index}>
@@ -44,12 +49,31 @@ export default function HomeHero() {
                 height={868}
                 alt="slider"
                 priority
-                className="object-cover  w-full h-auto  rounded-4xl inset-shadow-custom-light"
+                className="w-full h-full object-cover object-top sm:object-center"
               />
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
+      <div className="custom-pagination flex justify-center mt-4"></div>
+
+      {/* 🔥 Custom CSS for line-style pagination */}
+      <style jsx global>{`
+        .swiper-pagination-bullet {
+          width: 25px !important;
+          height: 8px !important;
+          border-radius: 8px !important;
+          background: #e4e1e1ff !important;
+          opacity: 1 !important;
+          margin: 0 6px !important;
+          transition: all 0.3s ease;
+        }
+
+        .swiper-pagination-bullet-active {
+          background: #d50505ff !important;
+          width: 25px !important;
+        }
+      `}</style>
     </div>
   );
 }

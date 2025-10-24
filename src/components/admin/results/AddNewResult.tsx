@@ -1,5 +1,6 @@
 "use client";
 
+import { SCAN_OMR } from "@/actions/omrActions";
 import { addNewResult } from "@/actions/resultActions";
 import { useActionState, useState } from "react";
 import DatePicker from "react-datepicker";
@@ -13,16 +14,19 @@ export default function AddnewResult() {
       const classFor = formData.get("classFor") as string;
       const year = formData.get("year") as string;
 
-      if (!classFor || !year) {
-        return alert("All fields are required");
-      }
+      // if (!classFor || !year) {
+      //   return alert("All fields are required");
+      // }
 
-      if (result_file.type !== "application/pdf") {
-        return alert("Only PDF files are allowed");
-      }
+      // if (result_file.type !== "application/pdf") {
+      //   return alert("Only PDF files are allowed");
+      // }
 
-      const result = await addNewResult(classFor, result_file, year);
-      return result;
+      // const result = await addNewResult(classFor, result_file, year);
+      const rest = await SCAN_OMR(result_file);
+
+      console.log(rest);
+      // return result;
     } catch (error) {
       console.log(error);
     }
@@ -55,7 +59,7 @@ export default function AddnewResult() {
           type="file"
           name="result_file"
           onChange={(e) => setFile(e.target?.files?.[0] ?? null)}
-          accept="application/pdf"
+          // accept="application/pdf"
           required
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer truncate"
         />
