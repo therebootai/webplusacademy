@@ -1,20 +1,116 @@
-
 @import "tailwindcss";
 @import "swiper/css";
-@import "swiper/css/bundle";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+@import "swiper/css/scrollbar";
+@import "swiper/css/autoplay";
+@import "swiper/css/free-mode";
+@import "react-datepicker/dist/react-datepicker.css";
 
+.a4-container {
+  width: 210mm;
+  height: 297mm;
 
-
+  background-color: white;
+  box-sizing: border-box;
+}
 
 @theme inline {
-
- --color-defined-red:#F31B2B;
-  --color-defined-yellow: #FFF;
+  --color-site-yellow: #f3cb1e;
+  --color-site-litegreen: #27995a;
+  --color-site-darkgreen: #0b5844;
+  --color-site-gray: #666666;
+  --color-site-black: #333333;
+  --color-defined-red: #f31b2b;
+  --color-defined-yellow: #fff;
   --color-defined-brown: #121212;
+
+  --font-outfit: var(--font-outfit);
+  --font-plus-jakarta-sans: var(--font-plus-jakarta-sans);
+
+  --shadow-nav: 0px 4px 4px 0px var(--tw-shadow-color);
+  --shadow-btn: 0px 0px 10px 0px var(--tw-shadow-color) inset;
+  --inset-shadow-custom-light: 0px 0px 10px 2px rgba(0, 0, 0, 0.05);
+  --inset-shadow-custom-dark: rgba(0, 0, 0, 0.35) 0px 2px 7px;
+
+  --background-image-nav: linear-gradient(
+    90deg,
+    #cccccc 0%,
+    #ffffff 50%,
+    #cccccc 100%
+  );
+  --background-image-green-dark-to-light: linear-gradient(
+    180deg,
+    #0d331e 0%,
+    #27995a 100%
+  );
+  --background-image-gradient-btn-inner: linear-gradient(0deg, #030303, #030303),
+    radial-gradient(80.68% 51.24% at 19.32% 40.62%, #08203a 0%, #000000 100%),
+    radial-gradient(128.28% 129.69% at 63.64% -12.5%, #80c727 0%, #23211b 100%),
+    radial-gradient(
+      80.11% 425.98% at 19.89% 65.63%,
+      rgba(73, 255, 244, 0.2) 0%,
+      rgba(11, 88, 68, 0.128) 100%
+    );
+  --background-image-gradient-btn-outer: linear-gradient(0deg, #030303, #030303),
+    radial-gradient(35.8% 316.2% at 82.39% 55.47%, #41ff48 0%, #27995a 100%),
+    radial-gradient(
+      92.56% 151.44% at 33.52% -15.63%,
+      #ffd41a 0%,
+      rgba(35, 173, 140, 0.58) 85.15%
+    ),
+    radial-gradient(
+      66.76% 121.06% at 22.73% 20.31%,
+      rgba(243, 203, 30, 0.2) 18.63%,
+      rgba(255, 250, 142, 0.2) 100%
+    ),
+    radial-gradient(
+      45.91% 85.94% at 55.4% 14.06%,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.032) 100%
+    );
+  --background-image-white-to-ash: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(226, 226, 226, 0.96) 100%
+  );
+  --breakpoint-sm: 280px;
+  --breakpoint-md: 760px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xlg: 1280px;
+  --breakpoint-xl: 1440px;
+  --breakpoint-xxl: 1900px;
+  --breakpoint-xxxl: 2480px;
+
+  --animate-marquee: marquee 10s linear infinite;
+}
+
+@media print {
+  .print-hidden {
+    display: none !important;
+  }
 }
 
 @layer base {
+  body {
+    @apply font-outfit;
+  }
 
+  button {
+    @apply cursor-pointer;
+  }
+
+  input {
+    @apply outline-none;
+  }
+
+  textarea {
+    @apply outline-none resize-none;
+  }
+
+  * {
+    @apply transition-all duration-500;
+  }
   .self-padding {
     @apply md:px-18 px-4 py-8 flex flex-col gap-12;
   }
@@ -23,15 +119,86 @@
     @apply scroll-smooth;
   }
 
-
-  
-   button {
+  button {
     @apply cursor-pointer  hover:transition-all duration-300 ease-in-out;
-  } 
+  }
+}
 
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
 
+@layer components {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 
+  .switch {
+    --secondary-container: #00cd44;
+    --primary: white;
+    font-size: 10px;
+    position: relative;
+    display: inline-block;
+    width: 1.75rem;
+    height: 0.875rem;
+  }
 
+  .switch input {
+    display: none;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
 
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    transition: 0.2s;
+    border-radius: 30px;
+    border: 1px solid #00cd44;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 1em;
+    width: 1em;
+    border-radius: 20px;
+    left: 0.1em;
+    bottom: 0.05em;
+    background-color: #00cd44;
+    transition: 0.4s;
+  }
+
+  input:checked + .slider::before {
+    background-color: var(--primary);
+  }
+
+  input:checked + .slider {
+    background-color: var(--secondary-container);
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px var(--secondary-container);
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(1.5em);
+  }
 }
