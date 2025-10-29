@@ -35,7 +35,7 @@ async function getPageData() {
       undefined,
       undefined,
       undefined,
-      undefined,
+      true,
       "video"
     );
     return data;

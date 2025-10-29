@@ -34,7 +34,7 @@ async function getPageData() {
       undefined,
       undefined,
       undefined,
-      undefined,
+      true,
       "image"
     );
     return data;
