@@ -78,6 +78,11 @@ export default function TopHeader() {
       label: "Result",
       path: "/admin/result",
     },
+      {
+      icon: <ResultIcon />,
+      label: "OMR",
+      path: "/admin/omr",
+    },
   ];
 
   async function handleLogout() {
@@ -107,13 +112,13 @@ export default function TopHeader() {
             className="md:h-10 lg:h-12 xl:h-14 h-8 w-fit"
           />
         </Link>
-        <div className="items-center flex justify-between px-4 xlg:px-6 xl:px-8 xl:gap-4 flex-wrap xl:flex-nowrap flex-1">
+        <div className="items-center flex justify-center  px-4 xlg:px-6 xl:px-8 gap-6 flex-wrap xl:flex-nowrap flex-1">
           {allNavLinks.map((link, index) => (
             <div className="group" key={index}>
               {!link.dropdown ? (
                 <Link
                   href={link.path + "?page=1"}
-                  className={`inline-flex gap-2 items-center group hover:text-site-darkgreen  font-medium text-base lg:text-base xlg:text-base xl:text-xl ${
+                  className={`inline-flex gap-2 items-center group hover:text-site-darkgreen  font-medium text-xs lg:text-sm xlg:text-sm xl:text-base ${
                     isActive(link.path)
                       ? "text-site-darkgreen"
                       : "text-site-black"
@@ -125,7 +130,7 @@ export default function TopHeader() {
               ) : (
                 <div className="relative" key={index}>
                   <h3
-                    className={`inline-flex gap-2 items-center hover:text-custom-violet font-medium lg:text-base xlg:text-base xl:text-xl ${
+                    className={`inline-flex gap-2 items-center hover:text-custom-violet font-medium text-xs lg:text-sm xlg:text-sm xl:text-base ${
                       isActive(link.path)
                         ? "text-site-darkgreen"
                         : "text-site-black"

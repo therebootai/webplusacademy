@@ -37,7 +37,7 @@ async function getNoticeData(): Promise<NoticeResponse> {
       limit: 10,
       sort: "createdAt",
       order: "desc",
-      status: true,
+      status: undefined,
     });
     return notices;
   } catch (error) {

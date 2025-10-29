@@ -125,9 +125,9 @@ export default function AddNewStudent({
           ? Number(hostelMonthlyAmountRaw)
           : undefined,
         monthsDue: [],
-        attendance_id: existingStudent
-          ? [...existingStudent.studentData?.[0]?.attendance_id]
-          : [],
+      attendance_id: existingStudent && Array.isArray(existingStudent.studentData?.[0]?.attendance_id)
+    ? [...existingStudent.studentData[0].attendance_id]
+    : [],
       },
       attendance_id:
         existingStudent?.studentData?.[0]?.attendance_id || undefined,
@@ -627,7 +627,7 @@ export default function AddNewStudent({
         <div className="flex-1 border border-[#cccccc] rounded-md flex gap-2 items-center px-2">
           <RiMoneyRupeeCircleLine className="text-site-gray size-5" />
           <input
-            type="number"
+            type="text"
             name="hostel_monthly_amount"
             placeholder="Hostel Fees per Month"
             value={hostelMonthlyAmount}

@@ -18,7 +18,7 @@ export default function ToggleInput({
     <button
       className={cn(wrapperClass, "w-7 h-3.5 rounded-4xl flex p-0.5")}
       style={{
-        justifyContent: "flex-" + (status ? "start" : "end"),
+       justifyContent: "flex-" + (status ? "end" : "start"),
         background: status ? "#00CD44" : "#3C65F5",
       }}
       onClick={changeStatus}
