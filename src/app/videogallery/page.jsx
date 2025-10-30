@@ -4,12 +4,16 @@ import MainTemplates from "@/templates/Maintemplates";
 import React from "react";
 import { getAllGalleries } from "@/actions/galleryActions";
 import GalleryList from "@/components/gallery/GalleryList";
+export const dynamic = "force-dynamic"; 
 
 export const metadata = {
   title: "Gallery | Waveplus Academy – NEET Coaching in Siliguri",
   description:
     "View our gallery showcasing classroom sessions, student achievements, and events at Waveplus Academy – the leading NEET coaching center in Siliguri.",
 };
+
+
+
 
 const page = async () => {
   const data = await getPageData();
