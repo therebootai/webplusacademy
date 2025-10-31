@@ -50,10 +50,10 @@ export default function CardSection1() {
             </div>
 
      
-            <h3 className="text-lg font-semibold mb-2 text-[#ED1F2B] md:text-[30px]">{card.title}</h3>
+            <h3 className="text-lg font-semibold mb-2 text-[#ED1F2B] md:text-[22px] lg:text-[30px]">{card.title}</h3>
 
            
-            <p className="text-[#333069] md:text-[20px]">{card.subtitle}</p>
+            <p className="text-[#333069] md:text-[16px] lg:text-[20px]">{card.subtitle}</p>
           </div>
         ))}
       </div>

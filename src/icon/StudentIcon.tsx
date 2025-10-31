@@ -7,7 +7,7 @@ export default function StudentIcon({ className }: { className?: string }) {
       height="1em"
       viewBox="0 0 19 21"
       fill="none"
-      className={cn("size-5", className)}
+      className={cn("size-4", className)}
       xmlns="http://www.w3.org/2000/svg"
     >
       <path

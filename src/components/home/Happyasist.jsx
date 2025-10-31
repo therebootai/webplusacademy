@@ -14,7 +14,7 @@ export default function Happyasist() {
     // 🌈 Full-width background
     <section className="bg-gradient-to-r from-[#CC2020] via-[#B11717] to-[#A11111] py-10">
       {/* 🎯 Centered content area */}
-      <div className="max-w-[1440px] mx-auto flex flex-col-reverse md:flex-row justify-between items-center px-4 md:px-40 gap-6">
+      <div className="max-w-[1440px] mx-auto flex flex-col-reverse md:flex-row justify-between items-center px-4 lg:px-28 xl:px-40 gap-6">
         {/* Left Content */}
         <div className="">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">

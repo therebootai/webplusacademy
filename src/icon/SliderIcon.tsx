@@ -6,7 +6,7 @@ export default function SliderIcon({ className }: { className?: string }) {
       width="1em"
       height="1em"
       viewBox="0 0 24 24"
-      className={cn("size-6", className)}
+      className={cn("size-4", className)}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >

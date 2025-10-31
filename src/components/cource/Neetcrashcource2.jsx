@@ -62,9 +62,9 @@ export default function Neetcrashcource2() {
 
   return (
       <section className="container mx-auto py-5">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="flex lg:flex-row flex-col gap-8">
      
-        <div className="md:col-span-2 flex flex-col gap-6">
+        <div className="w-full lg:w-[70%] flex flex-col justify-between gap-6">
      
           <div>
             <h2 className="text-3xl md:text-4xl font-extrabold mb-4 ">Career You’re Passionate About Is There For You!</h2>
@@ -94,7 +94,7 @@ export default function Neetcrashcource2() {
       
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {features.map((feature, i) => (
-              <div key={i} className="flex items-start gap-4 p-6 bg-[#FFFBF2] rounded-2xl border border-[0.3px] border-gray-300 shadow-sm hover:shadow-md transition">
+              <div key={i} className="flex items-start gap-4 p-6 bg-[#FFFBF2] rounded-2xl  border-[0.3px] border-gray-300 shadow-sm hover:shadow-md transition">
                 <div>{feature.icon}</div>
                 <div>
                   <h4 className="font-semibold">{feature.title}</h4>
@@ -106,9 +106,9 @@ export default function Neetcrashcource2() {
         </div>
 
      
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 w-full lg:w-[30%] justify-between">
           {relatedCourses.map((course, i) => (
-            <aside key={i} className="bg-white rounded-2xl shadow-sm border border-[0.3px] border-gray-300 overflow-hidden flex flex-col flex-1">
+            <aside key={i} className="bg-white rounded-2xl shadow-sm  border-[0.3px] border-gray-300 overflow-hidden flex flex-col flex-1">
             
               <div className="relative w-full h-48 md:h-64">
                 <img

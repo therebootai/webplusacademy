@@ -14,19 +14,21 @@ export default function AddnewResult() {
       const classFor = formData.get("classFor") as string;
       const year = formData.get("year") as string;
 
-      // if (!classFor || !year) {
-      //   return alert("All fields are required");
-      // }
+      if (!classFor || !year) {
+        return alert("All fields are required");
+      }
 
-      // if (result_file.type !== "application/pdf") {
-      //   return alert("Only PDF files are allowed");
-      // }
+      if (result_file.type !== "application/pdf") {
+        return alert("Only PDF files are allowed");
+      }
 
-      // const result = await addNewResult(classFor, result_file, year);
-      const rest = await SCAN_OMR(result_file);
+      const result = await addNewResult(classFor, result_file, year);
+    
+      return result;
 
-      console.log(rest);
-      // return result;
+      //   const rest = await SCAN_OMR(result_file);
+
+      // console.log(rest);
     } catch (error) {
       console.log(error);
     }

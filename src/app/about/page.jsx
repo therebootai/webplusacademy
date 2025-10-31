@@ -16,7 +16,7 @@ const page = () => {
     <>
       <MainTemplates>
         <Subbanner heading="About Us" />
-        <section className="px-4 md:px-40">
+        <section className="px-4 lg:px-28 xl:px-40">
           <Aboutsection1 />
           <Whatweoffer />
         </section>

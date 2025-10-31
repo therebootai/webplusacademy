@@ -17,21 +17,21 @@ export default function Home() {
   return (
     <>
       <Maintemplates>
-        <section className="px-4  md:px-40 pt-15 md:pt-0">
+        <section className="px-4  lg:px-28 xl:px-40 pt-15 md:pt-0">
           <Herobanner />
           <Titlesection1 />
           <Cardsection1 />
           <TabsSection />
         </section>
         <Ourlatest />
-        <section className="px-4  md:px-40">
+        <section className="px-4 lg:px-28 xl:px-40">
           <Titlesection2 />
 
           <Cardsection2 />
           <Titlesection3 />
         </section>
         <StudentTestimonial />
-        <section className="px-4  md:px-40">
+        <section className="px-4 lg:px-28 xl:px-40">
           <Titlesection4 />
           <ResultCard />
          

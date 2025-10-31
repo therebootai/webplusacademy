@@ -4,6 +4,7 @@ import GalleryList from "@/components/gallery/GalleryList";
 import Subbanner from "@/components/global/Subbanner";
 import MainTemplates from "@/templates/Maintemplates";
 import React from "react";
+export const dynamic = "force-dynamic"; 
 
 export const metadata = {
   title: "Gallery | Waveplus Academy – NEET Coaching in Siliguri",
@@ -17,7 +18,7 @@ const page = async () => {
     <>
       <MainTemplates>
         <Subbanner heading="Image Gallery" />
-        <section className="px-4 md:px-40 py-10">
+        <section className="px-4 lg:px-28 xl:px-40 py-10">
           {data && <GalleryList data={data?.data} type={"image"} />}
         </section>
       </MainTemplates>

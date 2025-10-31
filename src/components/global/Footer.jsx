@@ -11,29 +11,39 @@ import {
   FaTelegramPlane,
   FaWhatsapp,
 } from "react-icons/fa";
+import Link from "next/link";
 
 const Footer = () => {
+    const socialLinks = [
+    { Icon: FaFacebookF, link: "https://www.facebook.com/p/Waveplus-Academy-61577379283602/" },
+    { Icon: FaInstagram, link: "https://www.instagram.com/waveplus.academy/" },
+    { Icon: FaWhatsapp, link: "https://api.whatsapp.com/send?phone=+919614016184" }, 
+  ];
   return (
-    <footer className="bg-[#FFF9F2] pt-10 px-4 md:px-40">
+    <footer className="bg-[#FFF9F2] pt-10 px-4 lg:px-28 xl:px-40">
       <div className="max-w-[1440px] mx-auto text-gray-800">
       
         <div className="md:hidden flex flex-col gap-8">
-          {/* Corporate Office */}
-          <div>
-            <h3 className="font-bold mb-4">Corporate Office</h3>
-            <ul className="space-y-3 text-gray-800">
-              <li className="flex items-start gap-2">
-                <FaMapMarkerAlt className="mt-1" />
-                <span>394, Rajeev Gandhi Nagar, Kota, Rajasthan - 324005</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <FaPhoneAlt /> <span>18002121799</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <FaEnvelope /> <span>info@motion.ac.in</span>
-              </li>
-            </ul>
-          </div>
+        
+          <h3 className="font-bold mb-0">Corporate Office</h3>
+      <ul className="space-y-3 text-gray-800">
+        <Link href={"https://maps.app.goo.gl/J6RTxzycMhzHmn5N9"} target="_blank" className="flex items-start gap-2">
+          <FaMapMarkerAlt className=" text-[30px]" />
+          <span>
+            Gadadhar Pally, Behind Hebron School, Upper Bagdogra,
+            Darjeeling, West Bengal - 734003
+          </span>
+        </Link>
+        <li className="flex items-center gap-2">
+          <FaPhoneAlt className=" text-[20px]"  /> <Link href={"tel:919679315590"}> +91 96793 15590</Link>
+        </li>
+          <li className="flex items-center gap-2">
+          <FaWhatsapp className=" text-[20px]"  /> <Link href={"https://api.whatsapp.com/send?phone=+919614016184"}>+91 96140 16184 </Link> 
+        </li>
+        <Link href={"mailto:info@waveplusacademy.com"} className="flex items-center gap-2">
+          <FaEnvelope /> <span>info@waveplusacademy.com</span>
+        </Link>
+      </ul>
 
           {/* Follow Us */}
         <div>
@@ -146,7 +156,7 @@ const Footer = () => {
         </div>
 
 <div className="hidden md:block">
-  <div className="grid grid-cols-5 gap-4">
+  <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
    
     <div>
       <h3 className="font-bold mb-4">About Us</h3>
@@ -230,19 +240,22 @@ const Footer = () => {
     <div>
       <h3 className="font-bold mb-0">Corporate Office</h3>
       <ul className="space-y-3 text-gray-800">
-        <li className="flex items-start gap-2">
-          <FaMapMarkerAlt className=" text-[50px]" />
+        <Link href={"https://maps.app.goo.gl/J6RTxzycMhzHmn5N9"} target="_blank" className="flex items-start gap-2">
+          <FaMapMarkerAlt className=" text-[20px] lg:text-[50px]" />
           <span>
             Gadadhar Pally, Behind Hebron School, Upper Bagdogra,
             Darjeeling, West Bengal - 734003
           </span>
-        </li>
+        </Link>
         <li className="flex items-center gap-2">
-          <FaPhoneAlt className=" text-[20px]"  /> <span>+91 96140 16184 / +91 96793 15590</span>
+          <FaPhoneAlt className=" text-[20px]"  /> <Link href={"tel:919679315590"}> +91 96793 15590</Link>
         </li>
-        <li className="flex items-center gap-2">
+          <li className="flex items-center gap-2">
+          <FaWhatsapp className=" text-[20px]"  /> <Link href={"https://api.whatsapp.com/send?phone=+919614016184"}>+91 96140 16184 </Link> 
+        </li>
+        <Link href={"mailto:info@waveplusacademy.com"} className="flex items-center gap-2">
           <FaEnvelope /> <span>info@waveplusacademy.com</span>
-        </li>
+        </Link>
       </ul>
     </div>
   </div>
@@ -251,23 +264,16 @@ const Footer = () => {
   <div className="flex flex-col items-center mt-0">
     <h4 className="font-bold mb-2">FOLLOW US ON</h4>
     <div className="flex gap-3 justify-center">
-      {[
-        // BsX,
-        FaFacebookF,
-        // FaLinkedinIn,
-        FaInstagram,
-        FaYoutube,
-        // FaRss,
-        FaTelegramPlane,
-        FaWhatsapp,
-      ].map((Icon, i) => (
-        <a
+     {socialLinks.map(({ Icon, link }, i) => (
+        <Link
           key={i}
-          href="#"
-          className="bg-black text-white p-1 rounded-full hover:bg-gray-700"
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-black text-white p-2 rounded-full hover:bg-gray-700 transition-all duration-200"
         >
-          <Icon />
-        </a>
+          <Icon size={18} />
+        </Link>
       ))}
     </div>
   </div>

@@ -22,7 +22,7 @@ const page = async () => {
       <MainTemplates>
         <Subbanner heading="Video Gallery" />
 
-        <section className="px-4 md:px-40 py-10">
+        <section className="px-4 lg:px-28 xl:px-40 py-10">
           {data && <GalleryList data={data?.data} type={"video"} />}
         </section>
       </MainTemplates>

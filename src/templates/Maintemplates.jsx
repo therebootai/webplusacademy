@@ -16,7 +16,7 @@ export default function MainTemplates({ children }) {
       </div>
 
    
-      <div className="lg:mt-[5rem] md:mt-[5rem] mt-[2rem]">{children}</div>
+      <div className="lg:mt-[5rem] md:mt-[5rem] mt-[4rem]">{children}</div>
       <OnlyMobile/>
         
      <Footer/>

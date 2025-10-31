@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useState } from "react";
 
 export const Neet = () => {
@@ -32,27 +33,29 @@ Message: ${formData.message}`;
 
   return (
     <section className="w-full flex justify-center bg-white pt-5 pb-1">
-      <div className="w-full max-w-[1440px] flex flex-col lg:flex-row gap-8">
+      <div className="w-full max-w-[1440px] flex flex-col md:flex-row gap-8">
 
         {/* Left Image */}
-        <div className="w-full lg:flex-[4.5] flex justify-center items-center">
-          <img
+        <div className="w-full md:w-[70%] flex justify-center items-center">
+          <Image
             src="/assets/facilities/TeachingMethodologies.png"
             alt="About Waveplus Academy"
+              width={1280}
+            height={934}
             className="w-full h-auto rounded-lg object-cover"
           />
         </div>
 
         {/* Right Form */}
-        <div className="w-full lg:flex-[2] bg-[#F9FAFB] rounded-lg shadow-md">
+        <div className="w-full md:w-[30%] bg-[#F9FAFB] rounded-lg shadow-md">
 
           {/* Heading at the very top */}
-          <h3 className="text-[19px] font-semibold text-defined-red text-center py-3 px-6 bg-[#FFE5E5] rounded-t-lg">
+          <h3 className="lg:text-[19px] text-base font-semibold text-defined-red text-center py-3 px-6 bg-[#FFE5E5] rounded-t-lg">
             Career You're Passionate About Is There For You!
           </h3>
 
           {/* Form Container */}
-          <div className="p-6 flex flex-col gap-4">
+          <div className="lg:p-6 p-4 flex flex-col gap-4">
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <input
                 type="text"

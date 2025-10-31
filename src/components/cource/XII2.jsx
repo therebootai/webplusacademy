@@ -54,16 +54,16 @@ export default function XII2() {
     {
       title: "Crash Course — NEET Revision",
       desc: "Short intense revision program with full test series for NEET.",
-      href: "/courses/neet-crash",
+      href: "/neetcrashcource",
       img: "/assets/students/Rinchen Bhutia 2023.jpg",
     },
   ];
 
   return (
     <section className="container mx-auto py-5">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className=" flex lg:flex-row flex-col gap-8">
        
-        <div className="md:col-span-2 flex flex-col gap-6">
+        <div className="w-full lg:w-[70%] flex flex-col justify-between gap-6">
          
           <div>
             <h2 className="text-3xl md:text-4xl font-extrabold mb-4 ">
@@ -107,7 +107,7 @@ export default function XII2() {
             {features.map((feature, i) => (
               <div
                 key={i}
-                className="flex items-start gap-4 p-6 bg-[#FFFBF2] rounded-2xl border border-[0.3px] border-gray-300 shadow-sm hover:shadow-md transition"
+                className="flex items-start gap-4 p-6 bg-[#FFFBF2] rounded-2xl  border-[0.3px] border-gray-300 shadow-sm hover:shadow-md transition"
               >
                 <div>{feature.icon}</div>
                 <div>
@@ -120,7 +120,7 @@ export default function XII2() {
         </div>
 
        
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 w-full justify-between lg:w-[30%]">
           {relatedCourses.map((course, i) => (
             <aside
               key={i}

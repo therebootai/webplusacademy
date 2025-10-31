@@ -102,7 +102,7 @@ export default function StudentTestimonial() {
   const totalGroups = Math.ceil(testimonials.length / slidesPerGroup);
 
   return (
-    <section className="w-full bg-gray-50 py-16 px-4 md:px-40">
+    <section className="w-full bg-gray-50 py-16 px-4 lg:px-28 xl:px-40">
       <div className="max-w-[1440px] mx-auto">
        
         <div className="flex flex-col md:flex-row items-center gap-6 mb-16 transition-all duration-700 bg-[#FFFDFA] py-10 border-[0.2px] border-gray-300 rounded-[20px] px-6">
@@ -110,7 +110,7 @@ export default function StudentTestimonial() {
             <img
               src={testimonials[activeIndex].img}
               alt={testimonials[activeIndex].name}
-              className="w-80 h-80 object-cover shadow-lg transition-all duration-700 bg-[#F4D8B2] rounded-[20px]"
+              className="lg:size-80 md:size-[15rem]size-[17rem]  object-cover shadow-lg transition-all duration-700 bg-[#F4D8B2] rounded-[20px]"
             />
           </div>
           <div className="flex-1 text-center md:text-left relative md:-ml-6 pr-16">

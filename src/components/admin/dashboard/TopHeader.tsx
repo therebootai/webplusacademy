@@ -78,11 +78,11 @@ export default function TopHeader() {
       label: "Result",
       path: "/admin/result",
     },
-      {
-      icon: <ResultIcon />,
-      label: "OMR",
-      path: "/admin/omr",
-    },
+    //   {
+    //   icon: <ResultIcon />,
+    //   label: "OMR",
+    //   path: "/admin/omr",
+    // },
   ];
 
   async function handleLogout() {

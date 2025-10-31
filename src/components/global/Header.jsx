@@ -46,23 +46,24 @@ export default function Header() {
   }, []);
 
   // Close dropdowns when clicking outside
-  useEffect(() => {
-    const onDocClick = (e) => {
+useEffect(() => {
+  const onDocClick = (e) => {
+    if (window.innerWidth >= 1024) { // desktop only
       if (e.target.closest && e.target.closest(".nav-dropdown")) return;
       setDropdownOpen({});
-    };
-    document.addEventListener("click", onDocClick);
-    return () => document.removeEventListener("click", onDocClick);
-  }, []);
-
+    }
+  };
+  document.addEventListener("click", onDocClick);
+  return () => document.removeEventListener("click", onDocClick);
+}, []);
   return (
     <>
       <nav
-        className={`bg-white fixed w-full z-50 transition-shadow duration-300 py-1 ${
+        className={`bg-white fixed w-full z-50 transition-shadow duration-300 py-1 md:h-[5rem] h-[4rem] ${
           isScrolled ? "shadow-md" : ""
         }`}
       >
-        <div className="w-full max-w-[1440px] mx-auto px-4 md:px-40 flex justify-between items-center py-3">
+        <div className="w-full   px-4 xl:px-40 flex justify-between items-center py-3">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/">
@@ -72,12 +73,13 @@ export default function Header() {
                 height={70}
                 width={170}
                 priority
+                className="  "
               />
             </Link>
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-6 flex-grow justify-center items-center">
+          <div className="hidden lg:flex   flex-grow justify-center items-center">
             {navItems.map((item, idx) =>
               item.subMenu ? (
                 <div
@@ -135,17 +137,17 @@ export default function Header() {
           </div>
 
           {/* Desktop Login */}
-          <div className="hidden md:flex">
+          <div className="hidden lg:flex">
             <Link
               href="/guardian-login"
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
+              className="bg-red-600 text-white px-2 xl:px-4 py-2 rounded-md hover:bg-red-700 transition"
             >
               Student Login
             </Link>
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-start">
+          <div className="lg:hidden flex items-start">
             <button
               type="button"
               className="text-3xl flex items-center justify-center relative -top-2"
@@ -158,7 +160,7 @@ export default function Header() {
 
         {/* Mobile Menu */}
         <div
-          className={`md:hidden bg-white shadow-md overflow-hidden transition-max-height duration-500 ${
+          className={`lg:hidden bg-white shadow-md overflow-hidden transition-max-height duration-500 ${
             menuOpen ? "max-h-[1000px]" : "max-h-0"
           }`}
         >
@@ -185,19 +187,16 @@ export default function Header() {
 
                 {/* Mobile Submenu */}
                 <div
-                  className={`overflow-hidden transition-max-height duration-300 ${
-                    dropdownOpen[item.name] ? "max-h-[500px]" : "max-h-0"
-                  }`}
+                 className={`overflow-hidden transition-all duration-300 ${
+    dropdownOpen[item.name] ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+  }`}
                 >
                   {item.subMenu.map((sub, sidx) => (
                     <Link
                       key={sidx}
                       href={sub.href}
                       className="block px-6 py-2 hover:bg-gray-100"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        setDropdownOpen({});
-                      }}
+                     
                     >
                       {sub.name}
                     </Link>
