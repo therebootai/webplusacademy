@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { FaQuoteLeft } from "react-icons/fa";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper, SwiperSlide, useSwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/autoplay";
@@ -41,7 +41,7 @@ const testimonials = [
       "The classroom sessions were interactive and fun. I gained a lot of confidence and improved my problem-solving speed.",
     img: "/assets/students/Nishumita Subba 2023.jpg",
   },
-   {
+  {
     id: 6,
     name: "Phungwama Limboo",
     course: "NEET Aspirant",
@@ -55,7 +55,7 @@ const testimonials = [
     course: "NEET",
     comment:
       "The personalized attention and mock tests helped me improve my scores significantly. Highly recommend this institute!",
-   img: "/assets/students/Rinchen Bhutia 2023.jpg",
+    img: "/assets/students/Rinchen Bhutia 2023.jpg",
   },
   {
     id: 8,
@@ -63,7 +63,7 @@ const testimonials = [
     course: "NEET 2024",
     comment:
       "Excellent faculty and great environment for learning. Every concept is explained with clarity and patience.",
-   img: "/assets/students/Samir Sharma 2024.jpg",
+    img: "/assets/students/Samir Sharma 2024.jpg",
   },
   {
     id: 9,
@@ -71,7 +71,7 @@ const testimonials = [
     course: "NEET 2023",
     comment:
       "The classroom sessions were interactive and fun. I gained a lot of confidence and improved my problem-solving speed.",
-   img: "/assets/students/Swekar Subba  2023.jpg",
+    img: "/assets/students/Swekar Subba  2023.jpg",
   },
 ];
 
@@ -97,14 +97,13 @@ export default function StudentTestimonial() {
     }
   }, [navReady]);
 
-  const slidesPerGroup = 1; 
-  const slidesPerViewDesktop = 3; 
+  const slidesPerGroup = 1;
+  const slidesPerViewDesktop = 3;
   const totalGroups = Math.ceil(testimonials.length / slidesPerGroup);
 
   return (
     <section className="w-full bg-gray-50 py-16 px-4 lg:px-28 xl:px-40">
       <div className="max-w-[1440px] mx-auto">
-       
         <div className="flex flex-col md:flex-row items-center gap-6 mb-16 transition-all duration-700 bg-[#FFFDFA] py-10 border-[0.2px] border-gray-300 rounded-[20px] px-6">
           <div className="flex-1 flex justify-center md:justify-start">
             <img
@@ -127,7 +126,6 @@ export default function StudentTestimonial() {
           </div>
         </div>
 
-      
         <Swiper
           onSwiper={(swiper) => (swiperRef.current = swiper)}
           slidesPerView={1}
@@ -136,7 +134,9 @@ export default function StudentTestimonial() {
           loop={true}
           autoplay={{ delay: 4000, disableOnInteraction: false }}
           modules={[Autoplay, Navigation]}
-          onSlideChange={(swiper) => setActiveDot(Math.floor(swiper.realIndex / slidesPerGroup))}
+          onSlideChange={(swiper) =>
+            setActiveDot(Math.floor(swiper.realIndex / slidesPerGroup))
+          }
           breakpoints={{
             640: { slidesPerView: 1 },
             768: { slidesPerView: 2 },
@@ -145,38 +145,48 @@ export default function StudentTestimonial() {
         >
           {testimonials.map((item, index) => (
             <SwiperSlide key={item.id}>
-              <div
-                onClick={() => {
-                  setActiveIndex(index);
-                  swiperRef.current?.slideToLoop(index);
-                }}
-                className={`cursor-pointer bg-[#FFFDFA] shadow-md rounded-2xl p-6 transition-all duration-300 md:h-[240px] ${
-                  activeIndex === index ? "border-2 border-red-500" : ""
-                }`}
-              >
-                <FaQuoteLeft className="text-3xl text-gray-300 mb-3" />
-                <p className="text-gray-700 text-sm italic mb-6">
-                  {item.comment.length > 100
-                    ? item.comment.slice(0, 100) + "..."
-                    : item.comment}
-                </p>
-                <div className="flex items-center justify-between mt-auto">
-                  <img
-                    src={item.img}
-                    alt={item.name}
-                    className="w-20 h-20 rounded-full object-cover border"
-                  />
-                  <div className="ml-4">
-                    <h4 className="font-semibold text-gray-900 text-sm">{item.name}</h4>
-                    <p className="text-xs text-gray-500">{item.course}</p>
+              {({ isActive }) => {
+                useEffect(() => {
+                  if (isActive) {
+                    setActiveIndex(index);
+                  }
+                }, [isActive]);
+                return (
+                  <div
+                    onClick={() => {
+                      setActiveIndex(index);
+                      swiperRef.current?.slideToLoop(index);
+                    }}
+                    className={`cursor-pointer bg-[#FFFDFA] shadow-md rounded-2xl p-6 transition-all duration-300 md:h-[240px] ${
+                      activeIndex === index ? "border-2 border-red-500" : ""
+                    }`}
+                  >
+                    <FaQuoteLeft className="text-3xl text-gray-300 mb-3" />
+                    <p className="text-gray-700 text-sm italic mb-6">
+                      {item.comment.length > 100
+                        ? item.comment.slice(0, 100) + "..."
+                        : item.comment}
+                    </p>
+                    <div className="flex items-center justify-between mt-auto">
+                      <img
+                        src={item.img}
+                        alt={item.name}
+                        className="w-20 h-20 rounded-full object-cover border"
+                      />
+                      <div className="ml-4">
+                        <h4 className="font-semibold text-gray-900 text-sm">
+                          {item.name}
+                        </h4>
+                        <p className="text-xs text-gray-500">{item.course}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                );
+              }}
             </SwiperSlide>
           ))}
         </Swiper>
 
-      
         <div className="flex justify-center gap-6 mt-4 md:hidden text-xl font-bold">
           <button
             ref={prevRef}
@@ -202,7 +212,6 @@ export default function StudentTestimonial() {
           </button>
         </div>
 
-        
         <div className="hidden md:flex justify-center gap-4 mt-6">
           {Array.from({ length: totalGroups }).map((_, index) => (
             <button

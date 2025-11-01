@@ -7,14 +7,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { getAllSliders } from "@/actions/sliderActions";
 
-const images = [
-  "/assets/Slider/SLIDER 1.avif",
-  "/assets/Slider/SLIDE 2.avif",
-  "/assets/Slider/SLLIDE 3.avif",
-  "/assets/Slider/SLIDE 4.avif",
-  "/assets/Slider/SLIDE 5.avif",
-];
-
 const Herobanner = () => {
   const [allSiders, setAllSliders] = useState([]);
   async function getSliders() {
