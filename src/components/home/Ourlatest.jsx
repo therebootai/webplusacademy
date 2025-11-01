@@ -80,7 +80,7 @@ export default function Ourlatest() {
                     <Link
                       href={notice.notice_file.secure_url}
                       target="_blank"
-                      className="mr-4 relative text-lg font-medium group-odd:text-site-darkgreen group-even:text-site-yellow"
+                      className="mr-4 relative text-lg font-medium group-odd:text-site-darkgreen group-even:text-site-yellow line-clamp-2"
                     >
                       {notice.title}
                     </Link>
@@ -92,7 +92,7 @@ export default function Ourlatest() {
                   >
                     <div className="w-1 h-full group-odd:bg-site-darkgreen group-even:bg-site-yellow rounded-md" />
 
-                    <span className="mr-4 relative text-lg font-medium group-odd:text-site-darkgreen group-even:text-site-yellow">
+                    <span className="mr-4 relative text-lg font-medium group-odd:text-site-darkgreen group-even:text-site-yellow line-clamp-2">
                       {notice.title}
                     </span>
                   </div>
